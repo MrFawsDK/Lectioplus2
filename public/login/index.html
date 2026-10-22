@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log ind - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/login/login.css">
+</head>
+<body>
+
+<main class="login-page">
+    <section class="login-intro">
+        <h1>Flexio</h1>
+        <p class="lead">Log ind med din Lectio-konto for at se dit skema og dine opgaver.</p>
+    </section>
+
+    <p class="login-message" id="loginMessage" role="status" hidden></p>
+
+    <form class="login-form" id="loginForm" novalidate>
+
+        <!-- Trin 1: skole -->
+        <section class="step">
+            <span class="step-number">1</span>
+            <div class="step-body">
+                <h2>Vælg din skole</h2>
+
+                <!--
+                    M3: Text fields - Outlined text field med ikon (søg skole)
+                    Guide: https://m3.material.io/components/text-fields/overview
+                    Element: <md-outlined-text-field> fra @material/web/textfield/outlined-text-field.js
+                -->
+                <md-outlined-text-field id="schoolField" label="Skole" placeholder="Søg efter din skole" autocomplete="off">
+                    <md-icon slot="leading-icon">school</md-icon>
+                </md-outlined-text-field>
+
+                <!--
+                    M3: Lists (søgeresultater, indsættes i renderSchoolResults() i login.js)
+                    Guide: https://m3.material.io/components/lists/overview
+                    Element: <md-list> og <md-list-item> fra @material/web/list
+                -->
+                <md-list id="schoolResults" class="school-results" hidden></md-list>
+            </div>
+        </section>
+
+        <!-- Trin 2: log ind på Lectio -->
+        <section class="step">
+            <span class="step-number">2</span>
+            <div class="step-body">
+                <h2>Log ind på Lectio som normalt</h2>
+                <p>Åbn Lectio for din skole og log ind med MitID / UniLogin.</p>
+
+                <!--
+                    M3: Buttons - Outlined button med ikon (link til Lectio)
+                    Guide: https://m3.material.io/components/buttons/overview
+                    Element: <md-outlined-button> fra @material/web/button/outlined-button.js
+                -->
+                <md-outlined-button id="openLectioButton" target="_blank" disabled>
+                    <md-icon slot="icon">open_in_new</md-icon>
+                    Åbn Lectio
+                </md-outlined-button>
+            </div>
+        </section>
+
+        <!-- Trin 3: kopiér cookie -->
+        <section class="step">
+            <span class="step-number">3</span>
+            <div class="step-body">
+                <h2>Kopiér din Lectio-cookie</h2>
+                <ol class="howto">
+                    <li>Tryk <kbd>F12</kbd> på Lectio-siden for at åbne udviklerværktøjerne.</li>
+                    <li>Vælg fanen <strong>Netværk</strong> (Network) og genindlæs siden med <kbd>F5</kbd>.</li>
+                    <li>Klik på den første linje, <strong>forside.aspx</strong>.</li>
+                    <li>Find <strong>Cookie</strong> under <em>Anmodningsheadere</em> (Request Headers) og kopiér hele værdien.</li>
+                </ol>
+
+                <!--
+                    M3: Text fields - Outlined text field (type="password", så cookien ikke vises)
+                    Guide: https://m3.material.io/components/text-fields/overview
+                    Element: <md-outlined-text-field> fra @material/web/textfield/outlined-text-field.js
+                -->
+                <md-outlined-text-field id="cookieField" class="cookie-field" label="Lectio-cookie" type="password"
+                    supporting-text="Fx ASP.NET_SessionId=...; lectiogsc=..." autocomplete="off">
+                    <md-icon slot="leading-icon">key</md-icon>
+                </md-outlined-text-field>
+            </div>
+        </section>
+
+        <div class="actions">
+            <!--
+                M3: Buttons - Filled button med ikon
+                Guide: https://m3.material.io/components/buttons/overview
+                Element: <md-filled-button> fra @material/web/button/filled-button.js
+            -->
+            <md-filled-button id="loginButton" type="submit">
+                <md-icon slot="icon">login</md-icon>
+                Log ind
+            </md-filled-button>
+
+            <!--
+                M3: Progress indicators - kunne bruges her, men Material Web-pakken har den ikke med,
+                så der vises en tekst mens der logges ind.
+            -->
+            <span class="working" id="workingText" hidden>Tjekker cookien hos Lectio …</span>
+        </div>
+
+        <p class="security-note">
+            <md-icon>lock</md-icon>
+            <span>Cookien sendes kun til Flexio-serveren, som bruger den til at hente dine data fra lectio.dk.
+            Den gemmes i serverens hukommelse og aldrig i browseren. Den virker som at være logget ind - del den aldrig med andre.</span>
+        </p>
+    </form>
+
+    <!--
+        M3: Divider
+        Guide: https://m3.material.io/components/divider/overview
+        Element: <md-divider> fra @material/web/divider/divider.js
+    -->
+    <md-divider></md-divider>
+
+    <section class="demo">
+        <p>Vil du bare se, hvordan Flexio virker?</p>
+
+        <!--
+            M3: Buttons - Text button med ikon
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-text-button> fra @material/web/button/text-button.js
+        -->
+        <md-text-button id="demoButton">
+            <md-icon slot="icon">science</md-icon>
+            Prøv med demo-data
+        </md-text-button>
+    </section>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/login/login.js"></script>
+</body>
+</html>

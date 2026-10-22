@@ -1,0 +1,323 @@
+/* ---------- Siden (ingen boks, fuld bredde) ---------- */
+
+.opgaver-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+
+/* ---------- Overblik ---------- */
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+
+    margin-bottom: 28px;
+}
+
+.page-head h1 {
+    margin: 0;
+
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+}
+
+.stats {
+    display: flex;
+    gap: 40px;
+    margin: 0;
+}
+
+.stat dt {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.stat dd {
+    margin: 2px 0 0;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.stat.missing.active dd {
+    color: var(--md-sys-color-error);
+}
+
+
+/* ---------- Filtre ---------- */
+
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+
+    margin-bottom: 16px;
+}
+
+
+/* ---------- Sektioner ---------- */
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+.section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+
+    padding: 16px 16px 4px;
+}
+
+.section-head md-icon {
+    --md-icon-size: 20px;
+    align-self: center;
+}
+
+.section-head h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.section-meta {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.section-count {
+    margin-left: auto;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.section.is-missing .section-head {
+    color: var(--md-sys-color-error);
+}
+
+.section.is-submitted .section-head md-icon {
+    color: #386a20;
+}
+
+.section-list {
+    background: transparent;
+}
+
+
+/* ---------- Opgave ---------- */
+
+.assignment {
+    --md-list-item-leading-space: 16px;
+    --md-list-item-trailing-space: 16px;
+    --md-list-item-two-line-container-height: 76px;
+
+    border-radius: 16px;
+}
+
+.assignment-title {
+    font-weight: 500;
+}
+
+.assignment-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.assignment-note {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+
+    color: var(--md-sys-color-outline);
+    font-style: italic;
+}
+
+/* Dato-mærke til venstre */
+
+.date-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    border-radius: 14px;
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+
+    line-height: 1.1;
+}
+
+.date-badge.missing {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+
+.date-badge.submitted {
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.date-day {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.date-month {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Højre side */
+
+.assignment-end {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+
+    white-space: nowrap;
+}
+
+.when {
+    color: var(--md-sys-color-on-surface);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.when.soon {
+    color: var(--md-sys-color-primary);
+}
+
+.assignment.missing .when {
+    color: var(--md-sys-color-error);
+}
+
+.assignment.submitted .when {
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 400;
+}
+
+.grade {
+    min-width: 32px;
+    padding: 2px 8px;
+
+    border-radius: 8px;
+    background: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.time {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+}
+
+
+/* ---------- Tom side ---------- */
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    padding: 64px 24px;
+
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+
+/* ---------- Dialog ---------- */
+
+#assignmentDialog {
+    min-width: min(460px, calc(100vw - 32px));
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#dialogList {
+    background: transparent;
+}
+
+.detail-value {
+    white-space: normal;
+}
+
+.status-chip.missing {
+    --md-assist-chip-icon-color: var(--md-sys-color-error);
+}
+
+.status-chip.submitted {
+    --md-assist-chip-icon-color: #386a20;
+}
+
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 700px) {
+    .page-head h1 {
+        font-size: 32px;
+    }
+
+    .stats {
+        gap: 24px;
+    }
+
+    .stat dd {
+        font-size: 24px;
+    }
+
+    .section-meta {
+        display: none;
+    }
+
+    .assignment {
+        --md-list-item-leading-space: 8px;
+        --md-list-item-trailing-space: 8px;
+    }
+
+    .date-badge {
+        width: 44px;
+        height: 44px;
+    }
+}

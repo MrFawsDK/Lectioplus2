@@ -1,0 +1,190 @@
+{
+  "modules": [
+    { "name": "1. modul", "start": "08:00", "end": "09:30" },
+    { "name": "2. modul", "start": "09:50", "end": "11:20" },
+    { "name": "3. modul", "start": "11:50", "end": "13:20" },
+    { "name": "4. modul", "start": "13:30", "end": "15:00" },
+    { "name": "5. modul", "start": "15:10", "end": "15:55" }
+  ],
+  "lessons": [
+    {
+      "date": "2026-09-28",
+      "start": "08:00",
+      "end": "09:30",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "room": "H203"
+    },
+    {
+      "date": "2026-09-28",
+      "start": "09:50",
+      "end": "11:20",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "room": "H202",
+      "note": "Arbejde videre med læringsplatformen."
+    },
+    {
+      "date": "2026-09-28",
+      "start": "11:50",
+      "end": "13:20",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "room": "D104",
+      "homework": true
+    },
+    {
+      "date": "2026-09-28",
+      "start": "13:30",
+      "end": "15:00",
+      "subject": "Teknologi",
+      "teacher": "JM",
+      "room": "T01",
+      "note": "Projektarbejde i grupper."
+    },
+    {
+      "date": "2026-09-28",
+      "start": "15:10",
+      "end": "15:55",
+      "subject": "Studietid",
+      "teacher": "MK",
+      "room": "H203"
+    },
+
+    {
+      "date": "2026-09-29",
+      "start": "09:50",
+      "end": "11:20",
+      "subject": "Fysik",
+      "teacher": "PH",
+      "room": "Fysik 1",
+      "homework": true
+    },
+    {
+      "date": "2026-09-29",
+      "start": "11:50",
+      "end": "13:20",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "room": "H203",
+      "homework": true
+    },
+    {
+      "date": "2026-09-29",
+      "start": "13:30",
+      "end": "15:00",
+      "subject": "Engelsk",
+      "teacher": "AN",
+      "room": "D102"
+    },
+    {
+      "date": "2026-09-29",
+      "start": "15:10",
+      "end": "15:55",
+      "subject": "Studietid",
+      "teacher": "AN",
+      "room": "D102"
+    },
+
+    {
+      "date": "2026-09-30",
+      "start": "08:00",
+      "end": "09:30",
+      "subject": "Teknologi",
+      "teacher": "JM",
+      "room": "T01",
+      "note": "Gennemgang af produktkrav."
+    },
+    {
+      "date": "2026-09-30",
+      "start": "09:50",
+      "end": "13:20",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "room": "H202",
+      "status": "changed",
+      "note": "Dobbeltmodul. Lokale og tidspunkt er ændret."
+    },
+    {
+      "date": "2026-09-30",
+      "start": "13:30",
+      "end": "15:00",
+      "subject": "Historie",
+      "teacher": "KR",
+      "room": "D101"
+    },
+    {
+      "date": "2026-09-30",
+      "start": "15:10",
+      "end": "15:55",
+      "subject": "Klassetime",
+      "teacher": "MK",
+      "room": "H203"
+    },
+
+    {
+      "date": "2026-10-01",
+      "start": "08:00",
+      "end": "11:20",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "room": "H203",
+      "status": "changed",
+      "note": "Dobbeltmodul med ekstra tid til vektoropgaver."
+    },
+    {
+      "date": "2026-10-01",
+      "start": "11:50",
+      "end": "13:20",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "room": "D104",
+      "note": "Arbejde med outline og PEE-struktur.",
+      "homework": true
+    },
+    {
+      "date": "2026-10-01",
+      "start": "13:30",
+      "end": "15:00",
+      "subject": "Fysik",
+      "teacher": "PH",
+      "room": "Fysik 2"
+    },
+
+    {
+      "date": "2026-10-02",
+      "start": "08:00",
+      "end": "09:30",
+      "subject": "Engelsk",
+      "teacher": "AN",
+      "room": "D102",
+      "homework": true
+    },
+    {
+      "date": "2026-10-02",
+      "start": "09:50",
+      "end": "11:20",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "room": "H202"
+    },
+    {
+      "date": "2026-10-02",
+      "start": "11:50",
+      "end": "13:20",
+      "subject": "Teknologi",
+      "teacher": "JM",
+      "room": "T01"
+    },
+    {
+      "date": "2026-10-02",
+      "start": "13:30",
+      "end": "15:00",
+      "subject": "Idræt",
+      "teacher": "HB",
+      "room": "Hal 1",
+      "status": "cancelled",
+      "note": "Modulet er aflyst."
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/profil/profil.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="profil-page">
+    <h1 id="profileName">Profil</h1>
+    <p class="lead" id="profileLead"></p>
+
+    <!--
+        M3: Lists - List item med ikon og overline
+        Guide: https://m3.material.io/components/lists/overview
+        Element: <md-list> og <md-list-item> fra @material/web/list
+    -->
+    <md-list class="profile-list">
+        <md-list-item>
+            <md-icon slot="start">groups</md-icon>
+            <div slot="overline">Klasse</div>
+            <div slot="headline" id="profileClass">-</div>
+        </md-list-item>
+        <md-list-item>
+            <md-icon slot="start">school</md-icon>
+            <div slot="overline">Skole</div>
+            <div slot="headline" id="profileSchool">-</div>
+        </md-list-item>
+        <md-list-item>
+            <md-icon slot="start">cloud_sync</md-icon>
+            <div slot="overline">Data</div>
+            <div slot="headline" id="profileSource">-</div>
+        </md-list-item>
+    </md-list>
+
+    <!--
+        M3: Buttons - Filled tonal button med ikon
+        Guide: https://m3.material.io/components/buttons/overview
+        Element: <md-filled-tonal-button> fra @material/web/button/filled-tonal-button.js
+    -->
+    <md-filled-tonal-button id="logoutButton">
+        <md-icon slot="icon">logout</md-icon>
+        Log ud
+    </md-filled-tonal-button>
+
+    <p class="note">Når du logger ud, slettes din Lectio-session fra Flexio-serveren.
+    Du er stadig logget ind på lectio.dk, indtil du logger ud der.</p>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/profil/profil.js"></script>
+</body>
+</html>

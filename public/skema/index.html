@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skema - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/skema/skema.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="skema-main">
+
+    <!--
+        M3: Cards - Outlined card
+        Guide: https://m3.material.io/components/cards/overview
+        Element: <md-outlined-card> fra @material/web/labs/card/outlined-card.js
+    -->
+    <md-outlined-card class="skema-card">
+        <div class="toolbar">
+            <div class="toolbar-title">
+                <h1 id="weekTitle">Skema</h1>
+                <span id="weekRange"></span>
+            </div>
+
+            <div class="toolbar-controls">
+                <!--
+                    M3: Icon buttons - Standard icon button
+                    Guide: https://m3.material.io/components/icon-buttons/overview
+                    Element: <md-icon-button> fra @material/web/iconbutton/icon-button.js
+                    Ikon: <md-icon> (Material Symbols) - https://m3.material.io/styles/icons/overview
+                -->
+                <div class="row">
+                    <md-icon-button id="prevButton" aria-label="Forrige">
+                        <md-icon>chevron_left</md-icon>
+                    </md-icon-button>
+                    <md-icon-button id="nextButton" aria-label="Næste">
+                        <md-icon>chevron_right</md-icon>
+                    </md-icon-button>
+                </div>
+
+                <!--
+                    M3: Buttons - Outlined button
+                    Guide: https://m3.material.io/components/buttons/overview
+                    Element: <md-outlined-button> fra @material/web/button/outlined-button.js
+                -->
+                <md-outlined-button id="todayButton">I dag</md-outlined-button>
+
+                <!--
+                    M3: Segmented buttons - Single-select
+                    Guide: https://m3.material.io/components/segmented-buttons/overview
+                    Element: <md-outlined-segmented-button-set> og <md-outlined-segmented-button>
+                             fra @material/web/labs/segmentedbuttonset og /labs/segmentedbutton
+                -->
+                <md-outlined-segmented-button-set id="viewSwitch" aria-label="Visning">
+                    <md-outlined-segmented-button label="Uge" data-view="week" selected></md-outlined-segmented-button>
+                    <md-outlined-segmented-button label="Dag" data-view="day"></md-outlined-segmented-button>
+                </md-outlined-segmented-button-set>
+            </div>
+        </div>
+
+        <!-- Lektionerne er M3 Filled cards, se renderLesson() i skema.js -->
+        <p class="schedule-status" id="scheduleStatus" role="status" hidden></p>
+
+        <div class="schedule-scroll">
+            <div class="schedule" id="schedule"></div>
+        </div>
+    </md-outlined-card>
+</main>
+
+<!--
+    M3: Dialogs - Basic dialog
+    Guide: https://m3.material.io/components/dialogs/overview
+    Element: <md-dialog> fra @material/web/dialog/dialog.js
+-->
+<md-dialog id="lessonDialog">
+    <div slot="headline" id="dialogTitle"></div>
+
+    <div slot="content" class="dialog-content">
+        <!--
+            M3: Chips - Assist chip (indsættes i openLesson() i skema.js)
+            Guide: https://m3.material.io/components/chips/overview
+            Element: <md-chip-set> og <md-assist-chip> fra @material/web/chips
+        -->
+        <md-chip-set id="dialogChips"></md-chip-set>
+
+        <!--
+            M3: Lists (indsættes i openLesson() i skema.js)
+            Guide: https://m3.material.io/components/lists/overview
+            Element: <md-list> og <md-list-item> fra @material/web/list
+        -->
+        <md-list id="dialogList"></md-list>
+
+        <!-- Noter til lektionen (fra databasen, se notesFor() i skema.js) -->
+        <section class="lesson-notes">
+            <h3>Noter</h3>
+
+            <!--
+                M3: Lists - List item (type="link") til hver note
+                Guide: https://m3.material.io/components/lists/overview
+                Element: <md-list> og <md-list-item> fra @material/web/list
+            -->
+            <md-list id="dialogNotes"></md-list>
+            <p class="lesson-notes-empty" id="dialogNotesEmpty">Ingen noter til lektionen endnu.</p>
+        </section>
+    </div>
+
+    <div slot="actions">
+        <!--
+            M3: Buttons - Text button med ikon (link til ny note for lektionen)
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-text-button> fra @material/web/button/text-button.js
+        -->
+        <md-text-button id="newLessonNote">
+            <md-icon slot="icon">edit_note</md-icon>
+            Ny note
+        </md-text-button>
+
+        <!--
+            M3: Buttons - Text button
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-text-button> fra @material/web/button/text-button.js
+        -->
+        <md-text-button id="dialogClose">Luk</md-text-button>
+    </div>
+</md-dialog>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/skema/skema.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{
+  "subjects": ["Matematik", "Informatik", "Dansk"],
+  "assignments": [
+    {
+      "title": "Vektoropgave 1",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "deadline": "2026-08-28T23:30",
+      "hours": 3,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Elev"
+    },
+    {
+      "title": "Projektbeskrivelse",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "deadline": "2026-08-31T11:30",
+      "hours": 1,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Lærer",
+      "note": "Kort beskrivelse af problemet, målgruppe, mulige løsninger og en simpel tidsplan for projektarbejdet."
+    },
+    {
+      "title": "Analyse af kortfilm",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "deadline": "2026-09-10T22:00",
+      "hours": 3,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Elev",
+      "grade": "10"
+    },
+    {
+      "title": "Matematikrapport",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "deadline": "2026-09-13T23:30",
+      "hours": 1,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Lærer"
+    },
+    {
+      "title": "Informatik prøve",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "deadline": "2026-09-18T13:00",
+      "hours": 0,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Elev",
+      "grade": "7"
+    },
+    {
+      "title": "Dansk outline",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "deadline": "2026-09-25T08:00",
+      "hours": 1.5,
+      "status": "missing",
+      "absence": 100,
+      "waitingFor": "Elev",
+      "studentNote": "Mangler at skrive PEE-struktur færdig."
+    },
+    {
+      "title": "Informatik opgave 2",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "deadline": "2026-10-01T23:59",
+      "hours": 2,
+      "status": "pending",
+      "waitingFor": "Elev",
+      "note": "Lav en simpel prototype og forklar kort valg af funktioner."
+    },
+    {
+      "title": "Vektoropgave 2",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "deadline": "2026-10-06T23:59",
+      "hours": 4,
+      "status": "pending",
+      "waitingFor": "Elev",
+      "note": "Opgaven er vedhæftet. Vælg en af de to vinkler og lav udregning samt konklusion."
+    },
+    {
+      "title": "Dansk journal",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "deadline": "2026-10-11T23:30",
+      "hours": 3,
+      "status": "pending",
+      "waitingFor": "Elev"
+    },
+    {
+      "title": "Flowchart og kode",
+      "subject": "Informatik",
+      "teacher": "ABD",
+      "deadline": "2026-10-23T23:59",
+      "hours": 1,
+      "status": "pending",
+      "waitingFor": "Elev",
+      "note": "Afleveres som PDF. Koden skal have kommentarer, og flowchart skal passe til programmet."
+    },
+    {
+      "title": "Analyseopgave",
+      "subject": "Dansk",
+      "teacher": "LS",
+      "deadline": "2026-10-25T22:00",
+      "hours": 5,
+      "status": "pending",
+      "waitingFor": "Elev",
+      "note": "Læs om genren i danskbogen og brug begreberne i analysen."
+    },
+    {
+      "title": "Matematikopgave fra sidste år",
+      "subject": "Matematik",
+      "teacher": "MK",
+      "deadline": "2026-05-20T23:59",
+      "hours": 2,
+      "status": "submitted",
+      "absence": 0,
+      "waitingFor": "Elev",
+      "grade": "12"
+    }
+  ]
+}

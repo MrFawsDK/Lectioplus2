@@ -1,0 +1,196 @@
+/* ---------- Siden (ingen boks, fuld bredde) ---------- */
+
+.karakter-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+
+/* ---------- Overblik ---------- */
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+
+    margin-bottom: 28px;
+}
+
+.page-head h1 {
+    margin: 0;
+
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+}
+
+.stats {
+    display: flex;
+    gap: 40px;
+    margin: 0;
+}
+
+.stat dt {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.stat dd {
+    margin: 2px 0 0;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+
+/* ---------- Sløret karakter ---------- */
+
+.grade-value {
+    display: inline-block;
+
+    filter: blur(8px);
+    user-select: none;
+    cursor: default;
+    outline: none;
+
+    transition: filter 0.15s ease;
+}
+
+.grade-value:hover,
+.grade-value:focus-visible,
+.grade-value.shown {
+    filter: none;
+}
+
+.grade-value:focus-visible {
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+}
+
+
+/* ---------- Karakterblad ---------- */
+
+/* Bred tabel kan rulles sidelæns på små skærme */
+.grade-table-wrap {
+    overflow-x: auto;
+}
+
+.grade-table {
+    width: 100%;
+    margin-top: 8px;
+    border-collapse: collapse;
+}
+
+.grade-table[hidden] {
+    display: none;
+}
+
+.grade-table th,
+.grade-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.grade-table thead th {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.grade-table th[scope="row"],
+.grade-table thead th:first-child {
+    text-align: left;
+}
+
+.grade-table tbody tr:hover {
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.subject {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.team {
+    display: block;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.grade-table td {
+    font-size: 20px;
+}
+
+.grade-table td .grade-value {
+    min-width: 40px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: var(--md-sys-color-surface-container-high);
+}
+
+.grade-table td .grade-value.low {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+
+.no-grade {
+    color: var(--md-sys-color-outline-variant);
+}
+
+
+/* ---------- Tom side ---------- */
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    padding: 64px 24px;
+
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+
+/* ---------- Mobil ---------- */
+
+@media (max-width: 700px) {
+    .page-head h1 {
+        font-size: 32px;
+    }
+
+    .stats {
+        gap: 24px;
+    }
+
+    .stat dd {
+        font-size: 24px;
+    }
+
+    .grade-table th,
+    .grade-table td {
+        padding: 12px 8px;
+    }
+}

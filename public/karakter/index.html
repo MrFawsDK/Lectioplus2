@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karakterer - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/karakter/karakter.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="karakter-page">
+
+    <!-- Overblik -->
+    <section class="page-head">
+        <div>
+            <h1>Karakterer</h1>
+            <p class="lead" id="lead">Hold musen over en karakter for at se den.</p>
+        </div>
+
+        <dl class="stats">
+            <div class="stat">
+                <dt>Gennemsnit</dt>
+                <dd><span class="grade-value" id="statAverage" tabindex="0">-</span></dd>
+            </div>
+            <div class="stat">
+                <dt>Fag</dt>
+                <dd id="statSubjects">0</dd>
+            </div>
+            <div class="stat">
+                <dt>Karakterer</dt>
+                <dd id="statGrades">0</dd>
+            </div>
+        </dl>
+    </section>
+
+    <!--
+        M3: Divider
+        Guide: https://m3.material.io/components/divider/overview
+        Element: <md-divider> fra @material/web/divider/divider.js
+    -->
+    <md-divider></md-divider>
+
+    <!-- Karakterbladet indsættes i renderGrades() i karakter.js -->
+    <div class="grade-table-wrap">
+        <table class="grade-table" id="gradeTable" hidden>
+            <thead><tr id="gradeHead"></tr></thead>
+            <tbody id="gradeBody"></tbody>
+        </table>
+    </div>
+
+    <div class="empty" id="emptyState" hidden>
+        <!--
+            Ikon: <md-icon> (Material Symbols)
+            Guide: https://m3.material.io/styles/icons/overview
+            Element: <md-icon> fra @material/web/icon/icon.js
+        -->
+        <md-icon>school</md-icon>
+        <span id="emptyText">Henter karakterer …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/karakter/karakter.js"></script>
+</body>
+</html>

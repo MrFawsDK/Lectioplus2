@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opgaver - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/opgaver/opgaver.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="opgaver-page">
+
+    <!-- Overblik -->
+    <section class="page-head">
+        <div>
+            <h1>Opgaver</h1>
+            <p class="lead" id="lead"></p>
+        </div>
+
+        <dl class="stats">
+            <div class="stat">
+                <dt>Kommende</dt>
+                <dd id="statUpcoming">0</dd>
+            </div>
+            <div class="stat missing">
+                <dt>Mangler</dt>
+                <dd id="statMissing">0</dd>
+            </div>
+            <div class="stat">
+                <dt>Afleveret</dt>
+                <dd id="statSubmitted">0</dd>
+            </div>
+            <div class="stat">
+                <dt>Elevtid tilbage</dt>
+                <dd id="statHours">0</dd>
+            </div>
+        </dl>
+    </section>
+
+    <!-- Filtre -->
+    <section class="filter-bar">
+        <!--
+            M3: Chips - Filter chip (hold indsættes i renderTeamChips() i opgaver.js)
+            Guide: https://m3.material.io/components/chips/overview
+            Element: <md-chip-set> og <md-filter-chip> fra @material/web/chips
+        -->
+        <md-chip-set id="teamChips" aria-label="Vis for hold"></md-chip-set>
+
+        <!--
+            M3: Chips - Filter chip (til/fra-filtre)
+            Guide: https://m3.material.io/components/chips/overview
+            Element: <md-filter-chip> fra @material/web/chips/filter-chip.js
+        -->
+        <md-chip-set aria-label="Filtre">
+            <md-filter-chip id="currentOnly" label="Kun aktuelle" selected></md-filter-chip>
+            <md-filter-chip id="schoolYearOnly" label="Kun dette skoleår" selected></md-filter-chip>
+        </md-chip-set>
+    </section>
+
+    <!--
+        M3: Divider
+        Guide: https://m3.material.io/components/divider/overview
+        Element: <md-divider> fra @material/web/divider/divider.js
+    -->
+    <md-divider></md-divider>
+
+    <!-- Sektioner (Mangler, uger, Afleveret) indsættes i renderSections() i opgaver.js -->
+    <div id="sections" class="sections"></div>
+
+    <div class="empty" id="emptyState" hidden>
+        <md-icon>inbox</md-icon>
+        <span id="emptyText">Ingen opgaver.</span>
+    </div>
+</main>
+
+<!--
+    M3: Dialogs - Basic dialog
+    Guide: https://m3.material.io/components/dialogs/overview
+    Element: <md-dialog> fra @material/web/dialog/dialog.js
+-->
+<md-dialog id="assignmentDialog">
+    <div slot="headline" id="dialogTitle"></div>
+
+    <div slot="content" class="dialog-content">
+        <!--
+            M3: Chips - Assist chip (indsættes i openAssignment() i opgaver.js)
+            Guide: https://m3.material.io/components/chips/overview
+            Element: <md-chip-set> og <md-assist-chip> fra @material/web/chips
+        -->
+        <md-chip-set id="dialogChips"></md-chip-set>
+
+        <!--
+            M3: Lists (indsættes i openAssignment() i opgaver.js)
+            Guide: https://m3.material.io/components/lists/overview
+            Element: <md-list> og <md-list-item> fra @material/web/list
+        -->
+        <md-list id="dialogList"></md-list>
+    </div>
+
+    <div slot="actions">
+        <!--
+            M3: Buttons - Text button
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-text-button> fra @material/web/button/text-button.js
+        -->
+        <md-text-button id="dialogClose">Luk</md-text-button>
+    </div>
+</md-dialog>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/opgaver/opgaver.js"></script>
+</body>
+</html>

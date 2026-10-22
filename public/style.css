@@ -1,0 +1,30 @@
+:root {
+    --bg: #ffffff;
+    --text: #222222;
+    --muted: #666666;
+    --border: #e5e5e5;
+    --accent: #1a6bb5;
+    --hover: #f2f5f9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Robto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.content {
+    width: min(1200px, calc(100% - 32px));
+    margin: 32px auto;
+}
+
+.content h1 {
+    margin: 0 0 16px;
+    font-size: 26px;
+    font-weight: 600;
+}

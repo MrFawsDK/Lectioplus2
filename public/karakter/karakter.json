@@ -1,0 +1,71 @@
+{
+    "types": ["1. standpunkt", "2. standpunkt", "Årskarakter", "Eksamen"],
+    "subjects": [
+        {
+            "subject": "Dansk",
+            "team": "2y Da",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "7" },
+                { "type": "2. standpunkt", "grade": "7" },
+                { "type": "Årskarakter", "grade": "10" }
+            ]
+        },
+        {
+            "subject": "Engelsk",
+            "team": "2y En",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "10" },
+                { "type": "2. standpunkt", "grade": "12" }
+            ]
+        },
+        {
+            "subject": "Matematik",
+            "team": "2y Ma",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "4" },
+                { "type": "2. standpunkt", "grade": "7" }
+            ]
+        },
+        {
+            "subject": "Fysik",
+            "team": "2y Fy",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "7" },
+                { "type": "2. standpunkt", "grade": "7" },
+                { "type": "Årskarakter", "grade": "7" },
+                { "type": "Eksamen", "grade": "10" }
+            ]
+        },
+        {
+            "subject": "Teknologi",
+            "team": "2y Tk",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "12" },
+                { "type": "2. standpunkt", "grade": "10" }
+            ]
+        },
+        {
+            "subject": "Informatik",
+            "team": "2y Inf",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "10" },
+                { "type": "2. standpunkt", "grade": "10" },
+                { "type": "Årskarakter", "grade": "12" }
+            ]
+        },
+        {
+            "subject": "Historie",
+            "team": "2y Hi",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "02" }
+            ]
+        },
+        {
+            "subject": "Idræt",
+            "team": "2y Id",
+            "grades": [
+                { "type": "1. standpunkt", "grade": "Bestået" }
+            ]
+        }
+    ]
+}

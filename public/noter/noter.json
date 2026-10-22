@@ -1,0 +1,82 @@
+{
+    "subjects": ["SEJT", "SEJERE", "SEJEST"],
+    "tags": [
+        { "id": "t-vigtigt", "name": "Vigtigt", "color": "red", "icon": "priority_high" },
+        { "id": "t-eksamen", "name": "Eksamen", "color": "purple", "icon": "school" },
+        { "id": "t-projekt", "name": "Projekt", "color": "blue", "icon": "build" },
+        { "id": "t-ovelse", "name": "Øvelse", "color": "green", "icon": "science" },
+        { "id": "t-formler", "name": "Formler", "color": "teal", "icon": "functions" },
+        { "id": "t-film", "name": "Film", "color": "orange", "icon": "movie" },
+        { "id": "t-lektier", "name": "Lektier", "color": "yellow", "icon": "menu_book" }
+    ],
+    "notes": [
+        {
+            "id": "n1",
+            "title": "SEJT intro",
+            "subject": "SEJT",
+            "date": "2026-09-28",
+            "lesson": { "date": "2026-09-28", "start": "08:00" },
+            "tags": [],
+            "content": "SEJT er det første emne. Husk de tre grundbegreber og eksemplerne fra tavlen."
+        },
+        {
+            "id": "n2",
+            "title": "SEJT film",
+            "subject": "SEJT",
+            "date": "2026-09-28",
+            "lesson": { "date": "2026-09-28", "start": "09:50" },
+            "tags": ["t-film", "t-lektier"],
+            "content": "Vi så filmen til ca. 1:10. Skriv resume færdigt til næste gang."
+        },
+        {
+            "id": "n3",
+            "title": "SEJERE formler",
+            "subject": "SEJERE",
+            "date": "2026-09-29",
+            "tags": ["t-formler", "t-eksamen"],
+            "content": "Formelsamling side 12-14.\nSEJERE = SEJT + lidt mere.\nØv opgave 3 og 4."
+        },
+        {
+            "id": "n4",
+            "title": "SEJEST øvelse",
+            "subject": "SEJEST",
+            "date": "2026-09-30",
+            "tags": ["t-ovelse", "t-vigtigt"],
+            "content": "Øvelsesvejledning ligger i dokumenter. Husk sikkerhedsbriller."
+        },
+        {
+            "id": "n5",
+            "title": "Værksted dag 1",
+            "subject": "SEJT",
+            "date": "2026-09-30",
+            "lesson": { "date": "2026-09-30", "start": "09:50" },
+            "tags": ["t-projekt"],
+            "content": "PCA plader. Gruppen skal have tegningen klar til torsdag."
+        },
+        {
+            "id": "n6",
+            "title": "Værksted dag 2",
+            "subject": "SEJT",
+            "date": "2026-10-01",
+            "lesson": { "date": "2026-10-01", "start": "08:00" },
+            "tags": ["t-projekt", "t-vigtigt"],
+            "content": "2. gang. Lodning af komponenter. Mangler to modstande."
+        },
+        {
+            "id": "n7",
+            "title": "SEJERE eksamensforberedelse",
+            "subject": "SEJERE",
+            "date": "2026-10-02",
+            "tags": ["t-eksamen"],
+            "content": "Lav en oversigt over alle emner fra uge 35 til 40."
+        },
+        {
+            "id": "n8",
+            "title": "SEJEST journal",
+            "subject": "SEJEST",
+            "date": "2026-09-22",
+            "tags": ["t-ovelse"],
+            "content": "Journalen skal have formål, materialer, fremgangsmåde og resultater."
+        }
+    ]
+}

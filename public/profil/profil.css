@@ -1,0 +1,30 @@
+.profil-page {
+    width: min(640px, calc(100% - 32px));
+    margin: 40px auto;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.profil-page h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 400;
+}
+
+.lead {
+    margin: 6px 0 24px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.profile-list {
+    margin-bottom: 24px;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.note {
+    margin-top: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}

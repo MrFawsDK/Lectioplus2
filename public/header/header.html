@@ -1,0 +1,28 @@
+<!--
+    M3: Buttons - Text button (aktiv side skiftes til Filled tonal button i header.js)
+    Guide: https://m3.material.io/components/buttons/overview
+    Element: <md-text-button> fra @material/web/button/text-button.js
+-->
+<a href="/skema/" class="brand">Flexio</a>
+
+<nav class="nav">
+    <md-text-button href="/skema/">Skema</md-text-button>
+    <md-text-button href="/opgaver/">Opgaver</md-text-button>
+    <md-text-button href="/noter/">Noter</md-text-button>
+    <md-text-button href="/karakter/">Karakterer</md-text-button>
+</nav>
+
+<!--
+    M3: Icon buttons - Standard icon button (aktiv side skiftes til Filled tonal icon button i header.js)
+    Guide: https://m3.material.io/components/icon-buttons/overview
+    Element: <md-icon-button> fra @material/web/iconbutton/icon-button.js
+    Ikon: <md-icon> (Material Symbols) - https://m3.material.io/styles/icons/overview
+-->
+<div class="profile">
+    <!-- Vises kun når man bruger demo-data (se header.js) -->
+    <span class="demo-badge" id="demoBadge" hidden>Demo</span>
+
+    <md-icon-button href="/profil/" aria-label="Profil" title="Profil">
+        <md-icon>account_circle</md-icon>
+    </md-icon-button>
+</div>

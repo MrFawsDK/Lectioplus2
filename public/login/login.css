@@ -1,0 +1,207 @@
+body {
+    background: var(--md-sys-color-surface);
+}
+
+.login-page {
+    width: min(640px, calc(100% - 32px));
+    margin: 56px auto 64px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.login-intro h1 {
+    margin: 0;
+
+    color: var(--md-sys-color-primary);
+    font-size: 44px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 8px 0 32px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 17px;
+}
+
+/* Besked (fejl / info) */
+
+.login-message {
+    margin: 0 0 24px;
+    padding: 12px 16px;
+
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.login-message[hidden] {
+    display: none;
+}
+
+.login-message.error {
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+}
+
+.login-message.info {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+/* Trin */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.step {
+    display: flex;
+    gap: 16px;
+}
+
+.step-number {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+
+    font-weight: 500;
+}
+
+.step-body {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.step-body h2 {
+    margin: 4px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.step-body p {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.step-body md-outlined-text-field {
+    width: 100%;
+}
+
+.school-results {
+    width: 100%;
+    padding: 4px 0;
+
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 12px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.school-results[hidden] {
+    display: none;
+}
+
+.howto {
+    margin: 0;
+    padding-left: 20px;
+
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.6;
+}
+
+kbd {
+    padding: 1px 6px;
+
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 6px;
+    background: var(--md-sys-color-surface-container);
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+/* Knapper */
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding-left: 48px;
+}
+
+.working {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+}
+
+.working[hidden] {
+    display: none;
+}
+
+.security-note {
+    display: flex;
+    gap: 10px;
+
+    margin: 0;
+    padding-left: 48px;
+
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.security-note md-icon {
+    --md-icon-size: 18px;
+    flex-shrink: 0;
+}
+
+/* Demo */
+
+md-divider {
+    margin: 36px 0 20px;
+}
+
+.demo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.demo p {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (max-width: 600px) {
+    .login-page {
+        margin-top: 32px;
+    }
+
+    .login-intro h1 {
+        font-size: 36px;
+    }
+
+    .actions,
+    .security-note {
+        padding-left: 0;
+    }
+}

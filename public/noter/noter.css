@@ -1,0 +1,724 @@
+/* ---------- Siden (ingen boks, fuld bredde) ---------- */
+
+.noter-page {
+    padding: 32px clamp(16px, 4vw, 56px) 112px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.page-head {
+    margin-bottom: 24px;
+}
+
+.page-head h1 {
+    margin: 0;
+
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+}
+
+
+/* ---------- Visning ---------- */
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+
+    margin-bottom: 16px;
+}
+
+.controls .search {
+    flex: 1 1 320px;
+    max-width: 520px;
+}
+
+#groupSelect,
+#sortSelect {
+    min-width: 200px;
+}
+
+.chip-row {
+    margin-bottom: 12px;
+}
+
+.chip-row[hidden] {
+    display: none;
+}
+
+.manage-tags {
+    align-self: center;
+}
+
+
+/* ---------- Grupper ---------- */
+
+.groups {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin-top: 8px;
+}
+
+.group-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+
+    padding: 20px 0 12px;
+}
+
+.group-head h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.group-head h2::first-letter {
+    text-transform: uppercase;
+}
+
+.group-meta,
+.group-count {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.group-count {
+    margin-left: auto;
+}
+
+.note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+
+/* ---------- Note-kort ---------- */
+
+.note-card {
+    position: relative;
+    display: block;
+
+    --md-outlined-card-container-shape: 16px;
+
+    cursor: pointer;
+    outline: none;
+}
+
+.note-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    height: 100%;
+    padding: 16px;
+}
+
+.note-meta {
+    color: var(--md-sys-color-primary);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.note-meta::first-letter {
+    text-transform: uppercase;
+}
+
+.note-title {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.note-content {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+
+    margin: 0;
+
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-line;
+}
+
+.note-tags {
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+
+/* ---------- Tags ---------- */
+
+/* Farverne kommer fra --tag-main / --tag-container / --tag-on (se tagStyle() i tags.js) */
+
+.tag-chip {
+    --md-assist-chip-container-height: 28px;
+    --md-assist-chip-outline-color: transparent;
+    --md-assist-chip-label-text-color: var(--tag-on);
+    --md-assist-chip-icon-color: var(--tag-main);
+    --md-assist-chip-hover-label-text-color: var(--tag-on);
+    --md-assist-chip-focus-label-text-color: var(--tag-on);
+    --md-assist-chip-pressed-label-text-color: var(--tag-on);
+
+    border-radius: 8px;
+    background: var(--tag-container);
+}
+
+.tag-filter {
+    --md-filter-chip-icon-color: var(--tag-main);
+    --md-filter-chip-selected-container-color: var(--tag-container);
+    --md-filter-chip-selected-label-text-color: var(--tag-on);
+    --md-filter-chip-selected-icon-color: var(--tag-on);
+    --md-filter-chip-selected-hover-label-text-color: var(--tag-on);
+    --md-filter-chip-selected-focus-label-text-color: var(--tag-on);
+    --md-filter-chip-selected-pressed-label-text-color: var(--tag-on);
+}
+
+.group-tag-icon,
+.tag-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: var(--tag-container);
+    color: var(--tag-main);
+}
+
+.group-tag-icon {
+    width: 32px;
+    height: 32px;
+    align-self: center;
+}
+
+.group-tag-icon md-icon {
+    --md-icon-size: 18px;
+}
+
+.tag-avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.tag-actions {
+    display: flex;
+}
+
+.empty-small {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+}
+
+.empty-small[hidden],
+.tag-list[hidden] {
+    display: none;
+}
+
+
+/* ---------- Tom side ---------- */
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    padding: 64px 24px;
+
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+
+/* ---------- Ny note-knap ---------- */
+
+.new-note {
+    position: fixed;
+    right: clamp(16px, 4vw, 40px);
+    bottom: 24px;
+    z-index: 10;
+}
+
+.new-note[hidden],
+.noter-page[hidden] {
+    display: none;
+}
+
+
+/* ---------- Editor i fuld størrelse (som Word) ---------- */
+
+.editor {
+    display: flex;
+    flex-direction: column;
+
+    min-height: calc(100vh - 73px);
+
+    background: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.editor[hidden] {
+    display: none;
+}
+
+/* Øverste linje med titel og knapper */
+
+.editor-bar {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px clamp(8px, 2vw, 24px);
+
+    background: var(--md-sys-color-surface);
+}
+
+.editor-bar .spacer {
+    flex: 1;
+}
+
+.title-field {
+    width: min(380px, 40vw);
+
+    --md-outlined-text-field-top-space: 8px;
+    --md-outlined-text-field-bottom-space: 8px;
+    --md-outlined-text-field-input-text-size: 16px;
+    --md-outlined-text-field-input-text-weight: 500;
+}
+
+.save-state {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.save-state.unsaved {
+    color: var(--md-sys-color-primary);
+}
+
+/* Formateringslinje */
+
+.format-bar {
+    position: sticky;
+    top: var(--bar-height, 60px);
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    padding: 4px clamp(8px, 2vw, 24px);
+
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    padding-right: 6px;
+    margin-right: 2px;
+
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.tool-group:last-child {
+    border-right: none;
+}
+
+.format-bar md-icon-button {
+    --md-icon-button-icon-size: 20px;
+    --md-icon-button-state-layer-height: 36px;
+    --md-icon-button-state-layer-width: 36px;
+    --md-icon-button-selected-icon-color: var(--md-sys-color-on-secondary-container);
+    --md-icon-button-selected-hover-icon-color: var(--md-sys-color-on-secondary-container);
+    --md-icon-button-selected-focus-icon-color: var(--md-sys-color-on-secondary-container);
+    --md-icon-button-selected-pressed-icon-color: var(--md-sys-color-on-secondary-container);
+
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+}
+
+/* Aktiv formatering (fed, liste osv.) får en tonal baggrund */
+.format-bar md-icon-button[selected] {
+    background: var(--md-sys-color-secondary-container);
+}
+
+.tool-select {
+    --md-outlined-field-top-space: 6px;
+    --md-outlined-field-bottom-space: 6px;
+    --md-outlined-select-text-field-input-text-size: 14px;
+}
+
+.block-select {
+    width: 170px;
+}
+
+.size-select {
+    width: 92px;
+}
+
+.color-tool {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.color-bar {
+    position: absolute;
+    bottom: 5px;
+
+    width: 18px;
+    height: 3px;
+    border-radius: 2px;
+
+    pointer-events: none;
+}
+
+.color-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Siden man skriver på */
+
+.editor-body {
+    flex: 1;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+
+    padding: 32px clamp(12px, 3vw, 40px) 48px;
+}
+
+.page-area {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+}
+
+.page {
+    width: 100%;
+    max-width: 816px;
+    min-height: 1056px;
+    padding: 72px clamp(24px, 8vw, 88px);
+
+    border-radius: 4px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 4px 16px rgb(0 0 0 / 6%);
+
+    color: #1a1c1e;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 12pt;
+    line-height: 1.55;
+
+    outline: none;
+    overflow-wrap: break-word;
+}
+
+.page:focus-visible {
+    box-shadow: 0 0 0 2px var(--md-sys-color-primary), 0 4px 16px rgb(0 0 0 / 6%);
+}
+
+.page p {
+    margin: 0 0 0.6em;
+}
+
+.page h1,
+.page h2,
+.page h3 {
+    margin: 1em 0 0.4em;
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.page h1 {
+    font-size: 24pt;
+}
+
+.page h2 {
+    font-size: 18pt;
+}
+
+.page h3 {
+    font-size: 14pt;
+}
+
+.page > :first-child {
+    margin-top: 0;
+}
+
+.page blockquote {
+    margin: 0.8em 0;
+    padding: 4px 0 4px 16px;
+
+    border-left: 3px solid var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-surface-variant);
+    font-style: italic;
+}
+
+.page ul,
+.page ol {
+    margin: 0 0 0.6em;
+    padding-left: 1.6em;
+}
+
+.page hr {
+    margin: 1.2em 0;
+    border: none;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.page a {
+    color: var(--md-sys-color-primary);
+}
+
+/* Panel med detaljer */
+
+.editor-side {
+    position: sticky;
+    top: calc(var(--bar-height, 60px) + 60px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+    background: var(--md-sys-color-surface);
+    align-self: start;
+}
+
+.side-title {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.editor-side > md-outlined-select,
+.editor-side > md-outlined-text-field {
+    width: 100%;
+}
+
+/* Statuslinje */
+
+.status-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+
+    display: flex;
+    gap: 20px;
+
+    padding: 6px clamp(12px, 2vw, 24px);
+
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface-container-low);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+}
+
+.dialog-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.dialog-actions .spacer {
+    flex: 1;
+}
+
+/* Felter med egen overskrift (tags, farve, ikon) */
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.field-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Tag-dialogerne */
+
+.tags-dialog {
+    width: min(480px, calc(100vw - 32px));
+    max-width: none;
+}
+
+.tag-list {
+    background: transparent;
+}
+
+.tag-dialog {
+    width: min(460px, calc(100vw - 32px));
+    max-width: none;
+}
+
+.tag-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding-top: 4px;
+}
+
+.tag-preview {
+    display: flex;
+    justify-content: center;
+
+    padding: 16px;
+
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.color-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+    padding: 0;
+
+    border: 2px solid var(--swatch-container);
+    border-radius: 50%;
+    background: var(--swatch);
+    color: #fff;
+    cursor: pointer;
+}
+
+.swatch:hover {
+    transform: scale(1.08);
+}
+
+.swatch:focus-visible {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+}
+
+.swatch.selected {
+    box-shadow: 0 0 0 2px var(--md-sys-color-surface), 0 0 0 4px var(--swatch);
+}
+
+.swatch md-icon {
+    --md-icon-size: 20px;
+}
+
+.icon-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 40px);
+    gap: 4px;
+}
+
+.delete {
+    --md-text-button-label-text-color: var(--md-sys-color-error);
+}
+
+.delete[hidden] {
+    display: none;
+}
+
+
+@media (max-width: 1100px) {
+    .editor-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .editor-side {
+        position: static;
+        max-width: 816px;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-head h1 {
+        font-size: 32px;
+    }
+
+    .title-field {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .save-state {
+        display: none;
+    }
+
+    .page {
+        min-height: 70vh;
+        padding: 32px 20px;
+    }
+
+    #groupSelect,
+    #sortSelect {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+.save-state.error {
+    color: var(--md-sys-color-error);
+}
