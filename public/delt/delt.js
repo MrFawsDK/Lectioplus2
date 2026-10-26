@@ -1,11 +1,10 @@
-// En note som en anden elev har delt (se api/noter.js). Adressen er
-//   /delt/#<token>        delt med et link - kan læses uden login
-//   /delt/#intern/<id>    delt i Flexio med eleven eller elevens hold - kræver login
-// Siden bruger ikke session.js, fordi den sender til login - en delt note skal kunne læses uden.
+// En note som en anden elev har delt med eleven eller elevens hold (se api/noter.js). Adressen er
+//   /delt/#intern/<id>    kræver login
+// Siden bruger ikke session.js - den viser selv en log ind-knap og sender tilbage hertil bagefter.
 
 const hash = decodeURIComponent(location.hash.slice(1));
 const internalId = hash.startsWith("intern/") ? hash.slice("intern/".length) : null;
-const noteUrl = internalId ? `/api/delt-med-mig/${encodeURIComponent(internalId)}` : `/api/delt/${encodeURIComponent(hash)}`;
+const noteUrl = `/api/delt-med-mig/${encodeURIComponent(internalId ?? "")}`;
 
 const statusText = document.querySelector("#status");
 const copyButton = document.querySelector("#copyButton");
@@ -31,12 +30,12 @@ function showError(text) {
 }
 
 async function loadNote() {
-    if (!(internalId ?? hash)) return showError("Linket mangler en del. Bed om at få det sendt igen.");
+    if (!internalId) return showError("Noten findes ikke. Noter deles nu direkte med brugere - find dem under \"Delt med dig\" i Noter.");
 
     const response = await fetch(noteUrl, { credentials: "same-origin" });
     const data = await response.json().catch(() => null);
 
-    if (internalId && response.status === 401) {
+    if (response.status === 401) {
         loginText.textContent = "Log ind";
         loginButton.hidden = false;
         return showError("Log ind for at se noten.");
