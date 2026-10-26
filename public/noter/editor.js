@@ -12,9 +12,39 @@ const EDITOR_ALLOWED_TAGS = new Set([
 const EDITOR_DROP_TAGS = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "TEMPLATE", "SVG", "MATH", "IMG", "VIDEO", "AUDIO", "FORM", "INPUT", "BUTTON", "TEXTAREA", "SELECT"]);
 
 const EDITOR_ALLOWED_STYLES = [
-    "font-size", "color", "background-color", "text-align",
+    "font-size", "font-family", "color", "background-color", "text-align",
     "font-weight", "font-style", "text-decoration", "text-decoration-line", "margin-left", "padding-left"
 ];
+
+// Skrifttyper man kan vælge (samme liste som i index.html). Google Fonts-skrifterne hentes i noter.css,
+// de andre findes på Windows - mangler en skrift, bruges reserven.
+const EDITOR_FONTS = {
+    "Roboto": "sans-serif",
+    "Arial": "sans-serif",
+    "Calibri": "sans-serif",
+    "Cambria": "serif",
+    "Georgia": "serif",
+    "Times New Roman": "serif",
+    "Verdana": "sans-serif",
+    "Comic Sans MS": "cursive",
+    "Courier New": "monospace",
+    "Open Sans": "sans-serif",
+    "Lora": "serif",
+    "Merriweather": "serif",
+    "Roboto Mono": "monospace",
+    "Caveat": "cursive"
+};
+const DEFAULT_FONT = "Roboto";
+
+// Første skrift i en font-family / face -> en af EDITOR_FONTS (ellers null)
+function knownFont(value) {
+    const name = String(value ?? "").split(",")[0].trim().replace(/^["']|["']$/g, "");
+    return Object.keys(EDITOR_FONTS).find(font => font.toLowerCase() === name.toLowerCase()) ?? null;
+}
+
+function fontFamily(font) {
+    return `"${font}", ${EDITOR_FONTS[font]}`;
+}
 
 // <font size="1-7"> fra execCommand oversættes til pt
 const FONT_TAG_SIZES = { 1: "8pt", 2: "10pt", 3: "12pt", 4: "14pt", 5: "18pt", 6: "24pt", 7: "36pt" };
@@ -23,7 +53,14 @@ function cleanStyle(element) {
     const kept = [];
 
     EDITOR_ALLOWED_STYLES.forEach(property => {
-        const value = element.style.getPropertyValue(property);
+        let value = element.style.getPropertyValue(property);
+
+        // Kun skrifttyperne fra listen (indsat tekst fra Word o.l. kan have alle mulige)
+        if (property === "font-family") {
+            const font = knownFont(value);
+            value = font ? fontFamily(font) : "";
+        }
+
         if (value && !/url\(|expression|javascript:/i.test(value)) {
             kept.push(`${property}: ${value}`);
         }
@@ -38,6 +75,8 @@ function fontToSpan(font) {
     const size = FONT_TAG_SIZES[font.getAttribute("size")];
     if (size) span.style.fontSize = size;
     if (font.getAttribute("color")) span.style.color = font.getAttribute("color");
+    const face = knownFont(font.getAttribute("face"));
+    if (face) span.style.fontFamily = fontFamily(face);
     span.append(...font.childNodes);
     font.replaceWith(span);
     return span;
@@ -179,11 +218,24 @@ function createRichEditor({ page, toolbar, onChange }) {
         changed();
     }
 
+    /* Skrifttype: execCommand laver <font face>, som skiftes til <span style="font-family"> */
+
+    function setFont(font) {
+        restoreSelection();
+        document.execCommand("styleWithCSS", false, false);
+        document.execCommand("fontName", false, font);
+
+        page.querySelectorAll("font[face]").forEach(fontToSpan);
+
+        changed();
+    }
+
     /* Værktøjslinjens tilstand */
 
     const toggles = [...toolbar.querySelectorAll("[data-command][toggle]")];
     const blockSelect = toolbar.querySelector("[data-block-select]");
     const sizeSelect = toolbar.querySelector("[data-size-select]");
+    const fontSelect = toolbar.querySelector("[data-font-select]");
 
     function currentElement() {
         const selection = selectionInPage();
@@ -218,6 +270,10 @@ function createRichEditor({ page, toolbar, onChange }) {
             const pt = Math.round(px * 0.75);
             sizeSelect.value = FONT_SIZES_PT.includes(pt) ? String(pt) : "";
         }
+
+        if (fontSelect) {
+            fontSelect.value = knownFont(getComputedStyle(element).fontFamily) ?? DEFAULT_FONT;
+        }
     }
 
     /* Knapper og valg */
@@ -239,6 +295,10 @@ function createRichEditor({ page, toolbar, onChange }) {
 
     blockSelect?.addEventListener("change", () => {
         if (blockSelect.value) run("formatBlock", `<${blockSelect.value}>`);
+    });
+
+    fontSelect?.addEventListener("change", () => {
+        if (fontSelect.value) setFont(fontSelect.value);
     });
 
     sizeSelect?.addEventListener("change", () => {

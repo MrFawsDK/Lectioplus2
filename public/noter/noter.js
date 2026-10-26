@@ -967,6 +967,13 @@ document.querySelector("#newNoteButton").addEventListener("click", () => openNot
 document.querySelector("#backButton").addEventListener("click", closeEditor);
 document.querySelector("#deleteButton").addEventListener("click", deleteNote);
 document.querySelector("#shareButton").addEventListener("click", openShareDialog);
+
+// Print: browserens print-vindue (på Windows det samme som Ctrl+P). Kun noten kommer med, se @media print i noter.css
+document.querySelector("#printButton").addEventListener("click", () => window.print());
+
+window.addEventListener("beforeprint", () => {
+    document.querySelector("#printTitle").textContent = titleField.value.trim() || "Uden titel";
+});
 document.querySelector("#noteNewTagButton").addEventListener("click", () => openTagEditor(null, "note"));
 
 window.addEventListener("hashchange", route);
