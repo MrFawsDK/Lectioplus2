@@ -18,17 +18,11 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const express = require("express");
-const { DatabaseSync } = require("node:sqlite");
 
+const db = require("./db");
 const lectio = require("./lectio");
 
 /* ---------- Database ---------- */
-
-// DATA_DIR kan sættes, så databasen ligger uden for koden (fx et Docker-volume)
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "..", "data");
-fs.mkdirSync(DATA_DIR, { recursive: true });
-
-const db = new DatabaseSync(path.join(DATA_DIR, "flexio.db"));
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS notes (
@@ -338,9 +332,15 @@ function teamTarget(user, teamId) {
     return `${schoolOf(user)}:HE${teamId}`;
 }
 
-// Alt det eleven kan modtage noter som: sig selv og sine hold
+// Alt det eleven kan modtage noter som: sig selv og sine hold.
+// Kan holdene ikke hentes fra Lectio, vises noter delt direkte med eleven stadig.
 async function myTargets(user) {
-    const teams = await lectioTeams(user);
+    let teams = [];
+    try {
+        teams = await lectioTeams(user);
+    } catch (error) {
+        console.error(error);
+    }
     return [ownerOf(user), ...teams.filter(team => team.id).map(team => teamTarget(user, team.id))];
 }
 

@@ -8,13 +8,15 @@
 //   GET  /api/karakterer               karakterblad
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
-// Lectio-cookien gemmes kun her i serverens hukommelse. Browseren får kun et tilfældigt sessions-id.
+// Lectio-cookien gemmes på serveren i databasen (sessions), så man er logget ind efter en genstart.
+// Browseren får kun et tilfældigt sessions-id, og databasen kender kun id'ets hash.
 
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
 
+const db = require("./db");
 const lectio = require("./lectio");
 
 const router = express.Router();
@@ -22,17 +24,60 @@ router.use(express.json());
 
 /* ---------- Sessioner ---------- */
 
-const sessions = new Map(); // sessions-id -> { schoolCode, cookie, student, demo }
+db.exec(`
+    CREATE TABLE IF NOT EXISTS sessions (
+        id        TEXT PRIMARY KEY,
+        data      TEXT NOT NULL,
+        last_seen INTEGER NOT NULL
+    );
+`);
+
+const SESSION_DAYS = 30; // ubrugte sessioner slettes efter 30 dage
+const DAY = 24 * 60 * 60 * 1000;
+
+const sessionSql = {
+    get: db.prepare("SELECT data, last_seen FROM sessions WHERE id = ?"),
+    insert: db.prepare("INSERT INTO sessions (id, data, last_seen) VALUES (?, ?, ?)"),
+    touch: db.prepare("UPDATE sessions SET last_seen = ? WHERE id = ?"),
+    delete: db.prepare("DELETE FROM sessions WHERE id = ?"),
+    deleteOld: db.prepare("DELETE FROM sessions WHERE last_seen < ?")
+};
+
+// Sessioner der er i brug, holdes også i hukommelsen - der ligger hold og elever fra Lectio i en time
+const sessions = new Map(); // hash af sessions-id -> { schoolCode, cookie, student, demo }
+
+function hashId(id) {
+    return crypto.createHash("sha256").update(id).digest("hex");
+}
+
+function sessionId(req) {
+    return (req.headers.cookie ?? "").match(/flexio_session=([a-f0-9]+)/)?.[1];
+}
 
 function getSession(req) {
-    const id = (req.headers.cookie ?? "").match(/flexio_session=([a-f0-9]+)/)?.[1];
-    return id ? sessions.get(id) : null;
+    const id = sessionId(req);
+    if (!id) return null;
+
+    const key = hashId(id);
+    if (sessions.has(key)) return sessions.get(key);
+
+    const row = sessionSql.get.get(key);
+    if (!row || row.last_seen < Date.now() - SESSION_DAYS * DAY) return null;
+
+    const session = JSON.parse(row.data);
+    sessions.set(key, session);
+    sessionSql.touch.run(Date.now(), key);
+    return session;
 }
 
 function startSession(res, session) {
     const id = crypto.randomBytes(32).toString("hex");
-    sessions.set(id, session);
-    res.cookie("flexio_session", id, { httpOnly: true, sameSite: "lax" });
+    const { schoolCode, cookie, student, demo } = session;
+
+    sessionSql.deleteOld.run(Date.now() - SESSION_DAYS * DAY);
+    sessionSql.insert.run(hashId(id), JSON.stringify({ schoolCode, cookie, student, demo }), Date.now());
+    sessions.set(hashId(id), session);
+    res.cookie("flexio_session", id, { httpOnly: true, sameSite: "lax", maxAge: SESSION_DAYS * DAY });
 }
 
 function requireLogin(req, res, next) {
@@ -93,8 +138,11 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-    const id = (req.headers.cookie ?? "").match(/flexio_session=([a-f0-9]+)/)?.[1];
-    sessions.delete(id);
+    const id = sessionId(req);
+    if (id) {
+        sessions.delete(hashId(id));
+        sessionSql.delete.run(hashId(id));
+    }
     res.clearCookie("flexio_session");
     res.json({ ok: true });
 });
