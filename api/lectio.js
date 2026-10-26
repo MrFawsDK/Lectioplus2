@@ -156,12 +156,20 @@ async function getSchedule(user, week, year) {
 
         const oneTeam = lesson.teams.length === 1;
 
+        // Holdnavnene i brikken har et Lectio-id: <span data-lectiocontextcard="HE12345">2y Fy</span>
+        const teamCards = [];
+        $(brick).find("[data-lectiocontextcard]").each((_, element) => {
+            const id = ($(element).attr("data-lectiocontextcard") ?? "").match(/^HE(\d+)$/)?.[1];
+            if (id && !teamCards.some(team => team.id === id)) teamCards.push({ id, name: clean($(element).text()) });
+        });
+
         lessons.push({
             date: lesson.date,
             start: lesson.start,
             end: lesson.end,
             subject: oneTeam ? lesson.teams[0] : (lesson.title || lesson.teams.join(", ")),
             team: oneTeam ? lesson.teams[0] : "",
+            teamId: oneTeam ? (teamCards.find(team => team.name === lesson.teams[0]) ?? teamCards[0])?.id ?? null : null,
             topic: oneTeam ? lesson.title : "",
             teacher: lesson.teachers.join(" "),
             room: lesson.rooms.join(" "),
@@ -173,6 +181,34 @@ async function getSchedule(user, week, year) {
     });
 
     return { modules, lessons };
+}
+
+/* ---------- Elever på et hold ---------- */
+
+// Holdets deltagerliste. Hver elev står i en række med links/kort som data-lectiocontextcard="S12345"
+// (fornavn og efternavn kan stå i hver sin celle, så teksten samles pr. række).
+async function getTeamMembers(user, teamId) {
+    const $ = cheerio.load(await getPage(user, `subnav/members.aspx?holdelementid=${teamId}&showstudents=1&showteachers=0`));
+    const students = new Map();
+
+    $("tr").each((_, row) => {
+        const parts = [];
+        let id = null;
+
+        $(row).find("[data-lectiocontextcard], a[href*='elevid=']").each((_, element) => {
+            const studentId = ($(element).attr("data-lectiocontextcard") ?? "").match(/^S(\d+)$/)?.[1]
+                ?? ($(element).attr("href") ?? "").match(/elevid=(\d+)/)?.[1];
+            if (!studentId) return;
+
+            id ??= studentId;
+            const text = clean($(element).text());
+            if (studentId === id && text && !parts.includes(text)) parts.push(text);
+        });
+
+        if (id && parts.length && !students.has(id)) students.set(id, { id, name: parts.join(" ") });
+    });
+
+    return [...students.values()].sort((a, b) => a.name.localeCompare(b.name, "da"));
 }
 
 /* ---------- Opgaver ---------- */
@@ -296,4 +332,4 @@ async function getGrades(user) {
     return { types, subjects };
 }
 
-module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getAssignments, getGrades };
+module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades };

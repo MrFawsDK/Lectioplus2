@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Delt note - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/noter/noter.css">
+    <link rel="stylesheet" href="/delt/delt.css">
+</head>
+<body>
+
+<!-- En delt note kan læses uden login, så siden har ikke den almindelige header (den kræver login) -->
+<section class="editor shared">
+
+    <div class="editor-bar">
+        <a class="brand" href="/">Flexio</a>
+        <span class="shared-label">Delt note</span>
+        <span class="spacer"></span>
+
+        <!--
+            M3: Buttons - Filled tonal button med ikon (vises når man er logget ind)
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-filled-tonal-button> fra @material/web/button/filled-tonal-button.js
+        -->
+        <md-filled-tonal-button id="copyButton" hidden>
+            <md-icon slot="icon">note_add</md-icon>
+            Gem kopi i mine noter
+        </md-filled-tonal-button>
+
+        <!--
+            M3: Buttons - Text button (vises når man ikke er logget ind)
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-text-button> fra @material/web/button/text-button.js
+        -->
+        <md-text-button id="loginButton" hidden>
+            <md-icon slot="icon">login</md-icon>
+            <span id="loginText">Log ind for at gemme en kopi</span>
+        </md-text-button>
+    </div>
+
+    <div class="shared-body">
+        <p class="shared-status" id="status" role="status">Henter noten …</p>
+
+        <article class="shared-note" id="note" hidden>
+            <header class="shared-head">
+                <span class="note-meta" id="meta"></span>
+                <h1 id="title"></h1>
+            </header>
+            <!-- Indholdet er HTML fra editoren og renses med sanitizeHtml() fra editor.js, før det vises -->
+            <div class="page" id="content"></div>
+        </article>
+    </div>
+</section>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/noter/editor.js"></script>
+<script src="/delt/delt.js"></script>
+</body>
+</html>

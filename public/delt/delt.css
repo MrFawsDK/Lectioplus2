@@ -1,0 +1,67 @@
+/* Delt note: genbruger editorens udseende fra noter.css (.editor, .editor-bar, .page) */
+
+.shared {
+    min-height: 100vh;
+}
+
+.brand {
+    padding: 0 8px;
+    color: var(--md-sys-color-primary);
+    font-size: 22px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.shared-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+}
+
+#copyButton[hidden],
+#loginButton[hidden] {
+    display: none;
+}
+
+.shared-body {
+    display: flex;
+    justify-content: center;
+    padding: 32px clamp(12px, 3vw, 40px) 48px;
+}
+
+.shared-note {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 816px;
+}
+
+.shared-note[hidden],
+.shared-status[hidden] {
+    display: none;
+}
+
+.shared-head h1 {
+    margin: 4px 0 0;
+    font-size: 28px;
+    font-weight: 500;
+    overflow-wrap: break-word;
+}
+
+.shared-status {
+    margin: 48px 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Siden kan ikke redigeres, så den behøver ikke Word-højden */
+.shared .page {
+    min-height: 0;
+}
+
+@media (max-width: 600px) {
+    .shared-label {
+        display: none;
+    }
+}

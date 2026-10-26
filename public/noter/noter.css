@@ -678,6 +678,50 @@
     display: none;
 }
 
+/* Del note */
+
+/* M3-knapper sætter selv display, så [hidden] skal have hjælp */
+#shareButton[hidden],
+.share-dialog md-filled-button[hidden],
+.share-dialog md-text-button[hidden] {
+    display: none;
+}
+
+.share-dialog {
+    width: min(520px, calc(100vw - 32px));
+    max-width: none;
+}
+
+.share-content p {
+    margin: 0;
+}
+
+.share-content #shareOn {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.share-content #shareOn[hidden] {
+    display: none;
+}
+
+.share-link {
+    width: 100%;
+}
+
+.share-message {
+    min-height: 1.4em;
+    color: var(--md-sys-color-primary);
+    font-size: 13px;
+}
+
+.note-shared {
+    margin-left: 6px;
+    font-size: 15px;
+    vertical-align: -3px;
+}
+
 
 @media (max-width: 1100px) {
     .editor-body {
@@ -721,4 +765,46 @@
 
 .save-state.error {
     color: var(--md-sys-color-error);
+}
+
+/* Del i Flexio (hold og elever) */
+
+.share-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.share-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#shareTeamSelect {
+    width: 100%;
+}
+
+#shareTeamSelect[hidden] {
+    display: none;
+}
+
+.share-chips {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+/* Noter andre har delt med eleven */
+.note-from {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 4px;
+    color: var(--md-sys-color-primary);
+    font-size: 13px;
+}
+
+.note-from md-icon {
+    font-size: 16px;
 }

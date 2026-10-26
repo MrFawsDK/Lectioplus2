@@ -10,6 +10,9 @@ const LEGACY_KEYS = ["flexio.noter", "lectioplus.noter"];
 // Autogem: så lang tid efter sidste tastetryk gemmes noten
 const AUTOSAVE_MS = 800;
 
+// Det der er ved at blive gemt, ligger også her, indtil serveren har svaret (se "Kladde i browseren")
+const DRAFT_KEY = "flexio.noter.kladde";
+
 const DAY_NAMES = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
 
 // TAG_COLORS, TAG_ICONS, DEFAULT_TAG_COLOR, DEFAULT_TAG_ICON og tagStyle() kommer fra tags.js
@@ -18,6 +21,9 @@ let subjects = [];
 let tags = [];
 let notes = [];
 let lessons = [];
+
+// Noter andre har delt med eleven eller elevens hold (kan kun læses, åbnes på /delt/)
+let receivedNotes = [];
 
 let view = {
     groupBy: "subject",
@@ -407,10 +413,43 @@ function noteCard(note) {
             <md-ripple></md-ripple>
             <md-focus-ring></md-focus-ring>
             <div class="note-inner">
-                <span class="note-meta">${meta.map(escapeHtml).join(" · ")}</span>
+                <span class="note-meta">${meta.map(escapeHtml).join(" · ")}${note.recipients?.length ? `<md-icon class="note-shared" title="${escapeHtml(recipientsLabel(note.recipients))}">group</md-icon>` : ""}${note.shareToken ? `<md-icon class="note-shared" title="Delt med et link">share</md-icon>` : ""}</span>
                 <h3 class="note-title">${escapeHtml(noteTitle(note))}</h3>
                 <p class="note-content">${escapeHtml(noteText(note))}</p>
                 ${noteTags.length ? `<md-chip-set class="note-tags">${noteTags.map(tagChip).join("")}</md-chip-set>` : ""}
+            </div>
+        </md-outlined-card>
+    `;
+}
+
+// Noter delt med eleven følger søgning og fag, men har ingen tags (de tilhører den der delte)
+function visibleReceivedNotes() {
+    if (view.tagIds.length) return [];
+
+    const search = view.search.trim().toLowerCase();
+    return receivedNotes.filter(note => {
+        if (view.subject !== "Alle" && note.subject !== view.subject) return false;
+        if (!search) return true;
+        return [note.title, htmlToText(note.content ?? ""), note.subject, note.sharedBy].join(" ").toLowerCase().includes(search);
+    });
+}
+
+// M3: Cards - Outlined card (som noteCard, men åbner den delte note på /delt/)
+// Guide: https://m3.material.io/components/cards/overview
+// Element: <md-outlined-card> fra @material/web/labs/card/outlined-card.js
+function receivedCard(note) {
+    const meta = [note.subject, `${DAY_NAMES[parseDate(note.date).getDay()]} ${shortDate(note.date)}`];
+    const from = `${note.sharedBy || "En elev"} · ${note.via === "dig" ? "delt med dig" : `delt med ${note.via}`}`;
+
+    return `
+        <md-outlined-card class="note-card" data-received-id="${escapeHtml(note.id)}" tabindex="0" role="link" aria-label="${escapeHtml(noteTitle(note))}">
+            <md-ripple></md-ripple>
+            <md-focus-ring></md-focus-ring>
+            <div class="note-inner">
+                <span class="note-meta">${meta.map(escapeHtml).join(" · ")}</span>
+                <h3 class="note-title">${escapeHtml(noteTitle(note))}</h3>
+                <p class="note-content">${escapeHtml(htmlToText(note.content ?? ""))}</p>
+                <span class="note-from"><md-icon>${note.via === "dig" ? "person" : "group"}</md-icon>${escapeHtml(from)}</span>
             </div>
         </md-outlined-card>
     `;
@@ -436,8 +475,18 @@ function groupHead(group) {
 function renderNotes() {
     const list = visibleNotes();
     const groups = buildGroups(list);
+    const received = visibleReceivedNotes();
 
-    document.querySelector("#groups").innerHTML = groups
+    const receivedSection = received.length
+        ? `
+            <section class="group">
+                ${groupHead({ title: "Delt med dig", notes: received })}
+                <div class="note-grid">${received.map(receivedCard).join("")}</div>
+            </section>
+        `
+        : "";
+
+    document.querySelector("#groups").innerHTML = receivedSection + groups
         .map(group => `
             <section class="group">
                 ${groupHead(group)}
@@ -446,7 +495,7 @@ function renderNotes() {
         `)
         .join("");
 
-    document.querySelector("#emptyState").hidden = list.length > 0;
+    document.querySelector("#emptyState").hidden = list.length > 0 || received.length > 0;
     document.querySelector("#emptyText").textContent = notes.length === 0
         ? "Ingen noter endnu. Tryk på \"Ny note\" for at skrive den første."
         : "Ingen noter matcher dine valg.";
@@ -474,16 +523,21 @@ groupsElement.addEventListener("click", event => {
     }
 
     const card = event.target.closest(".note-card");
-    if (card) openNote(card.dataset.id);
+    if (card) openCard(card);
 });
 
 groupsElement.addEventListener("keydown", event => {
     const card = event.target.closest?.(".note-card");
     if (card && event.target === card && (event.key === "Enter" || event.key === " ")) {
         event.preventDefault();
-        openNote(card.dataset.id);
+        openCard(card);
     }
 });
+
+function openCard(card) {
+    if (card.dataset.receivedId) location.href = `/delt/#intern/${encodeURIComponent(card.dataset.receivedId)}`;
+    else openNote(card.dataset.id);
+}
 
 
 /* ---------- Visning ---------- */
@@ -539,6 +593,23 @@ const richEditor = createRichEditor({
 
 /* ---------- Autogem ---------- */
 
+// Den note der er åben i editoren. Hvert gem husker sin egen session, så et gem der først
+// bliver færdigt efter man har skiftet note, aldrig skriver i den forkerte note.
+//   noteId         notens id (null indtil en ny note er gemt første gang)
+//   newId          id'et en ny note får - vælges her, så et gem der sendes to gange ikke giver to noter
+//   latest         de nyeste data der venter på at blive gemt
+//   baseUpdatedAt  updatedAt for den udgave af noten, editoren sidst har gemt eller åbnet
+let editSession = { noteId: null, newId: null, latest: null, baseUpdatedAt: null };
+
+// crypto.randomUUID() findes kun på https og localhost, så id'et laves selv
+function uuid() {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = [...bytes].map(byte => byte.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
 let saveTimer = null;
 let pendingChanges = false;
 let saving = Promise.resolve();
@@ -583,42 +654,134 @@ function saveNow() {
     if (!pendingChanges) return saving;
 
     pendingChanges = false;
+    const session = editSession;
     const data = collectNote();
 
     // En ny, tom note gemmes ikke
-    if (!editingNoteId && !data.title && !richEditor.getText().trim()) {
+    if (!session.noteId && !data.title && !richEditor.getText().trim()) {
         setSaveState("");
         return saving;
     }
 
+    session.latest = data;
+    writeDraft(session, data);
+    return queueSave(session, data);
+}
+
+function queueSave(session, data) {
     saving = saving.then(async () => {
+        // Der er kommet nyere data til noten i mellemtiden - de gemmes i stedet
+        if (session.latest !== data) return;
+
         saveInFlight = true;
 
         try {
-            const saved = editingNoteId
-                ? await apiSend("PUT", `/api/noter/${encodeURIComponent(editingNoteId)}`, data)
-                : await apiSend("POST", "/api/noter", data);
+            // keepalive, så gemmet når frem, selvom fanen lukkes lige efter (browsere tillader max 64 KB)
+            const options = { keepalive: JSON.stringify(data).length < 60000 };
+            const saved = session.noteId
+                ? await apiSend("PUT", `/api/noter/${encodeURIComponent(session.noteId)}`, data, options)
+                : await apiSend("POST", "/api/noter", { ...data, id: session.newId }, options);
 
-            if (!editingNoteId) {
+            if (!session.noteId) {
+                session.noteId = saved.id;
+
                 // Den nye note har nu et id - adressen opdateres uden at åbne noten igen
-                editingNoteId = saved.id;
-                history.replaceState(null, "", `#note/${encodeURIComponent(saved.id)}`);
-                document.querySelector("#deleteButton").hidden = false;
+                if (session === editSession) {
+                    editingNoteId = saved.id;
+                    history.replaceState(null, "", `#note/${encodeURIComponent(saved.id)}`);
+                    document.querySelector("#deleteButton").hidden = false;
+                    document.querySelector("#shareButton").hidden = false;
+                }
             }
 
+            session.baseUpdatedAt = saved.updatedAt;
             upsertNote(saved);
-            if (!pendingChanges) setSaveState("Gemt");
+
+            if (session.latest === data) {
+                clearDraft(data);
+                if (session === editSession && !pendingChanges) setSaveState("Gemt");
+            }
         } catch (error) {
             console.error(error);
-            pendingChanges = true;
-            setSaveState("Kunne ikke gemme - prøver igen …", "error");
-            saveTimer = setTimeout(saveNow, 3000);
+
+            // Netværks- og serverfejl prøves igen. Andre fejl (fx at noten er slettet) hjælper det ikke at gentage.
+            const retry = !error.status || error.status >= 500;
+            if (session === editSession) {
+                setSaveState(retry ? "Kunne ikke gemme - prøver igen …" : `Kunne ikke gemme: ${error.message}`, "error");
+            }
+            if (retry) setTimeout(() => queueSave(session, data), 3000);
         } finally {
             saveInFlight = false;
         }
     });
 
     return saving;
+}
+
+
+/* ---------- Kladde i browseren ---------- */
+
+// Hvis siden lukkes, nettet forsvinder eller sessionen udløber midt i et gem, ligger de
+// seneste ændringer stadig i browseren. De gemmes næste gang noterne åbnes (restoreDraft).
+let draftData = null;
+let draftOwner = "";
+
+function ownerKey(me) {
+    return me?.demo ? "demo" : String(me?.student?.studentId ?? me?.student?.name ?? "");
+}
+
+function writeDraft(session, data) {
+    draftData = data;
+    writeStorage(DRAFT_KEY, {
+        owner: draftOwner,
+        noteId: session.noteId,
+        newId: session.newId,
+        baseUpdatedAt: session.baseUpdatedAt,
+        data
+    });
+}
+
+function clearDraft(data) {
+    if (draftData !== data) return;
+    draftData = null;
+
+    try {
+        localStorage.removeItem(DRAFT_KEY);
+    } catch {
+        // Ikke vigtigt
+    }
+}
+
+async function restoreDraft() {
+    const draft = readStorage(DRAFT_KEY);
+
+    // En anden elevs kladde (fx på en delt computer) bliver liggende til den elev logger ind
+    if (!draft?.data || draft.owner !== draftOwner) return;
+
+    try {
+        localStorage.removeItem(DRAFT_KEY);
+    } catch {
+        // Ikke vigtigt
+    }
+
+    // En ny note der faktisk nåede at blive gemt, findes nu under sit nye id
+    if (!draft.noteId && notes.some(note => note.id === draft.newId)) return;
+
+    const existing = draft.noteId ? notes.find(note => note.id === draft.noteId) : null;
+    if (draft.noteId && !existing) return; // noten er slettet
+
+    // Er noten ændret siden kladden, nåede gemmet frem (eller noten er rettet et andet sted)
+    if (existing && existing.updatedAt !== draft.baseUpdatedAt) return;
+
+    try {
+        const saved = existing
+            ? await apiSend("PUT", `/api/noter/${encodeURIComponent(existing.id)}`, draft.data)
+            : await apiSend("POST", "/api/noter", { ...draft.data, id: draft.newId });
+        upsertNote(saved);
+    } catch (error) {
+        console.error(error);
+        writeStorage(DRAFT_KEY, draft); // prøv igen næste gang
+    }
 }
 
 // Ordtælling i statuslinjen
@@ -748,6 +911,7 @@ function hideEditor() {
 function showEditor(id, prefill = {}) {
     const note = notes.find(item => item.id === id);
     editingNoteId = note ? note.id : null;
+    editSession = { noteId: editingNoteId, newId: note ? null : uuid(), latest: null, baseUpdatedAt: note?.updatedAt ?? null };
     noteTagSelection = new Set(note?.tags ?? view.tagIds);
     pendingChanges = false;
 
@@ -756,6 +920,7 @@ function showEditor(id, prefill = {}) {
     const lessonStart = note?.lesson?.start ?? prefill.start ?? "";
 
     document.querySelector("#deleteButton").hidden = !note;
+    document.querySelector("#shareButton").hidden = !note;
 
     titleField.value = note?.title ?? "";
     dateField.value = date;
@@ -788,7 +953,9 @@ async function deleteNote() {
 
     clearTimeout(saveTimer);
     pendingChanges = false;
+    editSession.latest = null; // gem der venter, springes over
     await saving;
+    clearDraft(draftData);
 
     await apiSend("DELETE", `/api/noter/${encodeURIComponent(editingNoteId)}`);
     notes = notes.filter(note => note.id !== editingNoteId);
@@ -799,6 +966,7 @@ async function deleteNote() {
 document.querySelector("#newNoteButton").addEventListener("click", () => openNote(null));
 document.querySelector("#backButton").addEventListener("click", closeEditor);
 document.querySelector("#deleteButton").addEventListener("click", deleteNote);
+document.querySelector("#shareButton").addEventListener("click", openShareDialog);
 document.querySelector("#noteNewTagButton").addEventListener("click", () => openTagEditor(null, "note"));
 
 window.addEventListener("hashchange", route);
@@ -1039,6 +1207,230 @@ document.querySelector("#tagForm").addEventListener("submit", event => {
 });
 
 
+/* ---------- Dialog: del note ---------- */
+
+// Delte noter kan læses af alle med linket på /delt/ (se public/delt/ og api/noter.js)
+const shareDialog = document.querySelector("#shareDialog");
+const shareLinkField = document.querySelector("#shareLinkField");
+const shareMessage = document.querySelector("#shareMessage");
+
+function shareUrl(note) {
+    return `${location.origin}/delt/#${note.shareToken}`;
+}
+
+function renderShareDialog(message = "") {
+    const note = notes.find(item => item.id === editingNoteId);
+    const shared = Boolean(note?.shareToken);
+
+    document.querySelector("#shareOff").hidden = shared;
+    document.querySelector("#shareOn").hidden = !shared;
+    document.querySelector("#createShareButton").hidden = shared;
+    document.querySelector("#copyShareButton").hidden = !shared;
+    document.querySelector("#stopShareButton").hidden = !shared;
+
+    shareLinkField.value = shared ? shareUrl(note) : "";
+    shareMessage.textContent = message;
+}
+
+async function openShareDialog() {
+    // Noten skal være gemt, før den kan deles
+    await saveNow();
+    if (!editingNoteId) return;
+
+    renderShareDialog();
+    renderRecipientsText();
+    shareDialog.show();
+
+    try {
+        renderShareTeams(await loadShareTeams());
+    } catch (error) {
+        console.error(error);
+        shareTeamSelect.hidden = true;
+        shareRecipientsText.textContent = `Kunne ikke hente dine hold: ${error.message}`;
+    }
+}
+
+async function setSharing(on) {
+    try {
+        const saved = await apiSend(on ? "POST" : "DELETE", `/api/noter/${encodeURIComponent(editingNoteId)}/deling`);
+        upsertNote(saved);
+        renderShareDialog(on ? "" : "Noten er ikke delt længere. Det gamle link virker ikke.");
+        if (on) await copyShareLink();
+    } catch (error) {
+        renderShareDialog(error.message);
+    }
+}
+
+async function copyShareLink() {
+    try {
+        await navigator.clipboard.writeText(shareLinkField.value);
+        shareMessage.textContent = "Linket er kopieret.";
+    } catch {
+        // Uden adgang til udklipsholderen markeres linket, så det kan kopieres med Ctrl+C
+        shareLinkField.select();
+        shareMessage.textContent = "Tryk Ctrl+C for at kopiere linket.";
+    }
+}
+
+document.querySelector("#createShareButton").addEventListener("click", () => setSharing(true));
+document.querySelector("#stopShareButton").addEventListener("click", () => setSharing(false));
+document.querySelector("#copyShareButton").addEventListener("click", copyShareLink);
+document.querySelector("#closeShareButton").addEventListener("click", () => shareDialog.close());
+
+
+/* ---------- Dialog: del i Flexio med hold og elever ---------- */
+
+// Man kan dele med sine egne hold - hele holdet eller enkelte elever (se /api/hold og /api/noter/:id/modtagere)
+const shareTeamSelect = document.querySelector("#shareTeamSelect");
+const shareStudentChips = document.querySelector("#shareStudentChips");
+const shareRecipientsText = document.querySelector("#shareRecipientsText");
+
+let shareTeamsRequest = null;
+let shareTeamId = null; // holdet der er valgt i dialogen (M3-selectens value opdateres først lidt efter)
+const studentRequests = new Map(); // hold-id -> Promise med eleverne
+let recipientSaving = Promise.resolve();
+
+// Hentes første gang dialogen åbnes
+function loadShareTeams() {
+    shareTeamsRequest ??= apiGet("/api/hold")
+        .then(data => data.teams ?? [])
+        .catch(error => {
+            shareTeamsRequest = null;
+            throw error;
+        });
+    return shareTeamsRequest;
+}
+
+function loadTeamStudents(teamId) {
+    if (!studentRequests.has(teamId)) {
+        studentRequests.set(teamId, apiGet(`/api/hold/${encodeURIComponent(teamId)}/elever`)
+            .then(data => data.students ?? [])
+            .catch(error => {
+                studentRequests.delete(teamId);
+                throw error;
+            }));
+    }
+    return studentRequests.get(teamId);
+}
+
+function recipientsLabel(recipients) {
+    return "Delt med " + recipients.map(item => item.type === "team" ? `${item.name} (hele holdet)` : item.name).join(", ");
+}
+
+function renderRecipientsText() {
+    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+    shareRecipientsText.textContent = recipients.length
+        ? `${recipientsLabel(recipients)}. De finder den under "Delt med dig" og ser altid den nyeste udgave.`
+        : "Vælg et hold og del med hele holdet eller enkelte elever. Kun dem du vælger, kan se noten.";
+}
+
+function renderShareTeams(teams) {
+    shareTeamSelect.hidden = teams.length === 0;
+    if (!teams.length) {
+        shareStudentChips.innerHTML = "";
+        shareRecipientsText.textContent = "Fandt ingen hold i dit skema at dele med.";
+        return;
+    }
+
+    // Start på holdet der passer til notens fag, ellers det hold man sidst valgte
+    const note = notes.find(item => item.id === editingNoteId);
+    const selected = teams.find(team => team.name === note?.subject)?.id
+        ?? teams.find(team => team.id === shareTeamId)?.id
+        ?? teams[0].id;
+
+    shareTeamId = selected;
+    shareTeamSelect.innerHTML = teams.map(team => option(team.id, team.name, team.id === selected)).join("");
+    renderShareStudents();
+}
+
+async function renderShareStudents() {
+    const teamId = shareTeamId;
+    if (!teamId) return;
+
+    let students;
+    try {
+        students = await loadTeamStudents(teamId);
+    } catch (error) {
+        console.error(error);
+        shareStudentChips.innerHTML = "";
+        shareRecipientsText.textContent = `Kunne ikke hente eleverne: ${error.message}`;
+        return;
+    }
+    if (shareTeamId !== teamId) return; // der er valgt et andet hold i mellemtiden
+
+    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+    const wholeTeam = recipients.some(item => item.type === "team" && item.id === teamId);
+
+    // M3: Chips - Filter chip med ikon. Er hele holdet valgt, kan eleverne allerede se noten.
+    // Guide: https://m3.material.io/components/chips/overview
+    // Element: <md-filter-chip> fra @material/web/chips/filter-chip.js
+    shareStudentChips.innerHTML = [
+        `<md-filter-chip label="Hele holdet" data-recipient-type="team"${wholeTeam ? " selected" : ""}>
+            <md-icon slot="icon">groups</md-icon>
+        </md-filter-chip>`,
+        ...students.map(student => {
+            const selected = wholeTeam || recipients.some(item => item.type === "student" && item.id === student.id);
+            return `<md-filter-chip label="${escapeHtml(student.name)}" data-recipient-type="student" data-student-id="${escapeHtml(student.id)}"${selected ? " selected" : ""}${wholeTeam ? " disabled" : ""}>
+                <md-icon slot="icon">person</md-icon>
+            </md-filter-chip>`;
+        })
+    ].join("");
+
+    renderRecipientsText();
+}
+
+function sameRecipient(a, b) {
+    return a.type === b.type && a.id === b.id;
+}
+
+// Valget vises med det samme, og hele listen gemmes bagefter (i rækkefølge, så det sidste klik vinder)
+function toggleRecipient(recipient) {
+    const note = notes.find(item => item.id === editingNoteId);
+    if (!note) return;
+
+    const current = note.recipients ?? [];
+    const recipients = current.some(item => sameRecipient(item, recipient))
+        ? current.filter(item => !sameRecipient(item, recipient))
+        : [...current, recipient];
+
+    upsertNote({ ...note, recipients });
+    renderShareStudents();
+
+    recipientSaving = recipientSaving.then(async () => {
+        try {
+            const saved = await apiSend("PUT", `/api/noter/${encodeURIComponent(note.id)}/modtagere`, { recipients });
+            const latest = notes.find(item => item.id === note.id);
+            if (latest?.recipients === recipients) upsertNote({ ...latest, recipients: saved.recipients });
+        } catch (error) {
+            console.error(error);
+            const latest = notes.find(item => item.id === note.id);
+            if (latest?.recipients === recipients) upsertNote({ ...latest, recipients: current });
+            shareMessage.textContent = `Kunne ikke gemme delingen: ${error.message}`;
+        }
+
+        if (editingNoteId === note.id) renderShareStudents();
+    });
+}
+
+shareTeamSelect.addEventListener("change", () => {
+    shareTeamId = shareTeamSelect.value;
+    renderShareStudents();
+});
+
+shareStudentChips.addEventListener("click", async event => {
+    const chip = event.target.closest("[data-recipient-type]");
+    if (!chip || chip.disabled) return;
+
+    const teams = await loadShareTeams();
+    const team = teams.find(item => item.id === shareTeamId);
+    if (!team) return;
+
+    toggleRecipient(chip.dataset.recipientType === "team"
+        ? { type: "team", id: team.id, name: team.name }
+        : { type: "student", id: chip.dataset.studentId, name: chip.label, teamId: team.id });
+});
+
+
 /* ---------- Data ---------- */
 
 async function loadNotes() {
@@ -1046,6 +1438,9 @@ async function loadNotes() {
         const data = await apiGet("/api/noter");
         notes = data.notes ?? [];
         tags = data.tags ?? [];
+
+        draftOwner = ownerKey(await getMe());
+        await restoreDraft();
 
         if (notes.length === 0 && tags.length === 0) await importLegacyNotes();
 
@@ -1055,6 +1450,13 @@ async function loadNotes() {
         } catch (error) {
             console.error(error);
             subjects = [...new Set(notes.map(note => note.subject).filter(Boolean))];
+        }
+
+        // Noter andre har delt med eleven (ikke vigtigt nok til at stoppe siden, hvis Lectio driller)
+        try {
+            receivedNotes = (await apiGet("/api/delt-med-mig")).notes ?? [];
+        } catch (error) {
+            console.error(error);
         }
 
         // Lektionerne bruges til at koble noter til skemaet - hent de uger noterne peger på
