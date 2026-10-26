@@ -38,13 +38,15 @@ async function apiPost(url, body = {}) {
     return apiSend("POST", url, body);
 }
 
-// POST / PUT / DELETE med JSON
-async function apiSend(method, url, body = {}) {
+// POST / PUT / DELETE med JSON.
+// keepalive: true lader kaldet gøre sig færdigt, selvom siden lukkes (kun til små kald, max 64 KB)
+async function apiSend(method, url, body = {}, { keepalive = false } = {}) {
     const response = await fetch(url, {
         method,
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        keepalive
     });
 
     let data = null;

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build:m3": "node scripts/build-m3.js"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,9 @@
     "cheerio": "^1.2.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@material/web": "^2.5.0",
+    "esbuild": "^0.28.2"
   }
 }

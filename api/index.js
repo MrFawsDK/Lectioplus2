@@ -6,7 +6,7 @@
 //   GET  /api/skema?week=40&year=2026  skemaet for en uge
 //   GET  /api/opgaver                  opgaver
 //   GET  /api/karakterer               karakterblad
-//   Noter, tags og fag: se noter.js (gemmes i en database)
+//   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
 // Lectio-cookien gemmes kun her i serverens hukommelse. Browseren får kun et tilfældigt sessions-id.
 

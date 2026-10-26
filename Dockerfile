@@ -2,7 +2,8 @@ FROM node:22-alpine
 
 ENV NODE_ENV=production \
     PORT=3000 \
-    HOST=0.0.0.0
+    HOST=0.0.0.0 \
+    DATA_DIR=/app/data
 
 WORKDIR /app
 
@@ -12,7 +13,11 @@ RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 COPY --chown=node:node server.js ./
 COPY --chown=node:node api ./api
 COPY --chown=node:node public ./public
-COPY --chown=node:node data ./data
+
+# Databasen med noterne ligger i et volume, så den overlever genstart og nye images.
+# Start fx med: docker run -p 3000:3000 -v flexio-data:/app/data flexio
+RUN mkdir -p /app/data && chown node:node /app/data
+VOLUME /app/data
 
 USER node
 
