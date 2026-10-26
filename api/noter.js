@@ -4,11 +4,8 @@
 //   PUT    /api/noter/:id           gem note (bruges af autogem)
 //   DELETE /api/noter/:id
 //   POST   /api/noter/import        noter fra browseren (fra før databasen) - kun hvis eleven ingen noter har
-//   POST   /api/noter/:id/deling    lav et delingslink til noten (eller giv det eksisterende)
-//   DELETE /api/noter/:id/deling    stop deling - linket holder op med at virke
-//   GET    /api/delt/:token         en delt note (kræver ikke login)
-//   POST   /api/delt/:token/kopi    gem en kopi af en delt note i egne noter
-//   PUT    /api/noter/:id/modtagere del noten i Flexio med hele hold og/eller enkelte elever (hele listen sendes)
+//   GET    /api/brugere?q=anna      søg efter andre Flexio-brugere på samme skole (dem man kan dele med)
+//   PUT    /api/noter/:id/modtagere del noten med andre brugere (hele listen sendes)
 //   GET    /api/hold                elevens hold (fra skemaet)
 //   GET    /api/hold/:id/elever     eleverne på et af elevens hold
 //   GET    /api/delt-med-mig        noter andre har delt med eleven eller elevens hold
@@ -79,6 +76,18 @@ db.exec(`
     CREATE INDEX IF NOT EXISTS note_recipients_target ON note_recipients (target);
 `);
 
+// Alle der har logget ind i Flexio - så andre kan finde dem og dele noter med dem. owner er "skole:<elev-id>".
+db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+        owner      TEXT PRIMARY KEY,
+        school     TEXT NOT NULL,
+        name       TEXT NOT NULL,
+        class_name TEXT NOT NULL DEFAULT '',
+        last_seen  TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS users_school ON users (school);
+`);
+
 const sql = {
     notes: db.prepare("SELECT * FROM notes WHERE owner = ? ORDER BY updated_at DESC"),
     note: db.prepare("SELECT * FROM notes WHERE id = ? AND owner = ?"),
@@ -90,13 +99,17 @@ const sql = {
                             WHERE id = :id AND owner = :owner`),
     deleteNote: db.prepare("DELETE FROM notes WHERE id = ? AND owner = ?"),
     countNotes: db.prepare("SELECT COUNT(*) AS count FROM notes WHERE owner = ?"),
-    shareNote: db.prepare("UPDATE notes SET share_token = ?, shared_by = ? WHERE id = ? AND owner = ?"),
-    sharedNote: db.prepare("SELECT * FROM notes WHERE share_token = ?"),
 
     recipients: db.prepare("SELECT * FROM note_recipients WHERE note_id = ? ORDER BY kind DESC, name"),
     insertRecipient: db.prepare(`INSERT INTO note_recipients (note_id, kind, target, name, team_id, shared_by)
                                  VALUES (:note_id, :kind, :target, :name, :team_id, :shared_by)`),
     deleteRecipients: db.prepare("DELETE FROM note_recipients WHERE note_id = ?"),
+    saveUser: db.prepare(`INSERT INTO users (owner, school, name, class_name, last_seen) VALUES (?, ?, ?, ?, ?)
+                          ON CONFLICT (owner) DO UPDATE SET name = excluded.name, class_name = excluded.class_name, last_seen = excluded.last_seen`),
+    user: db.prepare("SELECT * FROM users WHERE owner = ?"),
+    // Navnet eller klassen indeholder søgningen (LIKE er ligeglad med store/små bogstaver for a-z)
+    searchUsers: db.prepare(`SELECT * FROM users WHERE school = ? AND owner != ? AND (name LIKE ? ESCAPE '\\' OR class_name LIKE ? ESCAPE '\\')
+                             ORDER BY name LIMIT 20`),
     // Targets sendes som en JSON-liste. Ens egne noter tæller ikke (fx hvis man deler med sit eget hold).
     sharedWithMe: db.prepare(`SELECT notes.*, note_recipients.kind, note_recipients.name AS via, note_recipients.shared_by AS recipient_shared_by
                               FROM note_recipients JOIN notes ON notes.id = note_recipients.note_id
@@ -127,6 +140,12 @@ function ownerOf(user) {
         sql.moveNotes.run(owner, `${user.schoolCode}:${name}`);
         sql.moveTags.run(owner, `${user.schoolCode}:${name}`);
         user.notesMoved = true;
+    }
+
+    // Eleven kan findes af andre fra første login (én gang pr. session)
+    if (studentId && !user.registered) {
+        sql.saveUser.run(owner, user.schoolCode, name ?? "", user.student.className ?? "", now());
+        user.registered = true;
     }
 
     return owner;
@@ -166,7 +185,6 @@ function toNote(row) {
         lesson: row.lesson_date ? { date: row.lesson_date, start: row.lesson_start } : undefined,
         tags: JSON.parse(row.tags),
         content: row.content,
-        shareToken: row.share_token ?? undefined,
         recipients: sql.recipients.all(row.id).map(toRecipient),
         createdAt: row.created_at,
         updatedAt: row.updated_at
@@ -190,12 +208,12 @@ function toRecipient(row) {
     const id = row.target.slice(row.target.indexOf(":") + 1).replace(/^HE/, "");
     return row.kind === "team"
         ? { type: "team", id, name: row.name }
-        : { type: "student", id, name: row.name, teamId: row.team_id };
+        : { type: "student", id, name: row.name };
 }
 
-// Langt og tilfældigt, så links ikke kan gættes
-function newShareToken() {
-    return crypto.randomBytes(18).toString("base64url");
+// Bruger fra databasen -> søgeresultat (id er elev-id'et i Lectio)
+function toUser(row) {
+    return { id: row.owner.slice(row.owner.indexOf(":") + 1), name: row.name, className: row.class_name };
 }
 
 // Data fra browseren -> felter til databasen (kun gyldige værdier)
@@ -349,7 +367,7 @@ function lectioError(res, error) {
 
 module.exports = function noterRouter(requireLogin) {
     const router = express.Router();
-    router.use(["/noter", "/tags", "/fag", "/hold", "/delt-med-mig"], requireLogin);
+    router.use(["/noter", "/tags", "/fag", "/hold", "/brugere", "/delt-med-mig"], requireLogin);
 
     router.get("/noter", (req, res) => {
         const owner = ownerOf(req.user);
@@ -403,31 +421,6 @@ module.exports = function noterRouter(requireLogin) {
         res.json({ notes: sql.notes.all(owner).map(toNote), tags: sql.tags.all(owner) });
     });
 
-    router.post("/noter/:id/deling", (req, res) => {
-        const owner = ownerOf(req.user);
-        const row = sql.note.get(req.params.id, owner);
-        if (!row) return res.status(404).json({ error: "Noten findes ikke" });
-
-        if (!row.share_token) sql.shareNote.run(newShareToken(), req.user.student?.name ?? "", row.id, owner);
-        res.json(toNote(sql.note.get(row.id, owner)));
-    });
-
-    router.delete("/noter/:id/deling", (req, res) => {
-        const owner = ownerOf(req.user);
-        if (!sql.note.get(req.params.id, owner)) return res.status(404).json({ error: "Noten findes ikke" });
-
-        sql.shareNote.run(null, null, req.params.id, owner);
-        res.json(toNote(sql.note.get(req.params.id, owner)));
-    });
-
-    // Alle med linket kan læse noten, også uden at være logget ind
-    router.get("/delt/:token", (req, res) => {
-        const row = sql.sharedNote.get(req.params.token);
-        if (!row) return res.status(404).json({ error: "Noten findes ikke, eller den er ikke delt længere" });
-
-        res.json(toSharedNote(row));
-    });
-
     // Kopien får ingen tags - de hører til den der delte noten
     function copyNote(req, res, row) {
         const owner = ownerOf(req.user);
@@ -438,13 +431,6 @@ module.exports = function noterRouter(requireLogin) {
         sql.insertNote.run({ id, owner, ...fields, created_at: time, updated_at: time });
         res.status(201).json(toNote(sql.note.get(id, owner)));
     }
-
-    router.post("/delt/:token/kopi", requireLogin, (req, res) => {
-        const row = sql.sharedNote.get(req.params.token);
-        if (!row) return res.status(404).json({ error: "Noten findes ikke, eller den er ikke delt længere" });
-
-        copyNote(req, res, row);
-    });
 
     /* Deling inde i Flexio */
 
@@ -468,34 +454,44 @@ module.exports = function noterRouter(requireLogin) {
         }
     });
 
-    // Hele listen af modtagere sendes hver gang: [{ type: "team", id }, { type: "student", id, teamId }].
-    // Man kan kun dele med sine egne hold og eleverne på dem - navnene kommer fra Lectio, ikke fra browseren.
-    router.put("/noter/:id/modtagere", async (req, res) => {
+    // Andre Flexio-brugere på samme skole, som man kan dele med. Demo-brugeren søger i de opdigtede elever.
+    router.get("/brugere", (req, res) => {
+        const search = text(req.query.q, 60).trim();
+        if (search.length < 2) return res.json({ users: [] });
+
+        if (req.user.demo) {
+            const users = DEMO_STUDENTS.filter(student => student.name.toLowerCase().includes(search.toLowerCase()));
+            return res.json({ users: users.map(student => ({ ...student, className: "Demo" })) });
+        }
+
+        const pattern = `%${search.replace(/[\\%_]/g, "\\$&")}%`;
+        const rows = sql.searchUsers.all(req.user.schoolCode, ownerOf(req.user), pattern, pattern);
+        res.json({ users: rows.map(toUser) });
+    });
+
+    // Hele listen af modtagere sendes hver gang: [{ type: "student", id }, ...].
+    // Man kan dele med andre Flexio-brugere på sin skole - navnene kommer fra databasen, ikke fra browseren.
+    // Hold som noten allerede var delt med (fra før søgningen), kan kun beholdes eller fjernes.
+    router.put("/noter/:id/modtagere", (req, res) => {
         const owner = ownerOf(req.user);
         const row = sql.note.get(req.params.id, owner);
         if (!row) return res.status(404).json({ error: "Noten findes ikke" });
 
         const wanted = Array.isArray(req.body?.recipients) ? req.body.recipients.slice(0, 500) : [];
+        const existing = sql.recipients.all(row.id);
         const recipients = new Map();
 
-        try {
-            const teams = (await lectioTeams(req.user)).filter(team => team.id);
-
-            for (const item of wanted) {
-                const team = teams.find(entry => entry.id === String(item?.type === "team" ? item.id : item?.teamId));
-                if (!team) continue;
-
-                if (item.type === "team") {
-                    const target = teamTarget(req.user, team.id);
-                    recipients.set(target, { kind: "team", target, name: team.name, team_id: team.id });
-                } else if (item.type === "student") {
-                    const student = (await teamStudents(req.user, team.id)).find(entry => entry.id === String(item.id));
-                    const target = student && `${schoolOf(req.user)}:${student.id}`;
-                    if (student && target !== owner) recipients.set(target, { kind: "student", target, name: student.name, team_id: team.id });
-                }
+        for (const item of wanted) {
+            if (item?.type === "team") {
+                const team = existing.find(entry => entry.kind === "team" && entry.target === teamTarget(req.user, String(item.id)));
+                if (team) recipients.set(team.target, { kind: "team", target: team.target, name: team.name, team_id: team.team_id });
+            } else if (item?.type === "student") {
+                const target = `${schoolOf(req.user)}:${String(item.id)}`;
+                const student = req.user.demo
+                    ? DEMO_STUDENTS.find(entry => entry.id === String(item.id))
+                    : sql.user.get(target);
+                if (student && target !== owner) recipients.set(target, { kind: "student", target, name: student.name, team_id: null });
             }
-        } catch (error) {
-            return lectioError(res, error);
         }
 
         const sharedBy = req.user.student?.name ?? "";

@@ -413,7 +413,7 @@ function noteCard(note) {
             <md-ripple></md-ripple>
             <md-focus-ring></md-focus-ring>
             <div class="note-inner">
-                <span class="note-meta">${meta.map(escapeHtml).join(" · ")}${note.recipients?.length ? `<md-icon class="note-shared" title="${escapeHtml(recipientsLabel(note.recipients))}">group</md-icon>` : ""}${note.shareToken ? `<md-icon class="note-shared" title="Delt med et link">share</md-icon>` : ""}</span>
+                <span class="note-meta">${meta.map(escapeHtml).join(" · ")}${note.recipients?.length ? `<md-icon class="note-shared" title="${escapeHtml(recipientsLabel(note.recipients))}">group</md-icon>` : ""}</span>
                 <h3 class="note-title">${escapeHtml(noteTitle(note))}</h3>
                 <p class="note-content">${escapeHtml(noteText(note))}</p>
                 ${noteTags.length ? `<md-chip-set class="note-tags">${noteTags.map(tagChip).join("")}</md-chip-set>` : ""}
@@ -1209,192 +1209,112 @@ document.querySelector("#tagForm").addEventListener("submit", event => {
 
 /* ---------- Dialog: del note ---------- */
 
-// Delte noter kan læses af alle med linket på /delt/ (se public/delt/ og api/noter.js)
+// Man søger efter andre Flexio-brugere på sin skole og deler med dem (se /api/brugere og /api/noter/:id/modtagere).
+// De finder noten under "Delt med dig" og åbner den på /delt/.
 const shareDialog = document.querySelector("#shareDialog");
-const shareLinkField = document.querySelector("#shareLinkField");
 const shareMessage = document.querySelector("#shareMessage");
+const shareSearchField = document.querySelector("#shareSearchField");
+const shareResults = document.querySelector("#shareResults");
+const shareSearchText = document.querySelector("#shareSearchText");
+const shareRecipientChips = document.querySelector("#shareRecipientChips");
+const shareRecipientsText = document.querySelector("#shareRecipientsText");
 
-function shareUrl(note) {
-    return `${location.origin}/delt/#${note.shareToken}`;
-}
-
-function renderShareDialog(message = "") {
-    const note = notes.find(item => item.id === editingNoteId);
-    const shared = Boolean(note?.shareToken);
-
-    document.querySelector("#shareOff").hidden = shared;
-    document.querySelector("#shareOn").hidden = !shared;
-    document.querySelector("#createShareButton").hidden = shared;
-    document.querySelector("#copyShareButton").hidden = !shared;
-    document.querySelector("#stopShareButton").hidden = !shared;
-
-    shareLinkField.value = shared ? shareUrl(note) : "";
-    shareMessage.textContent = message;
-}
+let shareResultsList = [];
+let shareSearchTimer = null;
+let shareSearchCount = 0; // kun svaret på den nyeste søgning vises
+let recipientSaving = Promise.resolve();
 
 async function openShareDialog() {
     // Noten skal være gemt, før den kan deles
     await saveNow();
     if (!editingNoteId) return;
 
-    renderShareDialog();
-    renderRecipientsText();
+    shareSearchField.value = "";
+    shareMessage.textContent = "";
+    renderShareResults([]);
+    renderShareRecipients();
     shareDialog.show();
-
-    try {
-        renderShareTeams(await loadShareTeams());
-    } catch (error) {
-        console.error(error);
-        shareTeamSelect.hidden = true;
-        shareRecipientsText.textContent = `Kunne ikke hente dine hold: ${error.message}`;
-    }
+    shareSearchField.focus();
 }
 
-async function setSharing(on) {
-    try {
-        const saved = await apiSend(on ? "POST" : "DELETE", `/api/noter/${encodeURIComponent(editingNoteId)}/deling`);
-        upsertNote(saved);
-        renderShareDialog(on ? "" : "Noten er ikke delt længere. Det gamle link virker ikke.");
-        if (on) await copyShareLink();
-    } catch (error) {
-        renderShareDialog(error.message);
-    }
-}
-
-async function copyShareLink() {
-    try {
-        await navigator.clipboard.writeText(shareLinkField.value);
-        shareMessage.textContent = "Linket er kopieret.";
-    } catch {
-        // Uden adgang til udklipsholderen markeres linket, så det kan kopieres med Ctrl+C
-        shareLinkField.select();
-        shareMessage.textContent = "Tryk Ctrl+C for at kopiere linket.";
-    }
-}
-
-document.querySelector("#createShareButton").addEventListener("click", () => setSharing(true));
-document.querySelector("#stopShareButton").addEventListener("click", () => setSharing(false));
-document.querySelector("#copyShareButton").addEventListener("click", copyShareLink);
 document.querySelector("#closeShareButton").addEventListener("click", () => shareDialog.close());
-
-
-/* ---------- Dialog: del i Flexio med hold og elever ---------- */
-
-// Man kan dele med sine egne hold - hele holdet eller enkelte elever (se /api/hold og /api/noter/:id/modtagere)
-const shareTeamSelect = document.querySelector("#shareTeamSelect");
-const shareStudentChips = document.querySelector("#shareStudentChips");
-const shareRecipientsText = document.querySelector("#shareRecipientsText");
-
-let shareTeamsRequest = null;
-let shareTeamId = null; // holdet der er valgt i dialogen (M3-selectens value opdateres først lidt efter)
-const studentRequests = new Map(); // hold-id -> Promise med eleverne
-let recipientSaving = Promise.resolve();
-
-// Hentes første gang dialogen åbnes
-function loadShareTeams() {
-    shareTeamsRequest ??= apiGet("/api/hold")
-        .then(data => data.teams ?? [])
-        .catch(error => {
-            shareTeamsRequest = null;
-            throw error;
-        });
-    return shareTeamsRequest;
-}
-
-function loadTeamStudents(teamId) {
-    if (!studentRequests.has(teamId)) {
-        studentRequests.set(teamId, apiGet(`/api/hold/${encodeURIComponent(teamId)}/elever`)
-            .then(data => data.students ?? [])
-            .catch(error => {
-                studentRequests.delete(teamId);
-                throw error;
-            }));
-    }
-    return studentRequests.get(teamId);
-}
 
 function recipientsLabel(recipients) {
     return "Delt med " + recipients.map(item => item.type === "team" ? `${item.name} (hele holdet)` : item.name).join(", ");
-}
-
-function renderRecipientsText() {
-    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
-    shareRecipientsText.textContent = recipients.length
-        ? `${recipientsLabel(recipients)}. De finder den under "Delt med dig" og ser altid den nyeste udgave.`
-        : "Vælg et hold og del med hele holdet eller enkelte elever. Kun dem du vælger, kan se noten.";
-}
-
-function renderShareTeams(teams) {
-    shareTeamSelect.hidden = teams.length === 0;
-    if (!teams.length) {
-        shareStudentChips.innerHTML = "";
-        shareRecipientsText.textContent = "Fandt ingen hold i dit skema at dele med.";
-        return;
-    }
-
-    // Start på holdet der passer til notens fag, ellers det hold man sidst valgte
-    const note = notes.find(item => item.id === editingNoteId);
-    const selected = teams.find(team => team.name === note?.subject)?.id
-        ?? teams.find(team => team.id === shareTeamId)?.id
-        ?? teams[0].id;
-
-    shareTeamId = selected;
-    shareTeamSelect.innerHTML = teams.map(team => option(team.id, team.name, team.id === selected)).join("");
-    renderShareStudents();
-}
-
-async function renderShareStudents() {
-    const teamId = shareTeamId;
-    if (!teamId) return;
-
-    let students;
-    try {
-        students = await loadTeamStudents(teamId);
-    } catch (error) {
-        console.error(error);
-        shareStudentChips.innerHTML = "";
-        shareRecipientsText.textContent = `Kunne ikke hente eleverne: ${error.message}`;
-        return;
-    }
-    if (shareTeamId !== teamId) return; // der er valgt et andet hold i mellemtiden
-
-    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
-    const wholeTeam = recipients.some(item => item.type === "team" && item.id === teamId);
-
-    // M3: Chips - Filter chip med ikon. Er hele holdet valgt, kan eleverne allerede se noten.
-    // Guide: https://m3.material.io/components/chips/overview
-    // Element: <md-filter-chip> fra @material/web/chips/filter-chip.js
-    shareStudentChips.innerHTML = [
-        `<md-filter-chip label="Hele holdet" data-recipient-type="team"${wholeTeam ? " selected" : ""}>
-            <md-icon slot="icon">groups</md-icon>
-        </md-filter-chip>`,
-        ...students.map(student => {
-            const selected = wholeTeam || recipients.some(item => item.type === "student" && item.id === student.id);
-            return `<md-filter-chip label="${escapeHtml(student.name)}" data-recipient-type="student" data-student-id="${escapeHtml(student.id)}"${selected ? " selected" : ""}${wholeTeam ? " disabled" : ""}>
-                <md-icon slot="icon">person</md-icon>
-            </md-filter-chip>`;
-        })
-    ].join("");
-
-    renderRecipientsText();
 }
 
 function sameRecipient(a, b) {
     return a.type === b.type && a.id === b.id;
 }
 
+function renderShareRecipients() {
+    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+
+    // M3: Chips - Filter chip med fjern-knap (krydset fjerner delingen)
+    // Guide: https://m3.material.io/components/chips/overview
+    // Element: <md-filter-chip removable> fra @material/web/chips/filter-chip.js
+    shareRecipientChips.innerHTML = recipients.map(item => `
+        <md-filter-chip label="${escapeHtml(item.type === "team" ? `${item.name} (hele holdet)` : item.name)}" removable selected
+                        data-recipient-type="${item.type}" data-recipient-id="${escapeHtml(item.id)}">
+            <md-icon slot="icon">${item.type === "team" ? "groups" : "person"}</md-icon>
+        </md-filter-chip>`).join("");
+
+    shareRecipientsText.textContent = recipients.length
+        ? "De finder noten under \"Delt med dig\" og ser altid den nyeste udgave."
+        : "Noten er ikke delt med nogen endnu. Søg efter en elev for at give adgang.";
+}
+
+function renderShareResults(users, message = "") {
+    shareResultsList = users;
+    const recipients = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+
+    // M3: Lists - List item som knap. Er eleven allerede valgt, vises et flueben.
+    // Guide: https://m3.material.io/components/lists/overview
+    // Element: <md-list-item type="button"> fra @material/web/list/list-item.js
+    shareResults.innerHTML = users.map((user, index) => {
+        const added = recipients.some(item => sameRecipient(item, { type: "student", id: user.id }));
+        return `<md-list-item type="button" data-result-index="${index}">
+            <md-icon slot="start">person</md-icon>
+            <div slot="headline">${escapeHtml(user.name)}</div>
+            ${user.className ? `<div slot="supporting-text">${escapeHtml(user.className)}</div>` : ""}
+            <md-icon slot="end">${added ? "check" : "add"}</md-icon>
+        </md-list-item>`;
+    }).join("");
+
+    shareResults.hidden = users.length === 0;
+    shareSearchText.textContent = message;
+}
+
+async function searchUsers() {
+    const search = shareSearchField.value.trim();
+    const count = ++shareSearchCount;
+
+    if (search.length < 2) return renderShareResults([], search ? "Skriv mindst 2 bogstaver." : "");
+
+    try {
+        const { users = [] } = await apiGet(`/api/brugere?${new URLSearchParams({ q: search })}`);
+        if (count !== shareSearchCount) return;
+        renderShareResults(users, users.length ? "" : "Fandt ingen. Eleven skal have logget ind i Flexio mindst én gang.");
+    } catch (error) {
+        console.error(error);
+        if (count === shareSearchCount) renderShareResults([], `Kunne ikke søge: ${error.message}`);
+    }
+}
+
+shareSearchField.addEventListener("input", () => {
+    clearTimeout(shareSearchTimer);
+    shareSearchTimer = setTimeout(searchUsers, 200);
+});
+
 // Valget vises med det samme, og hele listen gemmes bagefter (i rækkefølge, så det sidste klik vinder)
-function toggleRecipient(recipient) {
+function setRecipients(recipients) {
     const note = notes.find(item => item.id === editingNoteId);
     if (!note) return;
 
     const current = note.recipients ?? [];
-    const recipients = current.some(item => sameRecipient(item, recipient))
-        ? current.filter(item => !sameRecipient(item, recipient))
-        : [...current, recipient];
-
     upsertNote({ ...note, recipients });
-    renderShareStudents();
+    renderShareRecipients();
+    renderShareResults(shareResultsList, shareSearchText.textContent);
 
     recipientSaving = recipientSaving.then(async () => {
         try {
@@ -1408,26 +1328,40 @@ function toggleRecipient(recipient) {
             shareMessage.textContent = `Kunne ikke gemme delingen: ${error.message}`;
         }
 
-        if (editingNoteId === note.id) renderShareStudents();
+        if (editingNoteId === note.id) {
+            renderShareRecipients();
+            renderShareResults(shareResultsList, shareSearchText.textContent);
+        }
     });
 }
 
-shareTeamSelect.addEventListener("change", () => {
-    shareTeamId = shareTeamSelect.value;
-    renderShareStudents();
+function toggleRecipient(recipient) {
+    const current = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+    setRecipients(current.some(item => sameRecipient(item, recipient))
+        ? current.filter(item => !sameRecipient(item, recipient))
+        : [...current, recipient]);
+}
+
+shareResults.addEventListener("click", event => {
+    const user = shareResultsList[event.target.closest("[data-result-index]")?.dataset.resultIndex];
+    if (user) toggleRecipient({ type: "student", id: user.id, name: user.name });
 });
 
-shareStudentChips.addEventListener("click", async event => {
+// Krydset på en chip fjerner delingen ("remove" bobler ikke, så den fanges på vej ned)
+shareRecipientChips.addEventListener("remove", event => {
+    event.preventDefault();
     const chip = event.target.closest("[data-recipient-type]");
-    if (!chip || chip.disabled) return;
+    if (!chip) return;
 
-    const teams = await loadShareTeams();
-    const team = teams.find(item => item.id === shareTeamId);
-    if (!team) return;
+    const remove = { type: chip.dataset.recipientType, id: chip.dataset.recipientId };
+    const current = notes.find(item => item.id === editingNoteId)?.recipients ?? [];
+    setRecipients(current.filter(item => !sameRecipient(item, remove)));
+}, true);
 
-    toggleRecipient(chip.dataset.recipientType === "team"
-        ? { type: "team", id: team.id, name: team.name }
-        : { type: "student", id: chip.dataset.studentId, name: chip.label, teamId: team.id });
+// Et klik på selve chippen skal ikke slå den fra - den fjernes kun med krydset
+shareRecipientChips.addEventListener("click", event => {
+    const chip = event.target.closest("md-filter-chip");
+    if (chip) chip.selected = true;
 });
 
 
