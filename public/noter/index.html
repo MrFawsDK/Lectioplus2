@@ -135,6 +135,15 @@
         <span class="spacer"></span>
 
         <!--
+            M3: Icon buttons - Standard icon button (åbner browserens print-vindue, som Ctrl+P)
+            Guide: https://m3.material.io/components/icon-buttons/overview
+            Element: <md-icon-button> fra @material/web/iconbutton/icon-button.js
+        -->
+        <md-icon-button id="printButton" aria-label="Print (Ctrl+P)" title="Print (Ctrl+P)">
+            <md-icon>print</md-icon>
+        </md-icon-button>
+
+        <!--
             M3: Buttons - Text button med ikon (åbner dialogen "Del note")
             Guide: https://m3.material.io/components/buttons/overview
             Element: <md-text-button> fra @material/web/button/text-button.js
@@ -185,6 +194,28 @@
                 <md-select-option value="h2"><div slot="headline">Overskrift 2</div></md-select-option>
                 <md-select-option value="h3"><div slot="headline">Overskrift 3</div></md-select-option>
                 <md-select-option value="blockquote"><div slot="headline">Citat</div></md-select-option>
+            </md-outlined-select>
+
+            <!--
+                M3: Menus/Select - Outlined select (kompakt, skrifttype). Listen skal passe med EDITOR_FONTS i editor.js
+                Guide: https://m3.material.io/components/menus/overview
+                Element: <md-outlined-select> og <md-select-option> fra @material/web/select
+            -->
+            <md-outlined-select class="tool-select font-select" data-font-select aria-label="Skrifttype">
+                <md-select-option value="Roboto"><div slot="headline" style="font-family: 'Roboto'">Roboto</div></md-select-option>
+                <md-select-option value="Arial"><div slot="headline" style="font-family: 'Arial'">Arial</div></md-select-option>
+                <md-select-option value="Calibri"><div slot="headline" style="font-family: 'Calibri'">Calibri</div></md-select-option>
+                <md-select-option value="Cambria"><div slot="headline" style="font-family: 'Cambria'">Cambria</div></md-select-option>
+                <md-select-option value="Georgia"><div slot="headline" style="font-family: 'Georgia'">Georgia</div></md-select-option>
+                <md-select-option value="Times New Roman"><div slot="headline" style="font-family: 'Times New Roman'">Times New Roman</div></md-select-option>
+                <md-select-option value="Verdana"><div slot="headline" style="font-family: 'Verdana'">Verdana</div></md-select-option>
+                <md-select-option value="Comic Sans MS"><div slot="headline" style="font-family: 'Comic Sans MS'">Comic Sans MS</div></md-select-option>
+                <md-select-option value="Courier New"><div slot="headline" style="font-family: 'Courier New'">Courier New</div></md-select-option>
+                <md-select-option value="Open Sans"><div slot="headline" style="font-family: 'Open Sans'">Open Sans</div></md-select-option>
+                <md-select-option value="Lora"><div slot="headline" style="font-family: 'Lora'">Lora</div></md-select-option>
+                <md-select-option value="Merriweather"><div slot="headline" style="font-family: 'Merriweather'">Merriweather</div></md-select-option>
+                <md-select-option value="Roboto Mono"><div slot="headline" style="font-family: 'Roboto Mono'">Roboto Mono</div></md-select-option>
+                <md-select-option value="Caveat"><div slot="headline" style="font-family: 'Caveat'">Caveat (håndskrift)</div></md-select-option>
             </md-outlined-select>
 
             <!--
@@ -303,6 +334,8 @@
     <div class="editor-body">
         <!-- Siden man skriver på (contenteditable). Indholdet renses i editor.js -->
         <div class="page-area">
+            <!-- Titlen kommer kun med, når noten printes -->
+            <h1 class="print-title" id="printTitle"></h1>
             <div class="page" id="notePage" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Note"></div>
         </div>
 

@@ -1,3 +1,6 @@
+/* Skrifttyper man kan vælge i noter, som ikke findes på Windows (se EDITOR_FONTS i editor.js) */
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
 /* ---------- Siden (ingen boks, fuld bredde) ---------- */
 
 .noter-page {
@@ -393,6 +396,10 @@
 
 .size-select {
     width: 92px;
+}
+
+.font-select {
+    width: 190px;
 }
 
 .color-tool {
@@ -799,4 +806,58 @@
 
 .note-from md-icon {
     font-size: 16px;
+}
+
+
+/* ---------- Print: kun titlen og noten ---------- */
+
+.print-title {
+    display: none;
+}
+
+@page {
+    margin: 2cm;
+}
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    /* Er en note åben, printes kun den (Ctrl+P på listen printer listen) */
+    body:has(.editor:not([hidden])) .noter-page,
+    .header,
+    .new-note,
+    .editor-bar,
+    .format-bar,
+    .editor-side,
+    .status-bar,
+    md-dialog {
+        display: none !important;
+    }
+
+    .editor:not([hidden]),
+    .editor-body,
+    .page-area {
+        display: block;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        background: none;
+    }
+
+    .print-title {
+        display: block;
+        margin: 0 0 16px;
+        color: #1a1c1e;
+        font-family: Roboto, Arial, sans-serif;
+        font-size: 20pt;
+    }
+
+    .page {
+        max-width: none;
+        min-height: 0;
+        padding: 0;
+        box-shadow: none;
+    }
 }
