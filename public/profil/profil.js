@@ -27,6 +27,19 @@ function loadAvatar() {
     }
 }
 
+async function loadStudyCard() {
+    try {
+        const card = await apiGet("/api/studiekort");
+
+        if (card.name) document.querySelector("#cardName").textContent = card.name;
+        if (card.school) document.querySelector("#cardSchool").textContent = card.school;
+        document.querySelector("#cardBirthday").textContent = card.birthday;
+        document.querySelector("#cardStamp").textContent = card.timestamp;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 async function showProfile() {
     const me = await getMe();
     const student = me.student ?? {};
@@ -47,12 +60,11 @@ async function showProfile() {
         chip.hidden = false;
     }
 
-    // Studiekortet
+    // Studiekortet: navn, skole og klasse vises med det samme, resten (fødselsdag) kommer fra Lectios studiekort
     document.querySelector("#cardName").textContent = student.name || "";
     document.querySelector("#cardInitials").textContent = initials(student.name);
-    document.querySelector("#cardClass").textContent = student.className || "";
     document.querySelector("#cardSchool").textContent = student.schoolName || "";
-    document.querySelector("#cardId").textContent = student.studentId || (me.demo ? "demo" : "-");
+    loadStudyCard();
 
     loadAvatar();
 }

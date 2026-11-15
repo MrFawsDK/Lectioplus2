@@ -283,6 +283,17 @@ router.get("/profil/billede", requireLogin, async (req, res) => {
     }
 });
 
+// Studiekortet (navn, skole, fødselsdag) fra Lectio
+router.get("/studiekort", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("profil/studiekort.json"));
+
+    try {
+        res.json(await profile.getStudyCard(req.user));
+    } catch (error) {
+        lectioError(res, error);
+    }
+});
+
 // Bøger, spørgeskemaer og SPS læses generisk fra Lectio (sider.js)
 for (const [route, load, demo] of [
     ["boger", user => pages.getBooks(user), "boger/boger.json"],

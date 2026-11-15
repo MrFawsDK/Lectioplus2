@@ -1,26 +1,51 @@
-// Profilbilledet fra Lectio. Billedet ligger bag elevens Lectio-login, så serveren henter det med cookien
-// og sender det videre til browseren (som ikke kender cookien). Billedets adresse står som
-// <img id="s_m_HeaderContent_picctrlthumbimage"> på Lectios sider (set i BetterLectios kode, _informationer.py).
+// Studiekort og profilbillede fra Lectio.
+//
+// Lectios studiekort ligger på digitaltStudiekort.aspx (set i BetterLectios kode, lib/profil-parser.ts):
+//   #s_m_Content_Content_StudentName      elevens navn
+//   #s_m_Content_Content_SchoolName       skolen
+//   #s_m_Content_Content_StudentBirthday  fødselsdag
+//   #s_m_Content_Content_StudPic          elevens foto (i god kvalitet - det er det samme foto, som står på studiekortet)
+//   #s_m_Content_Content_LectioCR         "© Lectio d. 16/11-2026 00:27"
+//
+// Fotoet ligger bag elevens Lectio-login, så serveren henter det med cookien og sender det videre til browseren.
+// QR-koden på studiekortet henter vi ikke: den indeholder elevens login-oplysninger.
 
 const cheerio = require("cheerio");
-const { getPage, LECTIO } = require("./lectio");
+const { getPage, clean, LECTIO } = require("./lectio");
 
+// Id'er har et præfiks i Lectios HTML, så vi matcher på slutningen
+const byId = ($, name) => $(`[id$='Content_Content_${name}']`).first();
+
+async function readStudyCard(user) {
+    const $ = cheerio.load(await getPage(user, "digitaltStudiekort.aspx"));
+    const src = byId($, "StudPic").attr("src");
+
+    return {
+        name: clean(byId($, "StudentName").text()),
+        school: clean(byId($, "SchoolName").text()),
+        birthday: clean(byId($, "StudentBirthday").text()),
+        timestamp: clean(byId($, "LectioCR").text()),
+        photoSrc: src ? new URL(src, `${LECTIO}/${user.schoolCode}/`) : null
+    };
+}
+
+async function getStudyCard(user) {
+    const { photoSrc, ...card } = await readStudyCard(user);
+    return { ...card, hasPhoto: Boolean(photoSrc) };
+}
+
+// Fotoet fra studiekortet. Findes det ikke, bruges den lille miniature fra Lectios sidehoved.
 async function findPicture(user) {
-    const pages = ["forside.aspx"];
-    if (user.student?.studentId) pages.push(`SkemaNy.aspx?type=elev&elevid=${user.student.studentId}`);
+    const card = await readStudyCard(user).catch(() => null);
+    if (card?.photoSrc) return card.photoSrc;
 
-    for (const page of pages) {
-        const $ = cheerio.load(await getPage(user, page));
-        const src = $("img[id$='picctrlthumbimage']").attr("src");
-        if (src) {
-            // Lectio giver som standard et lille billede - fullsize=1 giver det store (som BetterLectio bruger)
-            const url = new URL(src, `${LECTIO}/${user.schoolCode}/`);
-            url.searchParams.set("fullsize", "1");
-            return url;
-        }
-    }
+    const $ = cheerio.load(await getPage(user, "forside.aspx"));
+    const src = $("img[id$='picctrlthumbimage']").attr("src");
+    if (!src) return null;
 
-    return null;
+    const url = new URL(src, `${LECTIO}/${user.schoolCode}/`);
+    url.searchParams.set("fullsize", "1");
+    return url;
 }
 
 async function getProfileImage(user) {
@@ -29,7 +54,6 @@ async function getProfileImage(user) {
     // Kun billeder fra Lectio selv
     if (!url || url.hostname !== "www.lectio.dk") return null;
 
-    // Først det store billede; virker det ikke, prøves den almindelige adresse
     const small = new URL(url);
     small.searchParams.delete("fullsize");
 
@@ -42,4 +66,4 @@ async function getProfileImage(user) {
     return null;
 }
 
-module.exports = { getProfileImage };
+module.exports = { getProfileImage, getStudyCard };
