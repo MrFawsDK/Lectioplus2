@@ -5,7 +5,7 @@
 // Farverne følger M3's opbygning: main (tekst/ikon), container (baggrund), on (tekst på baggrund)
 // https://m3.material.io/styles/color/roles
 const TAG_COLORS = {
-    red:    { name: "Rød",    main: "#b3261e", container: "#f9dedc", on: "#410e0b" },
+    red:    { name: "Rød",    main: "#1e43b3", container: "#f9dedc", on: "#410e0b" },
     orange: { name: "Orange", main: "#8b5000", container: "#ffdcbe", on: "#2c1600" },
     yellow: { name: "Gul",    main: "#6d5e00", container: "#f8e287", on: "#211b00" },
     green:  { name: "Grøn",   main: "#386a20", container: "#b8f397", on: "#042100" },
