@@ -49,6 +49,19 @@ async function loadHeader() {
         const profileButton = header.querySelector(".profile [href='/profil/']");
         if (profileButton) profileButton.title = `Profil - ${me.student?.name ?? ""}`;
         header.querySelector("#demoBadge").hidden = !me.demo;
+
+        // Elevens eget profilbillede (fra Lectio) i stedet for ikonet. Mangler billedet (fx i demo), bliver ikonet stående.
+        if (profileButton && !me.demo) {
+            const photo = new Image();
+            photo.className = "profile-photo";
+            photo.alt = "";
+            photo.addEventListener("load", () => {
+                const icon = profileButton.querySelector("md-icon");
+                if (icon) icon.style.display = "none";
+                profileButton.append(photo);
+            });
+            photo.src = "/api/profil/billede";
+        }
     });
 }
 
