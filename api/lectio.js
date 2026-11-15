@@ -380,24 +380,41 @@ async function getAbsence(user) {
     const id = user.student.studentId;
     const $ = cheerio.load(await getPage(user, `subnav/fravaerelev.aspx?elevid=${id}`));
 
-    // Tabellen findes ud fra id'et. Er Lectios id ændret, bruges den tabel hvor rækkerne har fire procent/antal-celler efter holdnavnet
+    // Lectios id for tabellen har et præfiks, fx "..._ElevUpdatePanel_FravaerOversigt_SFTabStudentAbsenceDataTable"
     const tables = $("table").toArray();
-    const table = $("#s_m_Content_Content_SFTabStudentAbsenceDataTable")[0]
+    const table = $("table[id$='SFTabStudentAbsenceDataTable']")[0]
         ?? tables.find(element => /opgjort/i.test($(element).text()) && /hele året/i.test($(element).text()));
 
-    const teams = [];
-    $(table).find("tr").each((_, row) => {
-        if ($(row).attr("id") !== undefined) return;
+    const rows = $(table).find("tr").toArray().map(row => ({
+        id: $(row).attr("id"),
+        cells: $(row).children("th, td").toArray().map(cell => clean($(cell).text()))
+    }));
 
-        const cells = $(row).children("td").toArray().map(cell => clean($(cell).text()));
-        if (cells.length < 5 || !cells[0] || !/\d/.test(cells[1])) return;
+    // Overskrifterne står i et par rækker over holdene (Hold | Almindeligt fravær | Skriftligt fravær og under dem Opgjort/Hele året).
+    // Rækkefølgen af de fire tal er som standard: opgjort %, opgjort moduler, hele året %, hele året moduler.
+    // Står der noget andet i overskrifterne, følger vi dem.
+    const header = rows.filter(row => row.cells.some(cell => /%|modul/i.test(cell)) && !row.cells.some(cell => /^\d/.test(cell)));
+    const order = { periodPct: 1, periodModules: 2, yearPct: 3, yearModules: 4 };
+    const labels = header.at(-1)?.cells.filter(Boolean).slice(0, 4) ?? [];
+
+    if (labels.length === 4) {
+        labels.forEach((label, index) => {
+            const year = /år|helt/i.test(label);
+            const pct = /%/.test(label);
+            if (/opgjort|år|helt/i.test(label)) order[`${year ? "year" : "period"}${pct ? "Pct" : "Modules"}`] = index + 1;
+        });
+    }
+
+    const teams = [];
+    for (const { cells } of rows) {
+        if (cells.length < 5 || !cells[0] || !/\d/.test(cells[1])) continue;
 
         teams.push({
             name: cells[0],
-            period: { pct: cells[1], modules: cells[2] },
-            year: { pct: cells[3], modules: cells[4] }
+            period: { pct: cells[order.periodPct], modules: cells[order.periodModules] },
+            year: { pct: cells[order.yearPct], modules: cells[order.yearModules] }
         });
-    });
+    }
 
     if (!teams.length) {
         // Hjælp til fejlfinding: hvad så vi på siden?
@@ -414,8 +431,8 @@ async function getAbsence(user) {
 
     try {
         const reasons = cheerio.load(await getPage(user, `subnav/fravaerelev_fravaersaarsager.aspx?elevid=${id}`));
-        missing = readAbsenceModules(reasons, "#s_m_Content_Content_FatabMissingAarsagerGV", true);
-        registered = readAbsenceModules(reasons, "#s_m_Content_Content_FatabAbsenceFravaerGV", false);
+        missing = readAbsenceModules(reasons, "table[id$=FatabMissingAarsagerGV]", true);
+        registered = readAbsenceModules(reasons, "table[id$=FatabAbsenceFravaerGV]", false);
     } catch (error) {
         console.error(error);
     }
