@@ -12,7 +12,12 @@ async function findPicture(user) {
     for (const page of pages) {
         const $ = cheerio.load(await getPage(user, page));
         const src = $("img[id$='picctrlthumbimage']").attr("src");
-        if (src) return new URL(src, `${LECTIO}/${user.schoolCode}/`);
+        if (src) {
+            // Lectio giver som standard et lille billede - fullsize=1 giver det store (som BetterLectio bruger)
+            const url = new URL(src, `${LECTIO}/${user.schoolCode}/`);
+            url.searchParams.set("fullsize", "1");
+            return url;
+        }
     }
 
     return null;
@@ -24,11 +29,17 @@ async function getProfileImage(user) {
     // Kun billeder fra Lectio selv
     if (!url || url.hostname !== "www.lectio.dk") return null;
 
-    const response = await fetch(url, { headers: { Cookie: user.cookie }, redirect: "manual" });
-    const type = response.headers.get("content-type") ?? "";
-    if (!response.ok || !type.startsWith("image/")) return null;
+    // Først det store billede; virker det ikke, prøves den almindelige adresse
+    const small = new URL(url);
+    small.searchParams.delete("fullsize");
 
-    return { type, buffer: Buffer.from(await response.arrayBuffer()) };
+    for (const candidate of [url, small]) {
+        const response = await fetch(candidate, { headers: { Cookie: user.cookie }, redirect: "manual" });
+        const type = response.headers.get("content-type") ?? "";
+        if (response.ok && type.startsWith("image/")) return { type, buffer: Buffer.from(await response.arrayBuffer()) };
+    }
+
+    return null;
 }
 
 module.exports = { getProfileImage };

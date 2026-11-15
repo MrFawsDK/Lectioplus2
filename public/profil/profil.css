@@ -168,6 +168,101 @@
 }
 
 
+/* ---------- Studiekort ---------- */
+
+.studycard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+
+    aspect-ratio: 1.586 / 1;
+    min-height: 220px;
+    padding: 20px 24px;
+    border-radius: 20px;
+
+    background: linear-gradient(135deg, var(--md-sys-color-primary), #0f4c8a);
+    color: var(--md-sys-color-on-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.studycard-top,
+.studycard-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.studycard-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.studycard-school {
+    text-align: right;
+    opacity: 0.9;
+}
+
+.studycard-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.studycard-photo {
+    position: relative;
+    flex: none;
+
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+
+    width: 84px;
+    height: 104px;
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.studycard-photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.studycard-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.studycard-info strong {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.studycard-info span {
+    opacity: 0.9;
+}
+
+.studycard-bottom b {
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+
 /* ---------- Telefon og tablet ---------- */
 
 @media (max-width: 800px) {

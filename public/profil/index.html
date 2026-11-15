@@ -64,35 +64,29 @@
     </section>
 
     <div class="columns">
-        <!--
-            M3: Lists - List item med ikon (type="link")
-            Guide: https://m3.material.io/components/lists/overview
-            Element: <md-list> og <md-list-item> fra @material/web/list
-        -->
-        <section class="card">
-            <h2>Genveje</h2>
-            <md-list class="plain-list">
-                <md-list-item type="link" href="/skema/">
-                    <md-icon slot="start">calendar_month</md-icon>
-                    <div slot="headline">Skema</div>
-                    <md-icon slot="end">chevron_right</md-icon>
-                </md-list-item>
-                <md-list-item type="link" href="/lektier/">
-                    <md-icon slot="start">menu_book</md-icon>
-                    <div slot="headline">Lektier</div>
-                    <md-icon slot="end">chevron_right</md-icon>
-                </md-list-item>
-                <md-list-item type="link" href="/karakter/">
-                    <md-icon slot="start">grade</md-icon>
-                    <div slot="headline">Karakterer</div>
-                    <md-icon slot="end">chevron_right</md-icon>
-                </md-list-item>
-                <md-list-item type="link" href="/dokumenter/">
-                    <md-icon slot="start">folder</md-icon>
-                    <div slot="headline">Dokumenter</div>
-                    <md-icon slot="end">chevron_right</md-icon>
-                </md-list-item>
-            </md-list>
+        <!-- Studiekort: billede, navn, klasse og skole samlet som et kort -->
+        <section class="studycard" aria-label="Studiekort">
+            <div class="studycard-top">
+                <span class="studycard-label">Studiekort</span>
+                <span class="studycard-school" id="cardSchool"></span>
+            </div>
+
+            <div class="studycard-main">
+                <div class="studycard-photo">
+                    <span id="cardInitials"></span>
+                    <img id="cardImage" alt="" hidden>
+                </div>
+
+                <div class="studycard-info">
+                    <strong id="cardName"></strong>
+                    <span id="cardClass"></span>
+                </div>
+            </div>
+
+            <div class="studycard-bottom">
+                <span>Elev-id <b id="cardId">-</b></span>
+                <md-icon>badge</md-icon>
+            </div>
         </section>
 
         <section class="card">

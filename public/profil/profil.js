@@ -9,18 +9,22 @@ function initials(name) {
 
 // Billedet hentes fra vores server, som henter det fra Lectio. Mangler det, vises initialerne.
 function loadAvatar() {
-    const image = document.querySelector("#avatarImage");
+    // Både profilbilledet og studiekortet bruger billedet
+    for (const [imageId, initialsId] of [["#avatarImage", "#avatarInitials"], ["#cardImage", "#cardInitials"]]) {
+        const image = document.querySelector(imageId);
+        const initials = document.querySelector(initialsId);
 
-    image.addEventListener("load", () => {
-        image.hidden = false;
-        document.querySelector("#avatarInitials").hidden = true;
-    });
-    image.addEventListener("error", () => {
-        image.hidden = true;
-        document.querySelector("#avatarInitials").hidden = false;
-    });
+        image.addEventListener("load", () => {
+            image.hidden = false;
+            initials.hidden = true;
+        });
+        image.addEventListener("error", () => {
+            image.hidden = true;
+            initials.hidden = false;
+        });
 
-    image.src = "/api/profil/billede";
+        image.src = "/api/profil/billede";
+    }
 }
 
 async function showProfile() {
@@ -42,6 +46,13 @@ async function showProfile() {
         chip.label = student.schoolName;
         chip.hidden = false;
     }
+
+    // Studiekortet
+    document.querySelector("#cardName").textContent = student.name || "";
+    document.querySelector("#cardInitials").textContent = initials(student.name);
+    document.querySelector("#cardClass").textContent = student.className || "";
+    document.querySelector("#cardSchool").textContent = student.schoolName || "";
+    document.querySelector("#cardId").textContent = student.studentId || (me.demo ? "demo" : "-");
 
     loadAvatar();
 }
