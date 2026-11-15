@@ -29,6 +29,7 @@ const plan = require("./lektier");
 const pages = require("./sider");
 const profile = require("./profil");
 const finder = require("./find");
+const people = require("./person");
 
 const router = express.Router();
 router.use(express.json());
@@ -187,6 +188,49 @@ router.get("/skema", requireLogin, async (req, res) => {
         res.json(await lectio.getSchedule(req.user, Number(req.query.week), Number(req.query.year), who));
     } catch (error) {
         lectioError(res, error);
+    }
+});
+
+// En anden elev eller lærer: navn, klasse/hold og billede (person.js)
+router.get("/person/:id", requireLogin, async (req, res) => {
+    if (!people.PERSON.test(req.params.id)) return res.status(400).json({ error: "Ugyldig person" });
+
+    if (req.user.demo) {
+        const found = demoData("find/find.json").groups.flatMap(group => group.items).find(item => item.id === req.params.id);
+        if (!found) return res.status(404).json({ error: "Personen findes ikke" });
+
+        const teacher = req.params.id.startsWith("T");
+        return res.json({
+            id: found.id,
+            name: found.name,
+            kind: teacher ? "teacher" : "student",
+            label: teacher ? "Lærer" : "Elev",
+            className: teacher ? "" : (found.name.match(/\(([^)]+)\)/)?.[1] ?? ""),
+            teams: teacher ? [{ id: "HE5001", name: "2y Ma" }, { id: "HE5002", name: "2y Inf" }] : [],
+            hasPhoto: false
+        });
+    }
+
+    try {
+        res.json(await people.getPerson(req.user, req.params.id));
+    } catch (error) {
+        if (error.expose) return res.status(502).json({ error: error.message });
+        lectioError(res, error);
+    }
+});
+
+router.get("/person/:id/billede", requireLogin, async (req, res) => {
+    if (!people.PERSON.test(req.params.id) || req.user.demo) return res.status(404).end();
+
+    try {
+        const image = await people.getPersonImage(req.user, req.params.id);
+        if (!image) return res.status(404).end();
+
+        res.set("Cache-Control", "private, max-age=3600").type(image.type).send(image.buffer);
+    } catch (error) {
+        if (error instanceof lectio.NotLoggedInError) return lectioError(res, error);
+        console.error(error);
+        res.status(404).end();
     }
 });
 

@@ -10,7 +10,7 @@ class NotLoggedInError extends Error {}
 /* ---------- Hent sider ---------- */
 
 // Henter en side som den loggede ind elev. Sender Lectio os videre til login, er cookien ikke gyldig.
-async function getPage(user, page) {
+async function getPage(user, page, { partial = false } = {}) {
     const response = await fetch(`${LECTIO}/${user.schoolCode}/${page}`, {
         headers: { Cookie: user.cookie },
         redirect: "manual"
@@ -18,8 +18,8 @@ async function getPage(user, page) {
 
     const html = response.status === 200 ? await response.text() : "";
 
-    // Sider for en logget ind bruger har altid et "Log ud"-link
-    if (!html.includes("logout.aspx")) throw new NotLoggedInError();
+    // Sider for en logget ind bruger har altid et "Log ud"-link. Små sider (partial) har det ikke - dem kender vi på, at der kom noget
+    if (partial ? !html : !html.includes("logout.aspx")) throw new NotLoggedInError();
 
     return html;
 }

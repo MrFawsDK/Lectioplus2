@@ -98,3 +98,9 @@
     padding-left: 12px;
     border-left: 4px solid var(--fag-accent);
 }
+
+
+.people-list {
+    margin: 0 -8px;
+    background: transparent;
+}

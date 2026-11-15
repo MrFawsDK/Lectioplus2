@@ -37,6 +37,11 @@ function renderKinds() {
     }).join("");
 }
 
+// Elever og lærere har en profil (med skema-knap); klasser, hold og lokaler går direkte til skemaet
+function linkFor(item) {
+    return /^[ST]\d+$/.test(item.id) ? `/person/?id=${encodeURIComponent(item.id)}` : `/skema/?id=${encodeURIComponent(item.id)}`;
+}
+
 function render() {
     const query = normalize(searchField.value.trim());
     const pool = groups.filter(group => kind === "Alle" || group.title === kind).flatMap(group => group.items.map(item => ({ ...item, group: group.title })));
@@ -45,7 +50,7 @@ function render() {
     const shown = matches.slice(0, MAX_SHOWN);
 
     results.innerHTML = shown.map(item => `
-        <md-list-item type="link" href="/skema/?id=${encodeURIComponent(item.id)}">
+        <md-list-item type="link" href="${linkFor(item)}">
             <md-icon slot="start">${ICONS[item.id[0]] ?? "person"}</md-icon>
             <div slot="headline">${escapeHtml(item.name)}</div>
             ${kind === "Alle" ? `<div slot="supporting-text">${escapeHtml(item.group)}</div>` : ""}
@@ -74,9 +79,19 @@ searchField.addEventListener("input", () => {
     timer = setTimeout(render, 120);
 });
 
+// ?type=elever / laerere vælger kategorien på forhånd (fra forsiden)
+function presetKind() {
+    const wanted = new URLSearchParams(location.search).get("type");
+    if (!wanted) return;
+
+    const found = groups.find(group => normalize(group.title).replace("æ", "ae").startsWith(wanted.slice(0, 5)));
+    if (found) kind = found.title;
+}
+
 async function load() {
     try {
         ({ groups } = await apiGet("/api/find"));
+        presetKind();
         renderKinds();
         render();
     } catch (error) {

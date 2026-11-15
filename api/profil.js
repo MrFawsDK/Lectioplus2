@@ -49,9 +49,11 @@ async function findPicture(user) {
 }
 
 async function getProfileImage(user) {
-    const url = await findPicture(user);
+    return fetchImage(user, await findPicture(user));
+}
 
-    // Kun billeder fra Lectio selv
+// Henter et billede fra Lectio med elevens cookie. Kun billeder fra Lectio selv.
+async function fetchImage(user, url) {
     if (!url || url.hostname !== "www.lectio.dk") return null;
 
     const small = new URL(url);
@@ -66,4 +68,4 @@ async function getProfileImage(user) {
     return null;
 }
 
-module.exports = { getProfileImage, getStudyCard };
+module.exports = { getProfileImage, getStudyCard, fetchImage };

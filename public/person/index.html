@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/person/person.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="person-page">
+    <!--
+        M3: Icon buttons - Standard icon button
+        Guide: https://m3.material.io/components/icon-buttons/overview
+        Element: <md-icon-button> fra @material/web/iconbutton/icon-button.js
+    -->
+    <md-icon-button class="back" id="backButton" aria-label="Tilbage">
+        <md-icon>arrow_back</md-icon>
+    </md-icon-button>
+
+    <div class="empty" id="emptyState">
+        <md-icon>person</md-icon>
+        <span id="emptyText">Henter profil …</span>
+    </div>
+
+    <div id="content" hidden>
+        <section class="hero">
+            <div class="avatar" aria-hidden="true">
+                <span id="avatarInitials"></span>
+                <img id="avatarImage" alt="" hidden>
+            </div>
+
+            <div class="hero-text">
+                <h1 id="personName"></h1>
+                <p class="hero-sub" id="personSub"></p>
+
+                <!--
+                    M3: Buttons - Filled button med ikon
+                    Guide: https://m3.material.io/components/buttons/overview
+                    Element: <md-filled-button> fra @material/web/button/filled-button.js
+                -->
+                <md-filled-button id="scheduleButton">
+                    <md-icon slot="icon">calendar_month</md-icon>
+                    Se skema
+                </md-filled-button>
+            </div>
+        </section>
+
+        <!-- Lærerens hold: et tryk viser holdets skema -->
+        <section class="card" id="teamsCard" hidden>
+            <h2>Hold</h2>
+            <md-list class="plain-list" id="teamsList"></md-list>
+        </section>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/person/person.js"></script>
+</body>
+</html>

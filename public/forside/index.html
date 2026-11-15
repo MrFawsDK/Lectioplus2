@@ -35,6 +35,34 @@
             <a class="more" href="/opgaver/">Se alle opgaver</a>
         </section>
 
+        <!--
+            M3: Lists - List item (type="link")
+            Guide: https://m3.material.io/components/lists/overview
+            Element: <md-list> og <md-list-item> fra @material/web/list
+        -->
+        <section class="card">
+            <h2>Find personer</h2>
+            <md-list class="people-list">
+                <md-list-item type="link" href="/find/?type=elever">
+                    <md-icon slot="start">person</md-icon>
+                    <div slot="headline">Elever</div>
+                    <div slot="supporting-text">Se elevernes profil og skema</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+                <md-list-item type="link" href="/find/?type=laerere">
+                    <md-icon slot="start">school</md-icon>
+                    <div slot="headline">Lærere</div>
+                    <div slot="supporting-text">Se lærernes profil og skema</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+                <md-list-item type="link" href="/find/">
+                    <md-icon slot="start">groups</md-icon>
+                    <div slot="headline">Klasser, hold og lokaler</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+            </md-list>
+        </section>
+
         <section class="card">
             <h2>Fravær</h2>
             <p class="big" id="absence">-</p>
