@@ -249,6 +249,7 @@ router.get("/lektier", requireLogin, async (req, res) => {
     try {
         res.json(await plan.getHomework(req.user));
     } catch (error) {
+        if (error.expose) return res.status(502).json({ error: error.message });
         lectioError(res, error);
     }
 });

@@ -13,16 +13,20 @@ async function getHomework(user) {
     const $ = cheerio.load(await getPage(user, `material_lektieoversigt.aspx?elevid=${user.student.studentId}`));
     const homework = [];
 
-    $("tr").slice(1).each((_, row) => {
-        const cells = $(row).children("td").toArray();
-        if (cells.length < 3) return;
+    // Alle skemabrikker på siden: brikken står i én celle, og lektierne i cellen lige efter
+    const seen = new Set();
 
-        const brick = $(cells[1]).find("a.s2skemabrik").first();
+    $("a.s2skemabrik").each((_, brickElement) => {
+        const brick = $(brickElement);
+        const cell = brick.closest("td");
+        const row = cell.closest("tr");
+        if (!row.length || seen.has(row[0])) return;
+        seen.add(row[0]);
+
         const lesson = readTooltip(brick.attr("data-tooltip")) ?? {};
+        const lines = (cell.nextAll("td").first().html() ?? "").split(/<br\s*\/?>|&nbsp;| /i);
 
         const items = [];
-        const lines = ($(cells[2]).html() ?? "").split(/<br\s*\/?>|&nbsp;| /i);
-
         for (const line of lines) {
             const part = cheerio.load(`<div>${line}</div>`);
             const text = clean(part("div").text());
@@ -38,12 +42,21 @@ async function getHomework(user) {
             date: lesson.date ?? null,
             start: lesson.start ?? "",
             end: lesson.end ?? "",
-            subject: lesson.teams?.length === 1 ? lesson.teams[0] : (lesson.title || lesson.teams?.join(", ") || clean($(cells[1]).text())),
+            subject: lesson.teams?.length === 1 ? lesson.teams[0] : (lesson.title || lesson.teams?.join(", ") || clean(cell.text())),
             title: lesson.teams?.length === 1 ? lesson.title : "",
             teacher: lesson.teachers?.join(" ") ?? "",
             items
         });
     });
+
+    // Ingen lektier er ikke en fejl - men ses der slet ingen moduler, er siden ikke som forventet
+    if (!homework.length && !seen.size && !/ingen lektier|ingen.*lektie/i.test($("body").text())) {
+        const tables = $("table").toArray().slice(0, 6).map(table => `${$(table).attr("id") ?? "uden id"}: ${clean($(table).find("tr").first().text()).slice(0, 60)}`);
+        console.error("Lektier ikke fundet. Titel:", clean($("title").text()), "Tabeller:", tables);
+        const error = new Error(`Kunne ikke læse lektierne fra Lectio (${clean($("title").text()) || "ingen titel"}; ${$("table").length} tabeller)`);
+        error.expose = true;
+        throw error;
+    }
 
     return { homework };
 }
