@@ -125,3 +125,9 @@
         justify-content: flex-start;
     }
 }
+
+
+/* Skjulte menupunkter (Indstillinger -> Menu og forside) */
+.nav [hidden] {
+    display: none !important;
+}

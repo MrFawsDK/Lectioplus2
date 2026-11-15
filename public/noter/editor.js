@@ -34,7 +34,8 @@ const EDITOR_FONTS = {
     "Roboto Mono": "monospace",
     "Caveat": "cursive"
 };
-const DEFAULT_FONT = "Roboto";
+// Standardskrifttypen vælges i Indstillinger (cachedSettings() kommer fra session.js)
+const DEFAULT_FONT = typeof cachedSettings === "function" && EDITOR_FONTS[cachedSettings().noteFont] ? cachedSettings().noteFont : "Roboto";
 
 // Første skrift i en font-family / face -> en af EDITOR_FONTS (ellers null)
 function knownFont(value) {

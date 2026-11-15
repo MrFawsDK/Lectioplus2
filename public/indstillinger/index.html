@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indstillinger - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/indstillinger/indstillinger.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="settings-page">
+    <section class="page-head">
+        <div>
+            <h1>Indstillinger</h1>
+            <p class="lead">Dine indstillinger i Flexio. De gælder kun Flexio og ændrer ikke noget i Lectio.</p>
+        </div>
+        <span class="saved" id="savedState" role="status" aria-live="polite"></span>
+    </section>
+
+    <!-- ===== Udseende ===== -->
+    <section class="card">
+        <h2><md-icon>palette</md-icon> Udseende</h2>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Tema</strong>
+                <span>Lyst, mørkt eller det samme som din telefon/computer.</span>
+            </div>
+            <!--
+                M3: Segmented buttons - Single-select
+                Guide: https://m3.material.io/components/segmented-buttons/overview
+                Element: <md-outlined-segmented-button-set> og <md-outlined-segmented-button>
+            -->
+            <md-outlined-segmented-button-set id="themeSet" aria-label="Tema">
+                <md-outlined-segmented-button label="Lys" data-value="light"></md-outlined-segmented-button>
+                <md-outlined-segmented-button label="Mørk" data-value="dark"></md-outlined-segmented-button>
+                <md-outlined-segmented-button label="System" data-value="system"></md-outlined-segmented-button>
+            </md-outlined-segmented-button-set>
+        </div>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Farve</strong>
+                <span>Hovedfarven på knapper og fremhævninger.</span>
+            </div>
+            <div class="swatches" id="accentSwatches" role="radiogroup" aria-label="Farve">
+                <button class="swatch" data-value="blue" style="--swatch:#1a6bb5" role="radio" aria-label="Blå"></button>
+                <button class="swatch" data-value="green" style="--swatch:#2e7d32" role="radio" aria-label="Grøn"></button>
+                <button class="swatch" data-value="purple" style="--swatch:#6750a4" role="radio" aria-label="Lilla"></button>
+                <button class="swatch" data-value="orange" style="--swatch:#b35400" role="radio" aria-label="Orange"></button>
+                <button class="swatch" data-value="red" style="--swatch:#c0392b" role="radio" aria-label="Rød"></button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Tekststørrelse</strong>
+                <span>Gør det hele lidt mindre eller større.</span>
+            </div>
+            <md-outlined-segmented-button-set id="sizeSet" aria-label="Tekststørrelse">
+                <md-outlined-segmented-button label="Lille" data-value="small"></md-outlined-segmented-button>
+                <md-outlined-segmented-button label="Normal" data-value="normal"></md-outlined-segmented-button>
+                <md-outlined-segmented-button label="Stor" data-value="large"></md-outlined-segmented-button>
+            </md-outlined-segmented-button-set>
+        </div>
+    </section>
+
+    <!-- ===== Menu og forside ===== -->
+    <section class="card">
+        <h2><md-icon>home</md-icon> Menu og forside</h2>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Startside</strong>
+                <span>Siden du kommer til, når du logger ind.</span>
+            </div>
+            <!--
+                M3: Menus/Select - Outlined select
+                Guide: https://m3.material.io/components/menus/overview
+                Element: <md-outlined-select> og <md-select-option>
+            -->
+            <md-outlined-select id="startSelect" label="Startside"></md-outlined-select>
+        </div>
+
+        <div class="row column">
+            <div class="row-text">
+                <strong>Menupunkter</strong>
+                <span>Slå fra, hvad du ikke bruger. Den side du står på, vises altid.</span>
+            </div>
+
+            <!--
+                M3: Switch
+                Guide: https://m3.material.io/components/switch/overview
+                Element: <md-switch> fra @material/web/switch/switch.js
+            -->
+            <md-list class="switch-list" id="menuList"></md-list>
+        </div>
+    </section>
+
+    <!-- ===== Noter ===== -->
+    <section class="card">
+        <h2><md-icon>edit_note</md-icon> Noter</h2>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Standardskrifttype</strong>
+                <span>Bruges, når du laver en ny note.</span>
+            </div>
+            <md-outlined-select id="fontSelect" label="Skrifttype"></md-outlined-select>
+        </div>
+
+        <div class="row">
+            <div class="row-text">
+                <strong>Standardfag</strong>
+                <span>Fag der er valgt på forhånd i nye noter.</span>
+            </div>
+            <md-outlined-select id="subjectSelect" label="Fag"></md-outlined-select>
+        </div>
+    </section>
+
+    <!-- ===== Data og privatliv ===== -->
+    <section class="card">
+        <h2><md-icon>shield</md-icon> Data og privatliv</h2>
+
+        <p class="note" id="dataSummary">Henter …</p>
+        <p class="note">Her kan du kun slette det, Flexio selv har gemt. Lectio og dine data dér bliver ikke rørt.</p>
+
+        <div class="actions">
+            <md-filled-tonal-button id="logoutAllButton">
+                <md-icon slot="icon">devices</md-icon>
+                Log ud på alle enheder
+            </md-filled-tonal-button>
+
+            <md-outlined-button id="resetButton">
+                <md-icon slot="icon">restart_alt</md-icon>
+                Nulstil indstillinger
+            </md-outlined-button>
+
+            <md-text-button id="deleteButton" class="danger">
+                <md-icon slot="icon">delete</md-icon>
+                Slet mine Flexio-data
+            </md-text-button>
+        </div>
+    </section>
+</main>
+
+<!--
+    M3: Dialogs - Basic dialog (bekræft sletning)
+    Guide: https://m3.material.io/components/dialogs/overview
+    Element: <md-dialog> fra @material/web/dialog/dialog.js
+-->
+<md-dialog id="deleteDialog">
+    <div slot="headline">Slet dine Flexio-data?</div>
+    <div slot="content" id="deleteText">Alle dine noter, tags og indstillinger i Flexio bliver slettet. Det kan ikke fortrydes.</div>
+    <div slot="actions">
+        <md-text-button id="deleteCancel">Annullér</md-text-button>
+        <md-text-button id="deleteConfirm" class="danger">Slet alt</md-text-button>
+    </div>
+</md-dialog>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/indstillinger/indstillinger.js"></script>
+</body>
+</html>

@@ -36,6 +36,14 @@ async function loadHeader() {
         }
     });
 
+    // Menupunkter eleven har skjult i Indstillinger (den side man står på vises altid)
+    getSettings().then(settings => {
+        header.querySelectorAll(".nav [href]").forEach(button => {
+            const page = button.getAttribute("href");
+            button.hidden = settings.hiddenMenu.includes(page) && !path.startsWith(page);
+        });
+    }).catch(() => {});
+
     // Menu-knappen (telefon/tablet) åbner og lukker menuen
     const toggle = header.querySelector("#menuToggle");
     toggle?.addEventListener("click", () => {

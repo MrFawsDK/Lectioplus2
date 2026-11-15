@@ -32,7 +32,8 @@ import "@material/web/chips/filter-chip.js"; // <md-filter-chip>
 // Formularfelter
 import "@material/web/textfield/outlined-text-field.js"; // <md-outlined-text-field>
 import "@material/web/select/outlined-select.js";        // <md-outlined-select>
-import "@material/web/select/select-option.js";          // <md-select-option>
+import "@material/web/select/select-option.js";       // <md-select-option>
+import "@material/web/switch/switch.js";                 // <md-switch>
 
 // Lister og opdeling
 import "@material/web/list/list.js";       // <md-list>

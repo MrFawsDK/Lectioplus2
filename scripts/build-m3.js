@@ -51,6 +51,7 @@ const SECTIONS = [
     },
     { title: "Lister og divider", about: "labs/item er layoutet inde i hver listerække.", folders: ["labs/item", "list", "divider"] },
     { title: "Dialog og kort (kort er labs)", about: "", folders: ["dialog", "labs/card"] },
+    { title: "Kontakter (switch)", about: "", folders: ["switch"] },
     { title: "Ikon", about: "", folders: ["icon"] },
 ];
 

@@ -2,7 +2,16 @@
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=/forside/">
+    <meta http-equiv="refresh" content="1; url=/forside/">
+    <script>
+        // Videre til elevens valgte startside (Indstillinger), ellers forsiden
+        try {
+            const page = JSON.parse(localStorage.getItem("flexio.indstillinger") ?? "{}").startPage;
+            location.replace(typeof page === "string" && page.startsWith("/") && !page.startsWith("//") ? page : "/forside/");
+        } catch {
+            location.replace("/forside/");
+        }
+    </script>
     <title>Flexio</title>
 </head>
 <body>

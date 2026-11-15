@@ -11,46 +11,48 @@
  *   - Hvert modul starter med "// --- <filnavn>" og et link til kildekoden på GitHub.
  *
  * Indhold (linjenummer i parentes):
- *   1. Fundament: Lit og tslib (linje 77)
- *   2. Fælles hjælpekode (linje 1055)
- *   3. Effekter: elevation, fokusring og ripple (linje 2053)
- *       <md-elevation> (linje 2088)
- *       <md-focus-ring> (linje 2200)
- *       <md-ripple> (linje 2571)
- *   4. Knapper og FAB (linje 2591)
- *       <md-filled-button> (linje 2784)
- *       <md-filled-tonal-button> (linje 2836)
- *       <md-outlined-button> (linje 2887)
- *       <md-text-button> (linje 2929)
- *       <md-fab> (linje 3088)
- *   5. Ikonknapper (linje 3114)
- *       <md-icon-button> (linje 3305)
- *       <md-filled-tonal-icon-button> (linje 3342)
- *   6. Segmenterede knapper (labs) (linje 3370)
- *       <md-outlined-segmented-button-set> (linje 3513)
- *       <md-outlined-segmented-button> (linje 3733)
- *   7. Chips (linje 3754)
- *       <md-chip-set> (linje 3992)
- *       <md-assist-chip> (linje 4128)
- *       <md-filter-chip> (linje 4430)
- *   8. Formularfelter: tekstfelt og select (linje 4460)
- *       <md-outlined-field> (linje 4815)
- *       <md-outlined-text-field> (linje 5410)
- *       <md-menu> (linje 6566)
- *       <md-outlined-select> (linje 7254)
- *       <md-select-option> (linje 7669)
- *   9. Lister og divider (linje 7689)
- *       <md-item> (linje 8031)
- *       <md-list> (linje 8132)
- *       <md-list-item> (linje 8336)
- *       <md-divider> (linje 8394)
- *   10. Dialog og kort (kort er labs) (linje 8414)
- *       <md-dialog> (linje 8979)
- *       <md-filled-card> (linje 9041)
- *       <md-outlined-card> (linje 9072)
- *   11. Ikon (linje 9093)
- *       <md-icon> (linje 9132)
- *   12. Start: registrerer komponenterne (linje 9152)
+ *   1. Fundament: Lit og tslib (linje 79)
+ *   2. Fælles hjælpekode (linje 1057)
+ *   3. Effekter: elevation, fokusring og ripple (linje 2084)
+ *       <md-elevation> (linje 2119)
+ *       <md-focus-ring> (linje 2231)
+ *       <md-ripple> (linje 2602)
+ *   4. Knapper og FAB (linje 2622)
+ *       <md-filled-button> (linje 2815)
+ *       <md-filled-tonal-button> (linje 2867)
+ *       <md-outlined-button> (linje 2918)
+ *       <md-text-button> (linje 2960)
+ *       <md-fab> (linje 3119)
+ *   5. Ikonknapper (linje 3145)
+ *       <md-icon-button> (linje 3336)
+ *       <md-filled-tonal-icon-button> (linje 3373)
+ *   6. Segmenterede knapper (labs) (linje 3401)
+ *       <md-outlined-segmented-button-set> (linje 3544)
+ *       <md-outlined-segmented-button> (linje 3764)
+ *   7. Chips (linje 3785)
+ *       <md-chip-set> (linje 4023)
+ *       <md-assist-chip> (linje 4159)
+ *       <md-filter-chip> (linje 4461)
+ *   8. Formularfelter: tekstfelt og select (linje 4491)
+ *       <md-outlined-field> (linje 4846)
+ *       <md-outlined-text-field> (linje 5441)
+ *       <md-menu> (linje 6597)
+ *       <md-outlined-select> (linje 7285)
+ *       <md-select-option> (linje 7700)
+ *   9. Lister og divider (linje 7720)
+ *       <md-item> (linje 8062)
+ *       <md-list> (linje 8163)
+ *       <md-list-item> (linje 8367)
+ *       <md-divider> (linje 8425)
+ *   10. Dialog og kort (kort er labs) (linje 8445)
+ *       <md-dialog> (linje 9010)
+ *       <md-filled-card> (linje 9072)
+ *       <md-outlined-card> (linje 9103)
+ *   11. Kontakter (switch) (linje 9124)
+ *       <md-switch> (linje 9324)
+ *   12. Ikon (linje 9344)
+ *       <md-icon> (linje 9383)
+ *   13. Start: registrerer komponenterne (linje 9403)
  *
  * Licenser: @material/web (c) Google LLC, Apache-2.0. Lit (c) Google LLC, BSD-3-Clause.
  * tslib (c) Microsoft, 0BSD.
@@ -2043,6 +2045,35 @@ var init_select_validator = __esm({
       }
       copy({ value, required }) {
         return { value, required };
+      }
+    };
+  }
+});
+
+// --- @material/web/labs/behaviors/validators/checkbox-validator.js
+// --- https://github.com/material-components/material-web/blob/v2.5.0/labs/behaviors/validators/checkbox-validator.ts
+var CheckboxValidator;
+var init_checkbox_validator = __esm({
+  "node_modules/@material/web/labs/behaviors/validators/checkbox-validator.js"() {
+    init_validator();
+    CheckboxValidator = class extends Validator {
+      computeValidity(state) {
+        if (!this.checkboxControl) {
+          this.checkboxControl = document.createElement("input");
+          this.checkboxControl.type = "checkbox";
+        }
+        this.checkboxControl.checked = state.checked;
+        this.checkboxControl.required = state.required;
+        return {
+          validity: this.checkboxControl.validity,
+          validationMessage: this.checkboxControl.validationMessage
+        };
+      }
+      equals(prev, next) {
+        return prev.checked === next.checked && prev.required === next.required;
+      }
+      copy({ checked, required }) {
+        return { checked, required };
       }
     };
   }
@@ -8119,13 +8150,13 @@ var init_list = __esm({
 
 // --- @material/web/list/internal/list-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/list/internal
-var styles36, list_styles_cssresult_default;
+var styles37, list_styles_cssresult_default;
 var init_list_styles_cssresult = __esm({
   "node_modules/@material/web/list/internal/list-styles.cssresult.js"() {
     init_lit();
-    styles36 = i`:host{background:var(--md-list-container-color, var(--md-sys-color-surface, #fef7ff));color:unset;display:flex;flex-direction:column;outline:none;padding:8px 0;position:relative}
+    styles37 = i`:host{background:var(--md-list-container-color, var(--md-sys-color-surface, #fef7ff));color:unset;display:flex;flex-direction:column;outline:none;padding:8px 0;position:relative}
 `;
-    list_styles_cssresult_default = styles36.styleSheet;
+    list_styles_cssresult_default = styles37.styleSheet;
   }
 });
 
@@ -8140,7 +8171,7 @@ var init_list2 = __esm({
     init_list_styles_cssresult();
     MdList = class MdList2 extends List {
     };
-    MdList.styles = [styles36];
+    MdList.styles = [styles37];
     MdList = __decorate([
       t("md-list")
     ], MdList);
@@ -8323,13 +8354,13 @@ var init_list_item = __esm({
 
 // --- @material/web/list/internal/listitem/list-item-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/list/internal/listitem
-var styles37, list_item_styles_cssresult_default;
+var styles38, list_item_styles_cssresult_default;
 var init_list_item_styles_cssresult = __esm({
   "node_modules/@material/web/list/internal/listitem/list-item-styles.cssresult.js"() {
     init_lit();
-    styles37 = i`:host{display:flex;gap:16px;-webkit-tap-highlight-color:rgba(0,0,0,0);--md-ripple-hover-color: var(--md-list-item-hover-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-hover-opacity: var(--md-list-item-hover-state-layer-opacity, 0.08);--md-ripple-pressed-color: var(--md-list-item-pressed-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-pressed-opacity: var(--md-list-item-pressed-state-layer-opacity, 0.12)}:host(:is([type=button]:not([disabled]),[type=link])){cursor:pointer}md-focus-ring{z-index:1;--md-focus-ring-shape: 8px}a,button,li{background:none;border:none;cursor:inherit;padding:0;margin:0;text-align:unset;text-decoration:none}.list-item{border-radius:inherit;display:flex;flex:1;gap:inherit;max-width:inherit;min-width:inherit;outline:none;-webkit-tap-highlight-color:rgba(0,0,0,0);width:100%}.list-item.interactive{cursor:pointer}.list-item.disabled{opacity:var(--md-list-item-disabled-opacity, 0.3);pointer-events:none}[slot=container]{pointer-events:none}md-ripple{border-radius:inherit}md-item{border-radius:inherit;flex:1;height:100%;color:var(--md-list-item-label-text-color, var(--md-sys-color-on-surface, #1d1b20));font-family:var(--md-list-item-label-text-font, var(--md-sys-typescale-body-large-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-label-text-size, var(--md-sys-typescale-body-large-size, 1rem));line-height:var(--md-list-item-label-text-line-height, var(--md-sys-typescale-body-large-line-height, 1.5rem));font-weight:var(--md-list-item-label-text-weight, var(--md-sys-typescale-body-large-weight, var(--md-ref-typeface-weight-regular, 400)));min-height:var(--md-list-item-one-line-container-height, 56px);padding-top:var(--md-list-item-top-space, 12px);padding-bottom:var(--md-list-item-bottom-space, 12px);padding-inline-start:var(--md-list-item-leading-space, 16px);padding-inline-end:var(--md-list-item-trailing-space, 16px);gap:inherit}md-item[multiline]{min-height:var(--md-list-item-two-line-container-height, 72px)}[slot=supporting-text]{color:var(--md-list-item-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-list-item-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-list-item-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));font-weight:var(--md-list-item-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)))}[slot=trailing-supporting-text]{color:var(--md-list-item-trailing-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-list-item-trailing-supporting-text-font, var(--md-sys-typescale-label-small-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-trailing-supporting-text-size, var(--md-sys-typescale-label-small-size, 0.6875rem));line-height:var(--md-list-item-trailing-supporting-text-line-height, var(--md-sys-typescale-label-small-line-height, 1rem));font-weight:var(--md-list-item-trailing-supporting-text-weight, var(--md-sys-typescale-label-small-weight, var(--md-ref-typeface-weight-medium, 500)))}:is([slot=start],[slot=end])::slotted(*){fill:currentColor}[slot=start]{color:var(--md-list-item-leading-icon-color, var(--md-sys-color-on-surface-variant, #49454f))}[slot=end]{color:var(--md-list-item-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f))}@media(forced-colors: active){.disabled slot{color:GrayText}.list-item.disabled{color:GrayText;opacity:1}}
+    styles38 = i`:host{display:flex;gap:16px;-webkit-tap-highlight-color:rgba(0,0,0,0);--md-ripple-hover-color: var(--md-list-item-hover-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-hover-opacity: var(--md-list-item-hover-state-layer-opacity, 0.08);--md-ripple-pressed-color: var(--md-list-item-pressed-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-pressed-opacity: var(--md-list-item-pressed-state-layer-opacity, 0.12)}:host(:is([type=button]:not([disabled]),[type=link])){cursor:pointer}md-focus-ring{z-index:1;--md-focus-ring-shape: 8px}a,button,li{background:none;border:none;cursor:inherit;padding:0;margin:0;text-align:unset;text-decoration:none}.list-item{border-radius:inherit;display:flex;flex:1;gap:inherit;max-width:inherit;min-width:inherit;outline:none;-webkit-tap-highlight-color:rgba(0,0,0,0);width:100%}.list-item.interactive{cursor:pointer}.list-item.disabled{opacity:var(--md-list-item-disabled-opacity, 0.3);pointer-events:none}[slot=container]{pointer-events:none}md-ripple{border-radius:inherit}md-item{border-radius:inherit;flex:1;height:100%;color:var(--md-list-item-label-text-color, var(--md-sys-color-on-surface, #1d1b20));font-family:var(--md-list-item-label-text-font, var(--md-sys-typescale-body-large-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-label-text-size, var(--md-sys-typescale-body-large-size, 1rem));line-height:var(--md-list-item-label-text-line-height, var(--md-sys-typescale-body-large-line-height, 1.5rem));font-weight:var(--md-list-item-label-text-weight, var(--md-sys-typescale-body-large-weight, var(--md-ref-typeface-weight-regular, 400)));min-height:var(--md-list-item-one-line-container-height, 56px);padding-top:var(--md-list-item-top-space, 12px);padding-bottom:var(--md-list-item-bottom-space, 12px);padding-inline-start:var(--md-list-item-leading-space, 16px);padding-inline-end:var(--md-list-item-trailing-space, 16px);gap:inherit}md-item[multiline]{min-height:var(--md-list-item-two-line-container-height, 72px)}[slot=supporting-text]{color:var(--md-list-item-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-list-item-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-list-item-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));font-weight:var(--md-list-item-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)))}[slot=trailing-supporting-text]{color:var(--md-list-item-trailing-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-list-item-trailing-supporting-text-font, var(--md-sys-typescale-label-small-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-list-item-trailing-supporting-text-size, var(--md-sys-typescale-label-small-size, 0.6875rem));line-height:var(--md-list-item-trailing-supporting-text-line-height, var(--md-sys-typescale-label-small-line-height, 1rem));font-weight:var(--md-list-item-trailing-supporting-text-weight, var(--md-sys-typescale-label-small-weight, var(--md-ref-typeface-weight-medium, 500)))}:is([slot=start],[slot=end])::slotted(*){fill:currentColor}[slot=start]{color:var(--md-list-item-leading-icon-color, var(--md-sys-color-on-surface-variant, #49454f))}[slot=end]{color:var(--md-list-item-trailing-icon-color, var(--md-sys-color-on-surface-variant, #49454f))}@media(forced-colors: active){.disabled slot{color:GrayText}.list-item.disabled{color:GrayText;opacity:1}}
 `;
-    list_item_styles_cssresult_default = styles37.styleSheet;
+    list_item_styles_cssresult_default = styles38.styleSheet;
   }
 });
 
@@ -8344,7 +8375,7 @@ var init_list_item2 = __esm({
     init_list_item_styles_cssresult();
     MdListItem = class MdListItem2 extends ListItemEl {
     };
-    MdListItem.styles = [styles37];
+    MdListItem.styles = [styles38];
     MdListItem = __decorate([
       t("md-list-item")
     ], MdListItem);
@@ -8381,13 +8412,13 @@ var init_divider = __esm({
 
 // --- @material/web/divider/internal/divider-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/divider/internal
-var styles38, divider_styles_cssresult_default;
+var styles39, divider_styles_cssresult_default;
 var init_divider_styles_cssresult = __esm({
   "node_modules/@material/web/divider/internal/divider-styles.cssresult.js"() {
     init_lit();
-    styles38 = i`:host{box-sizing:border-box;color:var(--md-divider-color, var(--md-sys-color-outline-variant, #cac4d0));display:flex;height:var(--md-divider-thickness, 1px);width:100%}:host([inset]),:host([inset-start]){padding-inline-start:16px}:host([inset]),:host([inset-end]){padding-inline-end:16px}:host::before{background:currentColor;content:"";height:100%;width:100%}@media(forced-colors: active){:host::before{background:CanvasText}}
+    styles39 = i`:host{box-sizing:border-box;color:var(--md-divider-color, var(--md-sys-color-outline-variant, #cac4d0));display:flex;height:var(--md-divider-thickness, 1px);width:100%}:host([inset]),:host([inset-start]){padding-inline-start:16px}:host([inset]),:host([inset-end]){padding-inline-end:16px}:host::before{background:currentColor;content:"";height:100%;width:100%}@media(forced-colors: active){:host::before{background:CanvasText}}
 `;
-    divider_styles_cssresult_default = styles38.styleSheet;
+    divider_styles_cssresult_default = styles39.styleSheet;
   }
 });
 
@@ -8402,7 +8433,7 @@ var init_divider2 = __esm({
     init_divider_styles_cssresult();
     MdDivider = class MdDivider2 extends Divider {
     };
-    MdDivider.styles = [styles38];
+    MdDivider.styles = [styles39];
     MdDivider = __decorate([
       t("md-divider")
     ], MdDivider);
@@ -8966,13 +8997,13 @@ var init_dialog = __esm({
 
 // --- @material/web/dialog/internal/dialog-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/dialog/internal
-var styles39, dialog_styles_cssresult_default;
+var styles40, dialog_styles_cssresult_default;
 var init_dialog_styles_cssresult = __esm({
   "node_modules/@material/web/dialog/internal/dialog-styles.cssresult.js"() {
     init_lit();
-    styles39 = i`:host{border-start-start-radius:var(--md-dialog-container-shape-start-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-start-end-radius:var(--md-dialog-container-shape-start-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-end-radius:var(--md-dialog-container-shape-end-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-start-radius:var(--md-dialog-container-shape-end-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));display:contents;margin:auto;max-height:min(560px,100% - 48px);max-width:min(560px,100% - 48px);min-height:140px;min-width:280px;position:fixed;height:fit-content;width:fit-content}dialog{background:rgba(0,0,0,0);border:none;border-radius:inherit;flex-direction:column;height:inherit;margin:inherit;max-height:inherit;max-width:inherit;min-height:inherit;min-width:inherit;outline:none;overflow:visible;padding:0;width:inherit}dialog[open]{display:flex}::backdrop{background:none}.scrim{background:var(--md-sys-color-scrim, #000);display:none;inset:0;opacity:32%;pointer-events:none;position:fixed;z-index:1}:host([open]) .scrim{display:flex}h2{all:unset;align-self:stretch}.headline{align-items:center;color:var(--md-dialog-headline-color, var(--md-sys-color-on-surface, #1d1b20));display:flex;flex-direction:column;font-family:var(--md-dialog-headline-font, var(--md-sys-typescale-headline-small-font, var(--md-ref-typeface-brand, Roboto)));font-size:var(--md-dialog-headline-size, var(--md-sys-typescale-headline-small-size, 1.5rem));line-height:var(--md-dialog-headline-line-height, var(--md-sys-typescale-headline-small-line-height, 2rem));font-weight:var(--md-dialog-headline-weight, var(--md-sys-typescale-headline-small-weight, var(--md-ref-typeface-weight-regular, 400)));position:relative}slot[name=headline]::slotted(*){align-items:center;align-self:stretch;box-sizing:border-box;display:flex;gap:8px;padding:24px 24px 0}.icon{display:flex}slot[name=icon]::slotted(*){color:var(--md-dialog-icon-color, var(--md-sys-color-secondary, #625b71));fill:currentColor;font-size:var(--md-dialog-icon-size, 24px);margin-top:24px;height:var(--md-dialog-icon-size, 24px);width:var(--md-dialog-icon-size, 24px)}.has-icon slot[name=headline]::slotted(*){justify-content:center;padding-top:16px}.scrollable slot[name=headline]::slotted(*){padding-bottom:16px}.scrollable.has-headline slot[name=content]::slotted(*){padding-top:8px}.container{border-radius:inherit;display:flex;flex-direction:column;flex-grow:1;overflow:hidden;position:relative;transform-origin:top}.container::before{background:var(--md-dialog-container-color, var(--md-sys-color-surface-container-high, #ece6f0));border-radius:inherit;content:"";inset:0;position:absolute}.scroller{display:flex;flex:1;flex-direction:column;overflow:hidden;z-index:1}.scrollable .scroller{overflow-y:scroll}.content{color:var(--md-dialog-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-dialog-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-dialog-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-dialog-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));flex:1;font-weight:var(--md-dialog-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)));height:min-content;position:relative}slot[name=content]::slotted(*){box-sizing:border-box;padding:24px}.anchor{position:absolute}.top.anchor{top:0}.bottom.anchor{bottom:0}.actions{position:relative}slot[name=actions]::slotted(*){box-sizing:border-box;display:flex;gap:8px;justify-content:flex-end;padding:16px 24px 24px}.has-actions slot[name=content]::slotted(*){padding-bottom:8px}md-divider{display:none;position:absolute}.has-headline.show-top-divider .headline md-divider,.has-actions.show-bottom-divider .actions md-divider{display:flex}.headline md-divider{bottom:0}.actions md-divider{top:0}@media(forced-colors: active){dialog{outline:2px solid WindowText}}
+    styles40 = i`:host{border-start-start-radius:var(--md-dialog-container-shape-start-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-start-end-radius:var(--md-dialog-container-shape-start-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-end-radius:var(--md-dialog-container-shape-end-end, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));border-end-start-radius:var(--md-dialog-container-shape-end-start, var(--md-dialog-container-shape, var(--md-sys-shape-corner-extra-large, 28px)));display:contents;margin:auto;max-height:min(560px,100% - 48px);max-width:min(560px,100% - 48px);min-height:140px;min-width:280px;position:fixed;height:fit-content;width:fit-content}dialog{background:rgba(0,0,0,0);border:none;border-radius:inherit;flex-direction:column;height:inherit;margin:inherit;max-height:inherit;max-width:inherit;min-height:inherit;min-width:inherit;outline:none;overflow:visible;padding:0;width:inherit}dialog[open]{display:flex}::backdrop{background:none}.scrim{background:var(--md-sys-color-scrim, #000);display:none;inset:0;opacity:32%;pointer-events:none;position:fixed;z-index:1}:host([open]) .scrim{display:flex}h2{all:unset;align-self:stretch}.headline{align-items:center;color:var(--md-dialog-headline-color, var(--md-sys-color-on-surface, #1d1b20));display:flex;flex-direction:column;font-family:var(--md-dialog-headline-font, var(--md-sys-typescale-headline-small-font, var(--md-ref-typeface-brand, Roboto)));font-size:var(--md-dialog-headline-size, var(--md-sys-typescale-headline-small-size, 1.5rem));line-height:var(--md-dialog-headline-line-height, var(--md-sys-typescale-headline-small-line-height, 2rem));font-weight:var(--md-dialog-headline-weight, var(--md-sys-typescale-headline-small-weight, var(--md-ref-typeface-weight-regular, 400)));position:relative}slot[name=headline]::slotted(*){align-items:center;align-self:stretch;box-sizing:border-box;display:flex;gap:8px;padding:24px 24px 0}.icon{display:flex}slot[name=icon]::slotted(*){color:var(--md-dialog-icon-color, var(--md-sys-color-secondary, #625b71));fill:currentColor;font-size:var(--md-dialog-icon-size, 24px);margin-top:24px;height:var(--md-dialog-icon-size, 24px);width:var(--md-dialog-icon-size, 24px)}.has-icon slot[name=headline]::slotted(*){justify-content:center;padding-top:16px}.scrollable slot[name=headline]::slotted(*){padding-bottom:16px}.scrollable.has-headline slot[name=content]::slotted(*){padding-top:8px}.container{border-radius:inherit;display:flex;flex-direction:column;flex-grow:1;overflow:hidden;position:relative;transform-origin:top}.container::before{background:var(--md-dialog-container-color, var(--md-sys-color-surface-container-high, #ece6f0));border-radius:inherit;content:"";inset:0;position:absolute}.scroller{display:flex;flex:1;flex-direction:column;overflow:hidden;z-index:1}.scrollable .scroller{overflow-y:scroll}.content{color:var(--md-dialog-supporting-text-color, var(--md-sys-color-on-surface-variant, #49454f));font-family:var(--md-dialog-supporting-text-font, var(--md-sys-typescale-body-medium-font, var(--md-ref-typeface-plain, Roboto)));font-size:var(--md-dialog-supporting-text-size, var(--md-sys-typescale-body-medium-size, 0.875rem));line-height:var(--md-dialog-supporting-text-line-height, var(--md-sys-typescale-body-medium-line-height, 1.25rem));flex:1;font-weight:var(--md-dialog-supporting-text-weight, var(--md-sys-typescale-body-medium-weight, var(--md-ref-typeface-weight-regular, 400)));height:min-content;position:relative}slot[name=content]::slotted(*){box-sizing:border-box;padding:24px}.anchor{position:absolute}.top.anchor{top:0}.bottom.anchor{bottom:0}.actions{position:relative}slot[name=actions]::slotted(*){box-sizing:border-box;display:flex;gap:8px;justify-content:flex-end;padding:16px 24px 24px}.has-actions slot[name=content]::slotted(*){padding-bottom:8px}md-divider{display:none;position:absolute}.has-headline.show-top-divider .headline md-divider,.has-actions.show-bottom-divider .actions md-divider{display:flex}.headline md-divider{bottom:0}.actions md-divider{top:0}@media(forced-colors: active){dialog{outline:2px solid WindowText}}
 `;
-    dialog_styles_cssresult_default = styles39.styleSheet;
+    dialog_styles_cssresult_default = styles40.styleSheet;
   }
 });
 
@@ -8987,7 +9018,7 @@ var init_dialog2 = __esm({
     init_dialog_styles_cssresult();
     MdDialog = class MdDialog2 extends Dialog {
     };
-    MdDialog.styles = [styles39];
+    MdDialog.styles = [styles40];
     MdDialog = __decorate([
       t("md-dialog")
     ], MdDialog);
@@ -9016,25 +9047,25 @@ var init_card = __esm({
 
 // --- @material/web/labs/card/internal/filled-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/labs/card/internal
-var styles40, filled_styles_cssresult_default2;
+var styles41, filled_styles_cssresult_default2;
 var init_filled_styles_cssresult2 = __esm({
   "node_modules/@material/web/labs/card/internal/filled-styles.cssresult.js"() {
     init_lit();
-    styles40 = i`:host{--_container-color: var(--md-filled-card-container-color, var(--md-sys-color-surface-container-highest, #e6e0e9));--_container-elevation: var(--md-filled-card-container-elevation, 0);--_container-shadow-color: var(--md-filled-card-container-shadow-color, var(--md-sys-color-shadow, #000));--_container-shape: var(--md-filled-card-container-shape, var(--md-sys-shape-corner-medium, 12px))}
+    styles41 = i`:host{--_container-color: var(--md-filled-card-container-color, var(--md-sys-color-surface-container-highest, #e6e0e9));--_container-elevation: var(--md-filled-card-container-elevation, 0);--_container-shadow-color: var(--md-filled-card-container-shadow-color, var(--md-sys-color-shadow, #000));--_container-shape: var(--md-filled-card-container-shape, var(--md-sys-shape-corner-medium, 12px))}
 `;
-    filled_styles_cssresult_default2 = styles40.styleSheet;
+    filled_styles_cssresult_default2 = styles41.styleSheet;
   }
 });
 
 // --- @material/web/labs/card/internal/shared-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/labs/card/internal
-var styles41, shared_styles_cssresult_default10;
+var styles42, shared_styles_cssresult_default10;
 var init_shared_styles_cssresult10 = __esm({
   "node_modules/@material/web/labs/card/internal/shared-styles.cssresult.js"() {
     init_lit();
-    styles41 = i`:host{border-radius:var(--_container-shape);box-sizing:border-box;display:flex;flex-direction:column;position:relative;z-index:0}md-elevation,.background,.outline{border-radius:inherit;inset:0;pointer-events:none;position:absolute}.background{background:var(--_container-color);z-index:-1}.outline{border:1px solid rgba(0,0,0,0);z-index:1}md-elevation{z-index:-1;--md-elevation-level: var(--_container-elevation);--md-elevation-shadow-color: var(--_container-shadow-color)}slot{border-radius:inherit}
+    styles42 = i`:host{border-radius:var(--_container-shape);box-sizing:border-box;display:flex;flex-direction:column;position:relative;z-index:0}md-elevation,.background,.outline{border-radius:inherit;inset:0;pointer-events:none;position:absolute}.background{background:var(--_container-color);z-index:-1}.outline{border:1px solid rgba(0,0,0,0);z-index:1}md-elevation{z-index:-1;--md-elevation-level: var(--_container-elevation);--md-elevation-shadow-color: var(--_container-shadow-color)}slot{border-radius:inherit}
 `;
-    shared_styles_cssresult_default10 = styles41.styleSheet;
+    shared_styles_cssresult_default10 = styles42.styleSheet;
   }
 });
 
@@ -9050,7 +9081,7 @@ var init_filled_card = __esm({
     init_shared_styles_cssresult10();
     MdFilledCard = class MdFilledCard2 extends Card {
     };
-    MdFilledCard.styles = [styles41, styles40];
+    MdFilledCard.styles = [styles42, styles41];
     MdFilledCard = __decorate([
       t("md-filled-card")
     ], MdFilledCard);
@@ -9059,13 +9090,13 @@ var init_filled_card = __esm({
 
 // --- @material/web/labs/card/internal/outlined-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/labs/card/internal
-var styles42, outlined_styles_cssresult_default6;
+var styles43, outlined_styles_cssresult_default6;
 var init_outlined_styles_cssresult6 = __esm({
   "node_modules/@material/web/labs/card/internal/outlined-styles.cssresult.js"() {
     init_lit();
-    styles42 = i`:host{--_container-color: var(--md-outlined-card-container-color, var(--md-sys-color-surface, #fef7ff));--_container-elevation: var(--md-outlined-card-container-elevation, 0);--_container-shadow-color: var(--md-outlined-card-container-shadow-color, var(--md-sys-color-shadow, #000));--_container-shape: var(--md-outlined-card-container-shape, var(--md-sys-shape-corner-medium, 12px));--_outline-color: var(--md-outlined-card-outline-color, var(--md-sys-color-outline-variant, #cac4d0));--_outline-width: var(--md-outlined-card-outline-width, 1px)}.outline{border-color:var(--_outline-color);border-width:var(--_outline-width)}
+    styles43 = i`:host{--_container-color: var(--md-outlined-card-container-color, var(--md-sys-color-surface, #fef7ff));--_container-elevation: var(--md-outlined-card-container-elevation, 0);--_container-shadow-color: var(--md-outlined-card-container-shadow-color, var(--md-sys-color-shadow, #000));--_container-shape: var(--md-outlined-card-container-shape, var(--md-sys-shape-corner-medium, 12px));--_outline-color: var(--md-outlined-card-outline-color, var(--md-sys-color-outline-variant, #cac4d0));--_outline-width: var(--md-outlined-card-outline-width, 1px)}.outline{border-color:var(--_outline-color);border-width:var(--_outline-width)}
 `;
-    outlined_styles_cssresult_default6 = styles42.styleSheet;
+    outlined_styles_cssresult_default6 = styles43.styleSheet;
   }
 });
 
@@ -9081,7 +9112,7 @@ var init_outlined_card = __esm({
     init_shared_styles_cssresult10();
     MdOutlinedCard = class MdOutlinedCard2 extends Card {
     };
-    MdOutlinedCard.styles = [styles41, styles42];
+    MdOutlinedCard.styles = [styles42, styles43];
     MdOutlinedCard = __decorate([
       t("md-outlined-card")
     ], MdOutlinedCard);
@@ -9090,7 +9121,227 @@ var init_outlined_card = __esm({
 
 
 // ==============================================================================
-// SEKTION 11: Ikon
+// SEKTION 11: Kontakter (switch)
+// Elementer: <md-switch>
+// ==============================================================================
+
+// --- @material/web/switch/internal/switch.js
+// --- https://github.com/material-components/material-web/blob/v2.5.0/switch/internal/switch.ts
+var switchBaseClass, Switch;
+var init_switch = __esm({
+  "node_modules/@material/web/switch/internal/switch.js"() {
+    init_tslib_es6();
+    init_md_focus_ring();
+    init_ripple2();
+    init_lit();
+    init_decorators();
+    init_class_map2();
+    init_delegate();
+    init_dispatch_hooks();
+    init_form_label_activation();
+    init_redispatch_event();
+    init_constraint_validation();
+    init_element_internals();
+    init_form_associated();
+    init_checkbox_validator();
+    switchBaseClass = mixinDelegatesAria(mixinConstraintValidation(mixinFormAssociated(mixinElementInternals(i4))));
+    Switch = class extends switchBaseClass {
+      constructor() {
+        super();
+        this.selected = false;
+        this.icons = false;
+        this.showOnlySelectedIcon = false;
+        this.required = false;
+        this.value = "on";
+        if (o7) {
+          return;
+        }
+        this.addEventListener("click", (event) => {
+          if (!isActivationClick(event) || !this.input) {
+            return;
+          }
+          this.focus();
+          dispatchActivationClick(this.input);
+        });
+        setupDispatchHooks(this, "keydown");
+        this.addEventListener("keydown", (event) => {
+          afterDispatch(event, () => {
+            const ignoreEvent = event.defaultPrevented || event.key !== "Enter";
+            if (ignoreEvent || this.disabled || !this.input) {
+              return;
+            }
+            this.input.click();
+          });
+        });
+      }
+      render() {
+        return b2`
+      <div class="switch ${e8(this.getRenderClasses())}">
+        <input
+          id="switch"
+          class="touch"
+          type="checkbox"
+          role="switch"
+          aria-label=${this.ariaLabel || A}
+          ?checked=${this.selected}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          @input=${this.handleInput}
+          @change=${this.handleChange} />
+
+        <md-focus-ring part="focus-ring" for="switch"></md-focus-ring>
+        <span class="track"> ${this.renderHandle()} </span>
+      </div>
+    `;
+      }
+      getRenderClasses() {
+        return {
+          "selected": this.selected,
+          "unselected": !this.selected,
+          "disabled": this.disabled
+        };
+      }
+      renderHandle() {
+        const classes = {
+          "with-icon": this.showOnlySelectedIcon ? this.selected : this.icons
+        };
+        return b2`
+      ${this.renderTouchTarget()}
+      <span class="handle-container">
+        <md-ripple for="switch" ?disabled="${this.disabled}"></md-ripple>
+        <span class="handle ${e8(classes)}">
+          ${this.shouldShowIcons() ? this.renderIcons() : b2``}
+        </span>
+      </span>
+    `;
+      }
+      renderIcons() {
+        return b2`
+      <div class="icons">
+        ${this.renderOnIcon()}
+        ${this.showOnlySelectedIcon ? b2`` : this.renderOffIcon()}
+      </div>
+    `;
+      }
+      /**
+       * https://fonts.google.com/icons?selected=Material%20Symbols%20Outlined%3Acheck%3AFILL%400%3Bwght%40500%3BGRAD%400%3Bopsz%4024
+       */
+      renderOnIcon() {
+        return b2`
+      <slot class="icon icon--on" name="on-icon">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M9.55 18.2 3.65 12.3 5.275 10.675 9.55 14.95 18.725 5.775 20.35 7.4Z" />
+        </svg>
+      </slot>
+    `;
+      }
+      /**
+       * https://fonts.google.com/icons?selected=Material%20Symbols%20Outlined%3Aclose%3AFILL%400%3Bwght%40500%3BGRAD%400%3Bopsz%4024
+       */
+      renderOffIcon() {
+        return b2`
+      <slot class="icon icon--off" name="off-icon">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M6.4 19.2 4.8 17.6 10.4 12 4.8 6.4 6.4 4.8 12 10.4 17.6 4.8 19.2 6.4 13.6 12 19.2 17.6 17.6 19.2 12 13.6Z" />
+        </svg>
+      </slot>
+    `;
+      }
+      renderTouchTarget() {
+        return b2`<span class="touch"></span>`;
+      }
+      shouldShowIcons() {
+        return this.icons || this.showOnlySelectedIcon;
+      }
+      handleInput(event) {
+        const target = event.target;
+        this.selected = target.checked;
+      }
+      handleChange(event) {
+        redispatchEvent(this, event);
+      }
+      [getFormValue]() {
+        return this.selected ? this.value : null;
+      }
+      [getFormState]() {
+        return String(this.selected);
+      }
+      formResetCallback() {
+        this.selected = this.hasAttribute("selected");
+      }
+      formStateRestoreCallback(state) {
+        this.selected = state === "true";
+      }
+      [createValidator]() {
+        return new CheckboxValidator(() => ({
+          checked: this.selected,
+          required: this.required
+        }));
+      }
+      [getValidityAnchor]() {
+        return this.input;
+      }
+    };
+    Switch.shadowRootOptions = {
+      mode: "open",
+      delegatesFocus: true
+    };
+    __decorate([
+      n3({ type: Boolean })
+    ], Switch.prototype, "selected", void 0);
+    __decorate([
+      n3({ type: Boolean })
+    ], Switch.prototype, "icons", void 0);
+    __decorate([
+      n3({ type: Boolean, attribute: "show-only-selected-icon" })
+    ], Switch.prototype, "showOnlySelectedIcon", void 0);
+    __decorate([
+      n3({ type: Boolean })
+    ], Switch.prototype, "required", void 0);
+    __decorate([
+      n3()
+    ], Switch.prototype, "value", void 0);
+    __decorate([
+      e4("input")
+    ], Switch.prototype, "input", void 0);
+  }
+});
+
+// --- @material/web/switch/internal/switch-styles.cssresult.js
+// --- https://github.com/material-components/material-web/tree/v2.5.0/switch/internal
+var styles36, switch_styles_cssresult_default;
+var init_switch_styles_cssresult = __esm({
+  "node_modules/@material/web/switch/internal/switch-styles.cssresult.js"() {
+    init_lit();
+    styles36 = i`@layer styles, hcm;@layer styles{:host{display:inline-flex;outline:none;vertical-align:top;-webkit-tap-highlight-color:rgba(0,0,0,0);cursor:pointer}:host([disabled]){cursor:default}:host([touch-target=wrapper]){margin:max(0px,(48px - var(--md-switch-track-height, 32px))/2) 0px}md-focus-ring{--md-focus-ring-shape-start-start: var(--md-switch-track-shape-start-start, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));--md-focus-ring-shape-start-end: var(--md-switch-track-shape-start-end, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));--md-focus-ring-shape-end-end: var(--md-switch-track-shape-end-end, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));--md-focus-ring-shape-end-start: var(--md-switch-track-shape-end-start, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)))}.switch{align-items:center;display:inline-flex;flex-shrink:0;position:relative;width:var(--md-switch-track-width, 52px);height:var(--md-switch-track-height, 32px);border-start-start-radius:var(--md-switch-track-shape-start-start, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));border-start-end-radius:var(--md-switch-track-shape-start-end, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));border-end-end-radius:var(--md-switch-track-shape-end-end, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)));border-end-start-radius:var(--md-switch-track-shape-end-start, var(--md-switch-track-shape, var(--md-sys-shape-corner-full, 9999px)))}input{appearance:none;background:none;height:max(100%,var(--md-switch-touch-target-size, 48px));outline:none;margin:0;position:absolute;width:max(100%,var(--md-switch-touch-target-size, 48px));z-index:1;cursor:inherit;top:50%;left:50%;transform:translate(-50%, -50%)}:host([touch-target=none]) input{display:none}}@layer styles{.track{position:absolute;width:100%;height:100%;box-sizing:border-box;border-radius:inherit;display:flex;justify-content:center;align-items:center}.track::before{content:"";display:flex;position:absolute;height:100%;width:100%;border-radius:inherit;box-sizing:border-box;transition-property:opacity,background-color;transition-timing-function:linear;transition-duration:67ms}.disabled .track{background-color:rgba(0,0,0,0);border-color:rgba(0,0,0,0)}.disabled .track::before,.disabled .track::after{transition:none;opacity:var(--md-switch-disabled-track-opacity, 0.12)}.disabled .track::before{background-clip:content-box}.selected .track::before{background-color:var(--md-switch-selected-track-color, var(--md-sys-color-primary, #6750a4))}.selected:hover .track::before{background-color:var(--md-switch-selected-hover-track-color, var(--md-sys-color-primary, #6750a4))}.selected:focus-within .track::before{background-color:var(--md-switch-selected-focus-track-color, var(--md-sys-color-primary, #6750a4))}.selected:active .track::before{background-color:var(--md-switch-selected-pressed-track-color, var(--md-sys-color-primary, #6750a4))}.selected.disabled .track{background-clip:border-box}.selected.disabled .track::before{background-color:var(--md-switch-disabled-selected-track-color, var(--md-sys-color-on-surface, #1d1b20))}.unselected .track::before{background-color:var(--md-switch-track-color, var(--md-sys-color-surface-container-highest, #e6e0e9));border-color:var(--md-switch-track-outline-color, var(--md-sys-color-outline, #79747e));border-style:solid;border-width:var(--md-switch-track-outline-width, 2px)}.unselected:hover .track::before{background-color:var(--md-switch-hover-track-color, var(--md-sys-color-surface-container-highest, #e6e0e9));border-color:var(--md-switch-hover-track-outline-color, var(--md-sys-color-outline, #79747e))}.unselected:focus-visible .track::before{background-color:var(--md-switch-focus-track-color, var(--md-sys-color-surface-container-highest, #e6e0e9));border-color:var(--md-switch-focus-track-outline-color, var(--md-sys-color-outline, #79747e))}.unselected:active .track::before{background-color:var(--md-switch-pressed-track-color, var(--md-sys-color-surface-container-highest, #e6e0e9));border-color:var(--md-switch-pressed-track-outline-color, var(--md-sys-color-outline, #79747e))}.unselected.disabled .track::before{background-color:var(--md-switch-disabled-track-color, var(--md-sys-color-surface-container-highest, #e6e0e9));border-color:var(--md-switch-disabled-track-outline-color, var(--md-sys-color-on-surface, #1d1b20))}}@layer hcm{@media(forced-colors: active){.selected .track::before{background:ButtonText;border-color:ButtonText}.disabled .track::before{border-color:GrayText;opacity:1}.disabled.selected .track::before{background:GrayText}}}@layer styles{.handle-container{display:flex;place-content:center;place-items:center;position:relative;transition:margin 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)}.selected .handle-container{margin-inline-start:calc(var(--md-switch-track-width, 52px) - var(--md-switch-track-height, 32px))}.unselected .handle-container{margin-inline-end:calc(var(--md-switch-track-width, 52px) - var(--md-switch-track-height, 32px))}.disabled .handle-container{transition:none}.handle{border-start-start-radius:var(--md-switch-handle-shape-start-start, var(--md-switch-handle-shape, var(--md-sys-shape-corner-full, 9999px)));border-start-end-radius:var(--md-switch-handle-shape-start-end, var(--md-switch-handle-shape, var(--md-sys-shape-corner-full, 9999px)));border-end-end-radius:var(--md-switch-handle-shape-end-end, var(--md-switch-handle-shape, var(--md-sys-shape-corner-full, 9999px)));border-end-start-radius:var(--md-switch-handle-shape-end-start, var(--md-switch-handle-shape, var(--md-sys-shape-corner-full, 9999px)));height:var(--md-switch-handle-height, 16px);width:var(--md-switch-handle-width, 16px);transform-origin:center;transition-property:height,width;transition-duration:250ms,250ms;transition-timing-function:cubic-bezier(0.2, 0, 0, 1),cubic-bezier(0.2, 0, 0, 1);z-index:0}.handle::before{content:"";display:flex;inset:0;position:absolute;border-radius:inherit;box-sizing:border-box;transition:background-color 67ms linear}.disabled .handle,.disabled .handle::before{transition:none}.selected .handle{height:var(--md-switch-selected-handle-height, 24px);width:var(--md-switch-selected-handle-width, 24px)}.handle.with-icon{height:var(--md-switch-with-icon-handle-height, 24px);width:var(--md-switch-with-icon-handle-width, 24px)}.selected:not(.disabled):active .handle,.unselected:not(.disabled):active .handle{height:var(--md-switch-pressed-handle-height, 28px);width:var(--md-switch-pressed-handle-width, 28px);transition-timing-function:linear;transition-duration:100ms}.selected .handle::before{background-color:var(--md-switch-selected-handle-color, var(--md-sys-color-on-primary, #fff))}.selected:hover .handle::before{background-color:var(--md-switch-selected-hover-handle-color, var(--md-sys-color-primary-container, #eaddff))}.selected:focus-within .handle::before{background-color:var(--md-switch-selected-focus-handle-color, var(--md-sys-color-primary-container, #eaddff))}.selected:active .handle::before{background-color:var(--md-switch-selected-pressed-handle-color, var(--md-sys-color-primary-container, #eaddff))}.selected.disabled .handle::before{background-color:var(--md-switch-disabled-selected-handle-color, var(--md-sys-color-surface, #fef7ff));opacity:var(--md-switch-disabled-selected-handle-opacity, 1)}.unselected .handle::before{background-color:var(--md-switch-handle-color, var(--md-sys-color-outline, #79747e))}.unselected:hover .handle::before{background-color:var(--md-switch-hover-handle-color, var(--md-sys-color-on-surface-variant, #49454f))}.unselected:focus-within .handle::before{background-color:var(--md-switch-focus-handle-color, var(--md-sys-color-on-surface-variant, #49454f))}.unselected:active .handle::before{background-color:var(--md-switch-pressed-handle-color, var(--md-sys-color-on-surface-variant, #49454f))}.unselected.disabled .handle::before{background-color:var(--md-switch-disabled-handle-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-switch-disabled-handle-opacity, 0.38)}md-ripple{border-radius:var(--md-switch-state-layer-shape, var(--md-sys-shape-corner-full, 9999px));height:var(--md-switch-state-layer-size, 40px);inset:unset;width:var(--md-switch-state-layer-size, 40px)}.selected md-ripple{--md-ripple-hover-color: var(--md-switch-selected-hover-state-layer-color, var(--md-sys-color-primary, #6750a4));--md-ripple-pressed-color: var(--md-switch-selected-pressed-state-layer-color, var(--md-sys-color-primary, #6750a4));--md-ripple-hover-opacity: var(--md-switch-selected-hover-state-layer-opacity, 0.08);--md-ripple-pressed-opacity: var(--md-switch-selected-pressed-state-layer-opacity, 0.12)}.unselected md-ripple{--md-ripple-hover-color: var(--md-switch-hover-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-pressed-color: var(--md-switch-pressed-state-layer-color, var(--md-sys-color-on-surface, #1d1b20));--md-ripple-hover-opacity: var(--md-switch-hover-state-layer-opacity, 0.08);--md-ripple-pressed-opacity: var(--md-switch-pressed-state-layer-opacity, 0.12)}}@layer hcm{@media(forced-colors: active){.unselected .handle::before{background:ButtonText}.disabled .handle::before{opacity:1}.disabled.unselected .handle::before{background:GrayText}}}@layer styles{.icons{position:relative;height:100%;width:100%}.icon{position:absolute;inset:0;margin:auto;display:flex;align-items:center;justify-content:center;fill:currentColor;transition:fill 67ms linear,opacity 33ms linear,transform 167ms cubic-bezier(0.2, 0, 0, 1);opacity:0}.disabled .icon{transition:none}.selected .icon--on,.unselected .icon--off{opacity:1}.unselected .handle:not(.with-icon) .icon--on{transform:rotate(-45deg)}.icon--off{width:var(--md-switch-icon-size, 16px);height:var(--md-switch-icon-size, 16px);color:var(--md-switch-icon-color, var(--md-sys-color-surface-container-highest, #e6e0e9))}.unselected:hover .icon--off{color:var(--md-switch-hover-icon-color, var(--md-sys-color-surface-container-highest, #e6e0e9))}.unselected:focus-within .icon--off{color:var(--md-switch-focus-icon-color, var(--md-sys-color-surface-container-highest, #e6e0e9))}.unselected:active .icon--off{color:var(--md-switch-pressed-icon-color, var(--md-sys-color-surface-container-highest, #e6e0e9))}.unselected.disabled .icon--off{color:var(--md-switch-disabled-icon-color, var(--md-sys-color-surface-container-highest, #e6e0e9));opacity:var(--md-switch-disabled-icon-opacity, 0.38)}.icon--on{width:var(--md-switch-selected-icon-size, 16px);height:var(--md-switch-selected-icon-size, 16px);color:var(--md-switch-selected-icon-color, var(--md-sys-color-on-primary-container, #21005d))}.selected:hover .icon--on{color:var(--md-switch-selected-hover-icon-color, var(--md-sys-color-on-primary-container, #21005d))}.selected:focus-within .icon--on{color:var(--md-switch-selected-focus-icon-color, var(--md-sys-color-on-primary-container, #21005d))}.selected:active .icon--on{color:var(--md-switch-selected-pressed-icon-color, var(--md-sys-color-on-primary-container, #21005d))}.selected.disabled .icon--on{color:var(--md-switch-disabled-selected-icon-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-switch-disabled-selected-icon-opacity, 0.38)}}@layer hcm{@media(forced-colors: active){.icon--off{fill:Canvas}.icon--on{fill:ButtonText}.disabled.unselected .icon--off,.disabled.selected .icon--on{opacity:1}.disabled .icon--on{fill:GrayText}}}
+`;
+    switch_styles_cssresult_default = styles36.styleSheet;
+  }
+});
+
+// --- @material/web/switch/switch.js
+// --- https://github.com/material-components/material-web/blob/v2.5.0/switch/switch.ts
+var MdSwitch;
+var init_switch2 = __esm({
+  "node_modules/@material/web/switch/switch.js"() {
+    init_tslib_es6();
+    init_decorators();
+    init_switch();
+    init_switch_styles_cssresult();
+    MdSwitch = class MdSwitch2 extends Switch {
+    };
+    MdSwitch.styles = [styles36];
+    MdSwitch = __decorate([
+      t("md-switch")
+    ], MdSwitch);
+  }
+});
+
+
+// ==============================================================================
+// SEKTION 12: Ikon
 // Elementer: <md-icon>
 // ==============================================================================
 
@@ -9119,13 +9370,13 @@ var init_icon = __esm({
 
 // --- @material/web/icon/internal/icon-styles.cssresult.js
 // --- https://github.com/material-components/material-web/tree/v2.5.0/icon/internal
-var styles43, icon_styles_cssresult_default;
+var styles44, icon_styles_cssresult_default;
 var init_icon_styles_cssresult = __esm({
   "node_modules/@material/web/icon/internal/icon-styles.cssresult.js"() {
     init_lit();
-    styles43 = i`:host{font-size:var(--md-icon-size, 24px);width:var(--md-icon-size, 24px);height:var(--md-icon-size, 24px);color:inherit;font-variation-settings:inherit;font-weight:400;font-family:var(--md-icon-font, Material Symbols Outlined);display:inline-flex;font-style:normal;place-items:center;place-content:center;line-height:1;overflow:hidden;letter-spacing:normal;text-transform:none;user-select:none;white-space:nowrap;word-wrap:normal;flex-shrink:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale}::slotted(svg){fill:currentColor}::slotted(*){height:100%;width:100%}
+    styles44 = i`:host{font-size:var(--md-icon-size, 24px);width:var(--md-icon-size, 24px);height:var(--md-icon-size, 24px);color:inherit;font-variation-settings:inherit;font-weight:400;font-family:var(--md-icon-font, Material Symbols Outlined);display:inline-flex;font-style:normal;place-items:center;place-content:center;line-height:1;overflow:hidden;letter-spacing:normal;text-transform:none;user-select:none;white-space:nowrap;word-wrap:normal;flex-shrink:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale}::slotted(svg){fill:currentColor}::slotted(*){height:100%;width:100%}
 `;
-    icon_styles_cssresult_default = styles43.styleSheet;
+    icon_styles_cssresult_default = styles44.styleSheet;
   }
 });
 
@@ -9140,7 +9391,7 @@ var init_icon2 = __esm({
     init_icon_styles_cssresult();
     MdIcon = class MdIcon2 extends Icon {
     };
-    MdIcon.styles = [styles43];
+    MdIcon.styles = [styles44];
     MdIcon = __decorate([
       t("md-icon")
     ], MdIcon);
@@ -9149,7 +9400,7 @@ var init_icon2 = __esm({
 
 
 // ==============================================================================
-// SEKTION 12: Start
+// SEKTION 13: Start
 // Svarer til public/m3/komponenter.js. Kalder init-funktionerne ovenfor, som registrerer elementerne.
 // ==============================================================================
 
@@ -9170,6 +9421,7 @@ var require_komponenter = __commonJS({
     init_outlined_text_field2();
     init_outlined_select2();
     init_select_option2();
+    init_switch2();
     init_list2();
     init_list_item2();
     init_divider2();

@@ -28,3 +28,18 @@ body {
     font-size: 26px;
     font-weight: 600;
 }
+
+/* Tekststørrelse fra Indstillinger (sættes af session.js) */
+body {
+    zoom: var(--flexio-zoom, 1);
+}
+
+/* Mørkt tema (se også m3/m3.css) */
+:root[data-theme="dark"] {
+    --bg: #121316;
+    --text: #e3e2e6;
+    --muted: #a0a4ad;
+    --border: #2e3036;
+    --accent: #a9c7ff;
+    --hover: #1e1f23;
+}

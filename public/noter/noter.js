@@ -581,6 +581,9 @@ const saveState = document.querySelector("#saveState");
 let editingNoteId = null;
 let noteTagSelection = new Set();
 
+// Standardskrifttype til noter (Indstillinger)
+document.querySelector("#notePage").style.fontFamily = fontFamily(DEFAULT_FONT);
+
 const richEditor = createRichEditor({
     page: document.querySelector("#notePage"),
     toolbar: document.querySelector("#formatBar"),
@@ -916,7 +919,9 @@ function showEditor(id, prefill = {}) {
     pendingChanges = false;
 
     const date = note?.date ?? (prefill.date && /^\d{4}-\d{2}-\d{2}$/.test(prefill.date) ? prefill.date : toIsoDate(new Date()));
-    const subject = note?.subject ?? prefill.subject ?? (view.subject !== "Alle" ? view.subject : subjects[0]);
+    // Nye noter: valgt fag i visningen, ellers standardfaget fra Indstillinger (hvis det findes), ellers første fag
+    const preferred = subjects.includes(cachedSettings().noteSubject) ? cachedSettings().noteSubject : null;
+    const subject = note?.subject ?? prefill.subject ?? (view.subject !== "Alle" ? view.subject : (preferred ?? subjects[0]));
     const lessonStart = note?.lesson?.start ?? prefill.start ?? "";
 
     document.querySelector("#deleteButton").hidden = !note;

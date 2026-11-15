@@ -29,7 +29,7 @@ function escapeHtml(text) {
 // Kun adresser på vores egen side (ikke "//andet-site.dk")
 function nextUrl() {
     const next = new URLSearchParams(location.search).get("next") ?? "";
-    return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/forside/";
+    return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : startPage();
 }
 
 function showMessage(text, type = "error") {
@@ -155,6 +155,7 @@ async function login(event) {
     try {
         await apiPost("/api/login", { schoolCode: selectedSchool.schoolCode, cookie });
         cookieField.value = "";
+        await getSettings().catch(() => {}); // elevens egne indstillinger (startside, tema)
         location.href = nextUrl();
     } catch (error) {
         showMessage(error.message);
@@ -172,6 +173,7 @@ cookieField.addEventListener("input", () => {
 document.querySelector("#demoButton").addEventListener("click", async () => {
     try {
         await apiPost("/api/login", { demo: true });
+        await getSettings().catch(() => {});
         location.href = nextUrl();
     } catch (error) {
         showMessage(error.message);
@@ -190,6 +192,7 @@ async function start() {
     // Allerede logget ind? Så videre - men ikke hvis vi lige er sendt hertil, fordi sessionen er udløbet (ellers kører vi i ring)
     const response = reason ? { ok: false } : await fetch("/api/me", { credentials: "same-origin" });
     if (response.ok) {
+        await getSettings().catch(() => {});
         location.href = nextUrl();
         return;
     }

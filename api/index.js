@@ -9,6 +9,7 @@
 //   GET  /api/fravaer                  fravær pr. hold
 //   GET  /api/beskeder?mappe=          beskeder og mapper;  GET /api/beskeder/:id  en besked med svar (beskeder.js)
 //   GET  /api/dokumenter?mappe=        dokumenter og mapper (beskeder.js)
+//   GET/PUT/DELETE /api/indstillinger  Flexios egne indstillinger (indstillinger.js), POST /api/indstillinger/log-ud-overalt
 //   GET  /api/lektier                  lektier;  GET /api/studieplan  forløb pr. fag (lektier.js)
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
@@ -48,7 +49,8 @@ const sessionSql = {
     insert: db.prepare("INSERT INTO sessions (id, data, last_seen) VALUES (?, ?, ?)"),
     touch: db.prepare("UPDATE sessions SET last_seen = ? WHERE id = ?"),
     delete: db.prepare("DELETE FROM sessions WHERE id = ?"),
-    deleteOld: db.prepare("DELETE FROM sessions WHERE last_seen < ?")
+    deleteOld: db.prepare("DELETE FROM sessions WHERE last_seen < ?"),
+    all: db.prepare("SELECT id, data FROM sessions")
 };
 
 // Sessioner der er i brug, holdes også i hukommelsen - der ligger hold og elever fra Lectio i en time
@@ -316,5 +318,45 @@ for (const [route, load, demo] of [
 /* ---------- Noter ---------- */
 
 router.use(require("./noter")(requireLogin));
+
+/* ---------- Indstillinger (Flexios egne) ---------- */
+
+router.use(require("./indstillinger")(requireLogin));
+
+// Log ud på alle enheder: sletter alle elevens sessioner (telefon, computer ...) fra Flexio-serveren
+router.post("/indstillinger/log-ud-overalt", requireLogin, (req, res) => {
+    const me = req.user;
+    const same = session => session && !session.demo && !me.demo
+        && session.schoolCode === me.schoolCode
+        && session.student?.studentId && session.student.studentId === me.student?.studentId;
+
+    let count = 0;
+
+    for (const row of sessionSql.all.all()) {
+        try {
+            if (same(JSON.parse(row.data))) {
+                sessionSql.delete.run(row.id);
+                sessions.delete(row.id);
+                count++;
+            }
+        } catch {
+            // En ødelagt række ignoreres
+        }
+    }
+
+    for (const [key, session] of sessions) {
+        if (same(session)) sessions.delete(key);
+    }
+
+    // Demo-brugere har ingen andre enheder - kun den nuværende session slettes
+    const id = sessionId(req);
+    if (id) {
+        sessions.delete(hashId(id));
+        sessionSql.delete.run(hashId(id));
+    }
+
+    res.clearCookie("flexio_session");
+    res.json({ ok: true, count });
+});
 
 module.exports = router;
