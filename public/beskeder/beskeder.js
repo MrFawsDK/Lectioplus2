@@ -1,5 +1,4 @@
 // Beskeder: mapper og liste til venstre, valgt besked (hele tråden) til højre.
-// Svar og nye beskeder skrives i Lectio - her kan man læse dem.
 
 const folderBar = document.querySelector("#folders");
 const messageList = document.querySelector("#messageList");
@@ -85,10 +84,7 @@ function renderThread(thread) {
                     <md-text-button href="${escapeHtml(file.href)}" target="_blank" rel="noopener">
                         <md-icon slot="icon">attach_file</md-icon>${escapeHtml(file.name)}
                     </md-text-button>`).join("")}</div>` : ""}
-            </section>`).join("")}
-        <div class="reader-actions">
-            <md-filled-tonal-button href="${escapeHtml(thread.url)}" target="_blank" rel="noopener">Svar i Lectio</md-filled-tonal-button>
-        </div>`;
+            </section>`).join("")}`;
 }
 
 async function openMessage(id) {

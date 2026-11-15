@@ -25,6 +25,7 @@ const lectio = require("./lectio");
 const post = require("./beskeder");
 const plan = require("./lektier");
 const pages = require("./sider");
+const profile = require("./profil");
 
 const router = express.Router();
 router.use(express.json());
@@ -263,6 +264,22 @@ router.get("/studieplan", requireLogin, async (req, res) => {
         res.json(await plan.getStudyPlan(req.user));
     } catch (error) {
         lectioError(res, error);
+    }
+});
+
+// Profilbilledet hentes fra Lectio med elevens cookie (demo-brugeren har intet billede)
+router.get("/profil/billede", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.status(404).end();
+
+    try {
+        const image = await profile.getProfileImage(req.user);
+        if (!image) return res.status(404).end();
+
+        res.set("Cache-Control", "private, max-age=3600").type(image.type).send(image.buffer);
+    } catch (error) {
+        if (error instanceof lectio.NotLoggedInError) return lectioError(res, error);
+        console.error(error);
+        res.status(404).end();
     }
 });
 

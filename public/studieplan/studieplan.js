@@ -33,7 +33,6 @@ function renderPhases() {
                 <span>${escapeHtml([phase.period, phase.estimate].filter(Boolean).join(" · "))}</span>
             </div>
             ${phase.description ? `<p>${escapeHtml(phase.description)}</p>` : ""}
-            ${phase.url ? `<div class="phase-actions"><md-text-button href="${escapeHtml(phase.url)}" target="_blank" rel="noopener">Åbn i Lectio</md-text-button></div>` : ""}
         </article>`).join("");
 
     emptyState.hidden = phases.length > 0;

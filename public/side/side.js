@@ -43,8 +43,7 @@ function render(data) {
 
     root.innerHTML =
         tables.map(renderTable).join("") +
-        (data.text ? `<p class="plain">${escapeHtml(data.text)}</p>` : "") +
-        (data.url ? `<div class="open"><md-filled-tonal-button href="${escapeHtml(data.url)}" target="_blank" rel="noopener">Åbn i Lectio</md-filled-tonal-button></div>` : "");
+        (data.text ? `<p class="plain">${escapeHtml(data.text)}</p>` : "");
 
     showEmpty(tables.length || data.text ? "" : "Der er ikke noget at vise her.");
 }

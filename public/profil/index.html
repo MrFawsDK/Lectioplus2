@@ -15,44 +15,124 @@
 <header class="header" id="header"></header>
 
 <main class="profil-page">
-    <h1 id="profileName">Profil</h1>
-    <p class="lead" id="profileLead"></p>
 
-    <!--
-        M3: Lists - List item med ikon og overline
-        Guide: https://m3.material.io/components/lists/overview
-        Element: <md-list> og <md-list-item> fra @material/web/list
-    -->
-    <md-list class="profile-list">
-        <md-list-item>
-            <md-icon slot="start">groups</md-icon>
-            <div slot="overline">Klasse</div>
-            <div slot="headline" id="profileClass">-</div>
-        </md-list-item>
-        <md-list-item>
-            <md-icon slot="start">school</md-icon>
-            <div slot="overline">Skole</div>
-            <div slot="headline" id="profileSchool">-</div>
-        </md-list-item>
-        <md-list-item>
-            <md-icon slot="start">cloud_sync</md-icon>
-            <div slot="overline">Data</div>
-            <div slot="headline" id="profileSource">-</div>
-        </md-list-item>
-    </md-list>
+    <!-- Overblik: billede (fra Lectio), navn, klasse og skole -->
+    <section class="hero">
+        <div class="avatar" id="avatar" aria-hidden="true">
+            <span id="avatarInitials"></span>
+            <img id="avatarImage" alt="" hidden>
+        </div>
 
-    <!--
-        M3: Buttons - Filled tonal button med ikon
-        Guide: https://m3.material.io/components/buttons/overview
-        Element: <md-filled-tonal-button> fra @material/web/button/filled-tonal-button.js
-    -->
-    <md-filled-tonal-button id="logoutButton">
-        <md-icon slot="icon">logout</md-icon>
-        Log ud
-    </md-filled-tonal-button>
+        <div class="hero-text">
+            <h1 id="profileName">Profil</h1>
+            <p class="hero-sub" id="profileSub"></p>
 
-    <p class="note">Når du logger ud, slettes din Lectio-session fra Flexio-serveren.
-    Du er stadig logget ind på lectio.dk, indtil du logger ud der.</p>
+            <!--
+                M3: Chips - Assist chip
+                Guide: https://m3.material.io/components/chips/overview
+                Element: <md-chip-set> og <md-assist-chip> fra @material/web/chips
+            -->
+            <md-chip-set class="hero-chips">
+                <md-assist-chip id="chipSchool" label="" hidden></md-assist-chip>
+                <md-assist-chip id="chipSource" label=""></md-assist-chip>
+            </md-chip-set>
+        </div>
+    </section>
+
+    <!-- Tal fra dine egne sider -->
+    <section class="stats" aria-label="Overblik">
+        <a class="stat" href="/noter/">
+            <md-icon>edit_note</md-icon>
+            <strong id="statNotes">–</strong>
+            <span>Noter</span>
+        </a>
+        <a class="stat" href="/opgaver/">
+            <md-icon>assignment_late</md-icon>
+            <strong id="statTasks">–</strong>
+            <span>Opgaver der mangler</span>
+        </a>
+        <a class="stat" href="/fravaer/">
+            <md-icon>event_busy</md-icon>
+            <strong id="statAbsence">–</strong>
+            <span>Fravær i år</span>
+        </a>
+        <a class="stat" href="/beskeder/">
+            <md-icon>mail</md-icon>
+            <strong id="statMessages">–</strong>
+            <span>Beskeder</span>
+        </a>
+    </section>
+
+    <div class="columns">
+        <!--
+            M3: Lists - List item med ikon (type="link")
+            Guide: https://m3.material.io/components/lists/overview
+            Element: <md-list> og <md-list-item> fra @material/web/list
+        -->
+        <section class="card">
+            <h2>Genveje</h2>
+            <md-list class="plain-list">
+                <md-list-item type="link" href="/skema/">
+                    <md-icon slot="start">calendar_month</md-icon>
+                    <div slot="headline">Skema</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+                <md-list-item type="link" href="/lektier/">
+                    <md-icon slot="start">menu_book</md-icon>
+                    <div slot="headline">Lektier</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+                <md-list-item type="link" href="/karakter/">
+                    <md-icon slot="start">grade</md-icon>
+                    <div slot="headline">Karakterer</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+                <md-list-item type="link" href="/dokumenter/">
+                    <md-icon slot="start">folder</md-icon>
+                    <div slot="headline">Dokumenter</div>
+                    <md-icon slot="end">chevron_right</md-icon>
+                </md-list-item>
+            </md-list>
+        </section>
+
+        <section class="card">
+            <h2>Oplysninger</h2>
+            <md-list class="plain-list">
+                <md-list-item>
+                    <md-icon slot="start">groups</md-icon>
+                    <div slot="overline">Klasse</div>
+                    <div slot="headline" id="profileClass">-</div>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon slot="start">school</md-icon>
+                    <div slot="overline">Skole</div>
+                    <div slot="headline" id="profileSchool">-</div>
+                </md-list-item>
+                <md-list-item>
+                    <md-icon slot="start">cloud_sync</md-icon>
+                    <div slot="overline">Data</div>
+                    <div slot="headline" id="profileSource">-</div>
+                </md-list-item>
+            </md-list>
+        </section>
+    </div>
+
+    <section class="card account">
+        <div>
+            <h2>Konto</h2>
+            <p class="note">Når du logger ud, slettes din session fra Flexio-serveren. Du skal så bruge en ny cookie for at logge ind igen.</p>
+        </div>
+
+        <!--
+            M3: Buttons - Filled tonal button med ikon
+            Guide: https://m3.material.io/components/buttons/overview
+            Element: <md-filled-tonal-button> fra @material/web/button/filled-tonal-button.js
+        -->
+        <md-filled-tonal-button id="logoutButton">
+            <md-icon slot="icon">logout</md-icon>
+            Log ud
+        </md-filled-tonal-button>
+    </section>
 </main>
 
 <script type="module" src="/m3/material.js"></script>
