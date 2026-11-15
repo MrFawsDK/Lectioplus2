@@ -380,12 +380,17 @@ async function getAbsence(user) {
     const id = user.student.studentId;
     const $ = cheerio.load(await getPage(user, `subnav/fravaerelev.aspx?elevid=${id}`));
 
+    // Tabellen findes ud fra id'et. Er Lectios id ændret, bruges den tabel hvor rækkerne har fire procent/antal-celler efter holdnavnet
+    const tables = $("table").toArray();
+    const table = $("#s_m_Content_Content_SFTabStudentAbsenceDataTable")[0]
+        ?? tables.find(element => /opgjort/i.test($(element).text()) && /hele året/i.test($(element).text()));
+
     const teams = [];
-    $("#s_m_Content_Content_SFTabStudentAbsenceDataTable tr").each((_, row) => {
+    $(table).find("tr").each((_, row) => {
         if ($(row).attr("id") !== undefined) return;
 
         const cells = $(row).children("td").toArray().map(cell => clean($(cell).text()));
-        if (cells.length < 5) return;
+        if (cells.length < 5 || !cells[0] || !/\d/.test(cells[1])) return;
 
         teams.push({
             name: cells[0],
@@ -394,7 +399,14 @@ async function getAbsence(user) {
         });
     });
 
-    if (!teams.length) throw new Error("Kunne ikke finde fraværstabellen i Lectio");
+    if (!teams.length) {
+        // Hjælp til fejlfinding: hvad så vi på siden?
+        const seen = tables.slice(0, 6).map(element => `${$(element).attr("id") ?? "uden id"}: ${clean($(element).find("tr").first().text()).slice(0, 60)}`);
+        console.error("Fraværstabel ikke fundet. Titel:", clean($("title").text()), "Tabeller:", seen);
+        const error = new Error(`Kunne ikke læse fraværssiden fra Lectio (${clean($("title").text()) || "ingen titel"}; ${tables.length} tabeller)`);
+        error.expose = true;
+        throw error;
+    }
 
     // Moduler med fravær. Mislykkes denne side, vises resten alligevel
     let missing = [];
