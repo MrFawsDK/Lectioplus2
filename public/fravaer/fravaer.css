@@ -268,3 +268,41 @@
         grid-template-columns: 90px 1fr 56px;
     }
 }
+
+
+/* ---------- Kurve pr. uge ---------- */
+
+#weekCard[hidden] {
+    display: none;
+}
+
+.line {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.line .grid-line {
+    stroke: var(--md-sys-color-outline-variant);
+    stroke-width: 1;
+}
+
+.line .ten {
+    stroke: var(--md-sys-color-outline);
+    stroke-dasharray: 4 4;
+}
+
+.line .path {
+    fill: none;
+    stroke: var(--md-sys-color-primary);
+    stroke-width: 2.5;
+}
+
+.line .point {
+    fill: var(--md-sys-color-primary);
+}
+
+.line text {
+    fill: var(--md-sys-color-on-surface-variant);
+    font-size: 11px;
+}

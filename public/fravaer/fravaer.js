@@ -104,12 +104,43 @@ function renderTable({ columns, rows }) {
     ).join("");
 }
 
+// Kurve over fravær pr. uge: bruger den sidste kolonne med procent, hvis Lectio giver ugetal
+function renderWeeks({ weeks = [], weekColumns = [] }) {
+    const index = weekColumns.findLastIndex(column => /%/.test(column));
+    const points = weeks
+        .map(item => ({ week: item.week, pct: number(index >= 0 ? item.cells[index] : item.cells.findLast(cell => /%/.test(cell))) }))
+        .filter(point => point.pct !== null)
+        .sort((a, b) => a.week - b.week);
+
+    if (points.length < 2) return;
+
+    const W = 600, H = 220, left = 36, right = 12, top = 12, bottom = 28;
+    const max = Math.max(HIGH * 1.5, ...points.map(point => point.pct));
+    const x = i => left + (W - left - right) * i / (points.length - 1);
+    const y = pct => top + (H - top - bottom) * (1 - pct / max);
+
+    const grid = [0, max / 2, max].map(value =>
+        `<line class="grid-line" x1="${left}" x2="${W - right}" y1="${y(value)}" y2="${y(value)}"></line>
+         <text x="${left - 6}" y="${y(value) + 4}" text-anchor="end">${Math.round(value)} %</text>`).join("");
+
+    const labels = points.map((point, i) => i % Math.ceil(points.length / 12) === 0
+        ? `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${point.week}</text>` : "").join("");
+
+    document.querySelector("#weekChart").innerHTML = grid +
+        `<line class="grid-line ten" x1="${left}" x2="${W - right}" y1="${y(HIGH)}" y2="${y(HIGH)}"></line>` +
+        `<polyline class="path" points="${points.map((point, i) => `${x(i)},${y(point.pct)}`).join(" ")}"></polyline>` +
+        points.map((point, i) => `<circle class="point" cx="${x(i)}" cy="${y(point.pct)}" r="3"><title>Uge ${point.week}: ${format(point.pct)}</title></circle>`).join("") +
+        labels;
+
+    document.querySelector("#weekCard").hidden = false;
+}
+
 function render(data) {
     const all = readRows(data);
     const teams = all.filter(row => !row.total);
     const overall = all.find(row => row.total);
 
-    if (!all.length) throw new Error("Lectio gav ingen fraværstal, vi kunne læse.");
+    if (!all.length) throw new Error("Kunne ikke læse holdtabellen fra Lectio. Åbn /api/fravaer?debug=1 og send resultatet.");
 
     // Uden "I alt"-række bruges gennemsnittet af holdene
     const total = overall?.pct ?? teams.reduce((sum, team) => sum + team.pct, 0) / teams.length;
@@ -117,6 +148,7 @@ function render(data) {
     renderDonut(total);
     renderDiagnosis(total, teams.length ? teams : all);
     renderBars(teams.length ? teams : all);
+    renderWeeks(data);
     renderTable(data);
 
     document.querySelector("#emptyState").hidden = true;

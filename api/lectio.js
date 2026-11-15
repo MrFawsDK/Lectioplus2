@@ -336,23 +336,41 @@ async function getGrades(user) {
 
 // Fraværssiden har en tabel med én række pr. hold og kolonner som "Fravær (moduler)" og "Fravær (%)".
 // Vi kender ikke kolonnerne på forhånd, så vi sender overskrifter og celler videre som tekst.
-function readAbsence(html) {
-    const $ = cheerio.load(html);
-
-    const tables = $("table").toArray().filter(element => $(element).text().includes("%"));
-    const table = $(tables.find(element => /hold/i.test($(element).text())) ?? tables[0]);
-
-    const rows = table.find("tr").toArray().map(row =>
+function tableRows($, table) {
+    return $(table).find("tr").toArray().map(row =>
         $(row).children("th, td").toArray().map(cell => clean($(cell).text()))
     ).filter(cells => cells.some(Boolean));
+}
 
-    const header = rows.find(cells => cells.some(cell => /^(hold|fag)$/i.test(cell))) ?? rows[0] ?? [];
-    const body = rows.slice(rows.indexOf(header) + 1).filter(cells => cells.length > 1);
+// Fraværssiden har flere tabeller: én med hold (Hold | fravær | %) og en med fravær pr. uge (række = ugenummer).
+// Holdtabellen er den, hvor en overskrift er præcis "Hold". Ugetabellen er den, hvor rækkerne starter med et ugenummer.
+function readAbsence(html) {
+    const $ = cheerio.load(html);
+    const tables = $("table").toArray().map(table => tableRows($, table)).filter(rows => rows.length > 1);
 
-    return {
-        columns: header.slice(1),
-        rows: body.map(cells => ({ name: cells[0], cells: cells.slice(1, header.length) }))
-    };
+    const teamRows = tables.find(rows => rows.slice(0, 3).some(cells => cells.some(cell => /^hold$/i.test(cell))));
+    const weekRows = tables.find(rows => rows.slice(1).filter(cells => /^\d{1,2}$/.test(cells[0])).length >= 3);
+
+    const result = { columns: [], rows: [], weeks: [] };
+
+    if (teamRows) {
+        const header = teamRows.find(cells => cells.some(cell => /^hold$/i.test(cell)));
+        const body = teamRows.slice(teamRows.indexOf(header) + 1).filter(cells => cells.length > 1 && !/^\d{1,2}$/.test(cells[0]));
+        const first = header.findIndex(cell => /^hold$/i.test(cell));
+
+        result.columns = header.filter((_, index) => index !== first);
+        result.rows = body.map(cells => ({ name: cells[first] ?? cells[0], cells: cells.filter((_, index) => index !== first).slice(0, result.columns.length) }));
+    }
+
+    if (weekRows) {
+        const header = weekRows.find(cells => !/^\d{1,2}$/.test(cells[0])) ?? [];
+        result.weekColumns = header.slice(1);
+        result.weeks = weekRows.filter(cells => /^\d{1,2}$/.test(cells[0])).map(cells => ({ week: Number(cells[0]), cells: cells.slice(1) }));
+    }
+
+    // Til fejlfinding: ?debug=1 på /api/fravaer viser, hvordan Lectios tabeller ser ud
+    result.debug = tables.map(rows => rows.slice(0, 4));
+    return result;
 }
 
 async function getAbsence(user) {
@@ -376,7 +394,8 @@ async function getAbsence(user) {
     for (const page of candidates) {
         try {
             const absence = readAbsence(await getPage(user, page));
-            if (absence.rows.length) return absence;
+            absence.page = page;
+            if (absence.rows.length || absence.weeks.length) return absence;
         } catch (error) {
             if (!(error instanceof NotLoggedInError)) throw error;
         }
