@@ -148,6 +148,7 @@ router.post("/login", async (req, res) => {
         // Virker cookien, kan vi se elevens forside
         user.student = await lectio.getStudent(user);
         startSession(res, user);
+        finder.prefetch(user); // listen over elever og lærere hentes i baggrunden, så den er klar til Find
         res.json({ student: user.student });
     } catch (error) {
         if (error instanceof lectio.NotLoggedInError) {
@@ -168,6 +169,7 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", requireLogin, (req, res) => {
+    if (!req.user.demo) finder.prefetch(req.user); // varmer listen til Find op i baggrunden (gør intet, hvis den allerede er hentet)
     res.json({ student: req.user.student, demo: Boolean(req.user.demo) });
 });
 

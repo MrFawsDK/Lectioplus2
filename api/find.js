@@ -12,11 +12,46 @@
 
 const cheerio = require("cheerio");
 const { getPage, clean, NotLoggedInError } = require("./lectio");
+const db = require("./db");
 
 const ID = /^(?:S|T|C|HE|H|G|R|RE)\d+$/;
-const CACHE_MS = 30 * 60 * 1000;
+const CACHE_MS = 30 * 60 * 1000;   // efter så lang tid hentes listen på ny i baggrunden
+const PARALLEL = 8;               // sider hentet samtidig (flere ad gangen gør det hurtigere)
 const LETTERS = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "Æ", "Ø", "Å", "?"];
-const cache = new Map(); // skolekode -> { time, groups }
+const cache = new Map();    // skolekode -> { time, groups }  (hukommelse)
+const loading = new Map();  // skolekode -> igangværende hentning, så den kun sker én gang ad gangen
+
+// Listen gemmes også i databasen, så den overlever en genstart og er klar med det samme næste gang
+db.exec(`
+    CREATE TABLE IF NOT EXISTS find_cache (
+        school     TEXT PRIMARY KEY,
+        data       TEXT NOT NULL,
+        updated_at INTEGER NOT NULL
+    );
+`);
+
+function readCache(school) {
+    if (cache.has(school)) return cache.get(school);
+
+    const row = db.prepare("SELECT data, updated_at FROM find_cache WHERE school = ?").get(school);
+    if (!row) return null;
+
+    try {
+        const entry = { time: row.updated_at, groups: JSON.parse(row.data) };
+        cache.set(school, entry);
+        return entry;
+    } catch {
+        return null;
+    }
+}
+
+function writeCache(school, groups) {
+    const entry = { time: Date.now(), groups };
+    cache.set(school, entry);
+    db.prepare(`INSERT INTO find_cache (school, data, updated_at) VALUES (?, ?, ?)
+                ON CONFLICT (school) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`)
+        .run(school, JSON.stringify(groups), entry.time);
+}
 
 // id fra linkets adresse: SkemaNy.aspx?elevid=123 -> S123
 function idFromHref(href) {
@@ -55,7 +90,7 @@ function readList(html) {
 }
 
 // Henter mange sider ad gangen uden at overbelaste Lectio (6 ad gangen)
-async function inBatches(tasks, size = 6) {
+async function inBatches(tasks, size = PARALLEL) {
     const results = [];
     for (let i = 0; i < tasks.length; i += size) {
         results.push(...await Promise.all(tasks.slice(i, i + size).map(task => task())));
@@ -86,10 +121,7 @@ async function readPage(user, page, label, notes, { required = false } = {}) {
 }
 
 // Skolens lister er de samme for alle på skolen, så de hentes højst hvert 30. minut
-async function getPeople(user, { fresh = false } = {}) {
-    const cached = cache.get(user.schoolCode);
-    if (!fresh && cached && Date.now() - cached.time < CACHE_MS) return { groups: cached.groups };
-
+async function build(user) {
     const notes = [];
 
     // Lærerne først: afvises den, er eleven ikke logget ind
@@ -103,7 +135,7 @@ async function getPeople(user, { fresh = false } = {}) {
 
     const students = (await inBatches(LETTERS.map(letter => () =>
         readPage(user, `FindSkema.aspx?type=elev&forbogstav=${encodeURIComponent(letter)}`, `elever ${letter}`, notes)
-    ), 4)).flat();
+    ))).flat();
 
     // Samme person kan stå under flere bogstaver (fx Aa/Å) - hver kun én gang
     const unique = items => [...new Map(items.map(item => [item.id, item])).values()];
@@ -126,8 +158,36 @@ async function getPeople(user, { fresh = false } = {}) {
     // Ingen elever, men lærere: send alligevel det vi har, og skriv hvad der skete i serverens log
     if (!groups.some(group => group.title === "Elever")) console.error("Ingen elever fundet:", notes);
 
-    cache.set(user.schoolCode, { time: Date.now(), groups, notes });
+    writeCache(user.schoolCode, groups);
     return { groups, notes };
 }
 
-module.exports = { getPeople, ID };
+// Hentes kun én gang ad gangen pr. skole (flere der beder om listen samtidig venter på den samme hentning)
+function refresh(user) {
+    if (!loading.has(user.schoolCode)) {
+        loading.set(user.schoolCode, build(user).finally(() => loading.delete(user.schoolCode)));
+    }
+    return loading.get(user.schoolCode);
+}
+
+// Listen er den samme for alle på skolen. Er den gemt, får man den med det samme (er den over 30 minutter gammel, hentes en ny
+// i baggrunden til næste gang). Første gang skal den hentes fra Lectio, og det tager nogle sekunder.
+async function getPeople(user, { fresh = false } = {}) {
+    if (fresh) return refresh(user);
+
+    const cached = readCache(user.schoolCode);
+    if (cached) {
+        if (Date.now() - cached.time > CACHE_MS) refresh(user).catch(error => console.error("Opdatering af Find skema:", error.message));
+        return { groups: cached.groups };
+    }
+
+    return refresh(user);
+}
+
+// Henter listen i baggrunden, fx lige efter login, så den er klar, når man åbner Find
+function prefetch(user) {
+    if (readCache(user.schoolCode)) return;
+    refresh(user).catch(error => console.error("Forhåndshentning af Find skema:", error.message));
+}
+
+module.exports = { getPeople, prefetch, ID };
