@@ -306,3 +306,126 @@
     fill: var(--md-sys-color-on-surface-variant);
     font-size: 11px;
 }
+
+
+/* ---------- Opgjort / for året ---------- */
+
+.totals {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.totals .card + .card {
+    margin-top: 0;
+}
+
+.total .big {
+    margin: 0;
+    font-size: 44px;
+    font-weight: 400;
+}
+
+.total .sub {
+    margin: 4px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+md-divider {
+    margin: 8px 0 24px;
+}
+
+
+/* ---------- Cirkeldiagram + hold ---------- */
+
+.split {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 24px;
+}
+
+.split .donut-wrap {
+    flex: none;
+    margin: 0;
+}
+
+.split .donut circle {
+    stroke-width: 14;
+}
+
+.split .table-wrap {
+    flex: 1;
+}
+
+.absence-table .right {
+    text-align: right;
+}
+
+.absence-table th[scope="row"] {
+    text-align: left;
+    font-weight: 500;
+}
+
+.mini-bar {
+    width: 64px;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--md-sys-color-surface-container-high);
+}
+
+.mini-bar div {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--md-sys-color-primary);
+}
+
+
+/* ---------- Moduler med fravær ---------- */
+
+.module-group {
+    margin-bottom: 12px;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.module-group[hidden] {
+    display: none;
+}
+
+.module-group summary {
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.module-group .table-wrap {
+    padding: 0 12px 12px;
+}
+
+.modules td,
+.modules th {
+    text-align: left;
+}
+
+@media (max-width: 800px) {
+    .totals {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .totals .diagnose {
+        grid-column: 1 / -1;
+    }
+
+    .split {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .split .donut-wrap {
+        align-self: center;
+    }
+}

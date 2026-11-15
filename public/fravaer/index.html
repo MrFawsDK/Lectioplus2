@@ -17,7 +17,7 @@
 <main class="fravaer-page">
     <section class="page-head">
         <h1>Fravær</h1>
-        <p class="lead">Dit fravær fra Lectio, fordelt på hold, med en vurdering af hvordan det ser ud.</p>
+        <p class="lead">Dit fravær fra Lectio: opgjort, for hele året og pr. hold.</p>
     </section>
 
     <div class="empty" id="emptyState">
@@ -26,52 +26,66 @@
     </div>
 
     <div id="content" hidden>
-        <div class="grid">
-            <!-- Cirkeldiagram: fremmøde mod fravær -->
-            <section class="card donut-card">
-                <h2>Samlet fravær</h2>
-                <div class="donut-wrap">
-                    <svg viewBox="0 0 120 120" class="donut" role="img" id="donut" aria-label="Cirkeldiagram over fravær"></svg>
-                    <div class="donut-center"><strong id="totalPct">-</strong><span>fravær</span></div>
-                </div>
-                <ul class="legend">
-                    <li><i class="dot present"></i> Til stede <b id="presentPct">-</b></li>
-                    <li><i class="dot absent"></i> Fraværende <b id="absentPct">-</b></li>
-                </ul>
+        <!-- Opgjort og hele året -->
+        <div class="totals">
+            <section class="card total">
+                <h2>Opgjort</h2>
+                <p class="big" id="periodPct">-</p>
+                <p class="sub" id="periodModules"></p>
             </section>
-
-            <!-- Diagnose -->
-            <section class="card diagnose" id="diagnose">
+            <section class="card total">
+                <h2>For året</h2>
+                <p class="big" id="yearPct">-</p>
+                <p class="sub" id="yearModules"></p>
+            </section>
+            <section class="card diagnose">
                 <h2>Diagnose</h2>
                 <div class="verdict" id="verdict"></div>
                 <ul class="insights" id="insights"></ul>
-                <p class="note">Vurderingen er vejledende og bygger på grænserne 5 %, 10 % og 20 %. Din skoles egne regler kan være anderledes.</p>
             </section>
         </div>
 
-        <!-- Søjlediagram pr. hold -->
-        <section class="card">
-            <h2>Fravær pr. hold</h2>
-            <div class="bars" id="bars"></div>
-            <p class="note">Den stiplede streg viser 10 %.</p>
-        </section>
+        <md-divider></md-divider>
 
-        <!-- Kurve over fravær pr. uge (vises kun hvis Lectio giver ugetal) -->
-        <section class="card" id="weekCard" hidden>
-            <h2>Fravær pr. uge</h2>
-            <svg class="line" id="weekChart" viewBox="0 0 600 220" role="img" aria-label="Fravær pr. uge"></svg>
-        </section>
+        <!-- Cirkeldiagram og tabel pr. hold (hele året) -->
+        <div class="split">
+            <div class="donut-wrap">
+                <svg viewBox="0 0 120 120" class="donut" role="img" id="donut" aria-label="Fravær pr. hold, hele året"></svg>
+                <div class="donut-center"><strong id="donutTotal">0</strong><span>moduler</span></div>
+            </div>
 
-        <!-- Tabel med Lectios egne tal -->
-        <section class="card">
-            <h2>Tal fra Lectio</h2>
             <div class="table-wrap">
                 <table class="absence-table">
-                    <thead><tr id="absenceHead"></tr></thead>
-                    <tbody id="absenceBody"></tbody>
+                    <thead>
+                        <tr><th scope="col">Hold</th><th scope="col">%</th><th scope="col"></th><th scope="col">Moduler</th></tr>
+                    </thead>
+                    <tbody id="teamBody"></tbody>
                 </table>
             </div>
-        </section>
+        </div>
+
+        <md-divider></md-divider>
+
+        <!-- Moduler med fravær -->
+        <details class="module-group" id="missingGroup" open>
+            <summary id="missingTitle"></summary>
+            <div class="table-wrap">
+                <table class="absence-table modules">
+                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Type</th></tr></thead>
+                    <tbody id="missingBody"></tbody>
+                </table>
+            </div>
+        </details>
+
+        <details class="module-group" id="registeredGroup">
+            <summary id="registeredTitle"></summary>
+            <div class="table-wrap">
+                <table class="absence-table modules">
+                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Årsag</th><th>Note</th></tr></thead>
+                    <tbody id="registeredBody"></tbody>
+                </table>
+            </div>
+        </details>
     </div>
 </main>
 

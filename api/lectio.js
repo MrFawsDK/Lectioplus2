@@ -336,72 +336,79 @@ async function getGrades(user) {
 
 // Fraværssiden har en tabel med én række pr. hold og kolonner som "Fravær (moduler)" og "Fravær (%)".
 // Vi kender ikke kolonnerne på forhånd, så vi sender overskrifter og celler videre som tekst.
-function tableRows($, table) {
-    return $(table).find("tr").toArray().map(row =>
-        $(row).children("th, td").toArray().map(cell => clean($(cell).text()))
-    ).filter(cells => cells.some(Boolean));
-}
+// Opbygningen af Lectios fraværssider er set i BetterLectios kode (github.com/BetterLectio/betterLectio, apps/api/lectio/_fravær.py).
+//
+// subnav/fravaerelev.aspx: tabellen #s_m_Content_Content_SFTabStudentAbsenceDataTable har én række pr. hold:
+//   Hold | Opgjort fravær % | Opgjort fravær moduler | Hele året % | Hele året moduler   (og en række "Samlet")
+//
+// subnav/fravaerelev_fravaersaarsager.aspx har to tabeller med moduler med fravær:
+//   #s_m_Content_Content_FatabMissingAarsagerGV   fravær hvor årsag mangler
+//   #s_m_Content_Content_FatabAbsenceFravaerGV    fravær med årsag
+//   Uge | Aktivitet (skemabrik) | Fravær | Type | Registreret + lærer | Bemærkning | Årsag + note
+function readAbsenceModules($, selector, missing) {
+    const modules = [];
 
-// Fraværssiden har flere tabeller: én med hold (Hold | fravær | %) og en med fravær pr. uge (række = ugenummer).
-// Holdtabellen er den, hvor en overskrift er præcis "Hold". Ugetabellen er den, hvor rækkerne starter med et ugenummer.
-function readAbsence(html) {
-    const $ = cheerio.load(html);
-    const tables = $("table").toArray().map(table => tableRows($, table)).filter(rows => rows.length > 1);
+    $(`${selector} tr`).slice(1).each((_, row) => {
+        const cells = $(row).children("td").toArray();
+        if (cells.length < 6) return; // fx "Der er ingen manglende fraværsårsager"
 
-    const teamRows = tables.find(rows => rows.slice(0, 3).some(cells => cells.some(cell => /^hold$/i.test(cell))));
-    const weekRows = tables.find(rows => rows.slice(1).filter(cells => /^\d{1,2}$/.test(cells[0])).length >= 3);
+        const lesson = readTooltip($(row).find("a.s2skemabrik").attr("data-tooltip")) ?? {};
+        const text = index => clean($(cells[index]).text());
+        const [reason = "", reasonNote = ""] = (cells[6] ? $(cells[6]).text() : "").split(/\n+|\s{3,}/).map(clean).filter(Boolean);
 
-    const result = { columns: [], rows: [], weeks: [] };
+        modules.push({
+            week: text(0),
+            date: lesson.date ?? null,
+            start: lesson.start ?? "",
+            end: lesson.end ?? "",
+            subject: lesson.teams?.join(", ") || lesson.title || "",
+            title: lesson.title ?? "",
+            absence: text(2),
+            type: text(3),
+            registered: text(4),
+            comment: text(5),
+            reason: missing ? "" : reason ?? "",
+            reasonNote: missing ? "" : reasonNote ?? "",
+            missingReason: missing
+        });
+    });
 
-    if (teamRows) {
-        const header = teamRows.find(cells => cells.some(cell => /^hold$/i.test(cell)));
-        const body = teamRows.slice(teamRows.indexOf(header) + 1).filter(cells => cells.length > 1 && !/^\d{1,2}$/.test(cells[0]));
-        const first = header.findIndex(cell => /^hold$/i.test(cell));
-
-        result.columns = header.filter((_, index) => index !== first);
-        result.rows = body.map(cells => ({ name: cells[first] ?? cells[0], cells: cells.filter((_, index) => index !== first).slice(0, result.columns.length) }));
-    }
-
-    if (weekRows) {
-        const header = weekRows.find(cells => !/^\d{1,2}$/.test(cells[0])) ?? [];
-        result.weekColumns = header.slice(1);
-        result.weeks = weekRows.filter(cells => /^\d{1,2}$/.test(cells[0])).map(cells => ({ week: Number(cells[0]), cells: cells.slice(1) }));
-    }
-
-    // Til fejlfinding: ?debug=1 på /api/fravaer viser, hvordan Lectios tabeller ser ud
-    result.debug = tables.map(rows => rows.slice(0, 4));
-    return result;
+    return modules;
 }
 
 async function getAbsence(user) {
-    const forside = await getPage(user, "forside.aspx");
     const id = user.student.studentId;
+    const $ = cheerio.load(await getPage(user, `subnav/fravaerelev.aspx?elevid=${id}`));
 
-    // Lectios menu på forsiden kender adressen til fraværssiden - brug den først, ellers gæt på de kendte
-    const $ = cheerio.load(forside);
-    const fromMenu = $("a[href*='fravaer' i]").toArray()
-        .map(link => ($(link).attr("href") ?? "").replace(/^\/lectio\/\d+\//, "").replace(/^\.?\//, ""))
-        .filter(href => href && !href.startsWith("http") && !href.startsWith("#"));
+    const teams = [];
+    $("#s_m_Content_Content_SFTabStudentAbsenceDataTable tr").each((_, row) => {
+        if ($(row).attr("id") !== undefined) return;
 
-    const candidates = [...new Set([
-        ...fromMenu,
-        `subnav/fravaerelev_fravaerelev.aspx?elevid=${id}`,
-        `subnav/fravaerelev.aspx?elevid=${id}`,
-        `subnav/fravaer.aspx?elevid=${id}`,
-        `fravaerelev.aspx?elevid=${id}`
-    ])];
+        const cells = $(row).children("td").toArray().map(cell => clean($(cell).text()));
+        if (cells.length < 5) return;
 
-    for (const page of candidates) {
-        try {
-            const absence = readAbsence(await getPage(user, page));
-            absence.page = page;
-            if (absence.rows.length || absence.weeks.length) return absence;
-        } catch (error) {
-            if (!(error instanceof NotLoggedInError)) throw error;
-        }
+        teams.push({
+            name: cells[0],
+            period: { pct: cells[1], modules: cells[2] },
+            year: { pct: cells[3], modules: cells[4] }
+        });
+    });
+
+    if (!teams.length) throw new Error("Kunne ikke finde fraværstabellen i Lectio");
+
+    // Moduler med fravær. Mislykkes denne side, vises resten alligevel
+    let missing = [];
+    let registered = [];
+
+    try {
+        const reasons = cheerio.load(await getPage(user, `subnav/fravaerelev_fravaersaarsager.aspx?elevid=${id}`));
+        missing = readAbsenceModules(reasons, "#s_m_Content_Content_FatabMissingAarsagerGV", true);
+        registered = readAbsenceModules(reasons, "#s_m_Content_Content_FatabAbsenceFravaerGV", false);
+    } catch (error) {
+        console.error(error);
     }
 
-    throw new Error("Kunne ikke finde dit fravær i Lectio");
+    return { teams, missing, registered };
 }
 
 module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades, getAbsence };

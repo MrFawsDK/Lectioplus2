@@ -1,9 +1,14 @@
 {
-  "columns": ["Fravær (moduler)", "Moduler i alt", "Fravær (%)"],
-  "rows": [
-    { "name": "Matematik", "cells": ["2", "28", "7,1 %"] },
-    { "name": "Informatik", "cells": ["0", "24", "0,0 %"] },
-    { "name": "Dansk", "cells": ["3", "26", "11,5 %"] },
-    { "name": "I alt", "cells": ["5", "78", "6,4 %"] }
+  "teams": [
+    { "name": "Samlet", "period": { "pct": "6,4%", "modules": "5" }, "year": { "pct": "5,1%", "modules": "9" } },
+    { "name": "Matematik", "period": { "pct": "7,1%", "modules": "2" }, "year": { "pct": "4,0%", "modules": "3" } },
+    { "name": "Informatik", "period": { "pct": "0,0%", "modules": "0" }, "year": { "pct": "1,5%", "modules": "1" } },
+    { "name": "Dansk", "period": { "pct": "11,5%", "modules": "3" }, "year": { "pct": "9,0%", "modules": "5" } }
+  ],
+  "missing": [
+    { "week": "39/2026", "date": "2026-09-22", "start": "08:00", "end": "09:30", "subject": "Dansk", "title": "", "absence": "100%", "type": "Ikke tilstede", "registered": "22/9-2026", "comment": "", "reason": "", "reasonNote": "", "missingReason": true }
+  ],
+  "registered": [
+    { "week": "38/2026", "date": "2026-09-15", "start": "08:00", "end": "09:30", "subject": "Matematik", "title": "", "absence": "100%", "type": "Ikke tilstede", "registered": "15/9-2026", "comment": "", "reason": "Sygdom", "reasonNote": "Influenza", "missingReason": false }
   ]
 }

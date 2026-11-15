@@ -197,10 +197,7 @@ router.get("/fravaer", requireLogin, async (req, res) => {
     if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
 
     try {
-        const absence = await lectio.getAbsence(req.user);
-        if (req.query.debug) return res.json(absence); // fejlfinding: viser også tabellerne som Lectio sender dem
-        const { debug, page, ...data } = absence;
-        res.json(data);
+        res.json(await lectio.getAbsence(req.user));
     } catch (error) {
         lectioError(res, error);
     }
