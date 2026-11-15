@@ -142,7 +142,8 @@ const SCHEDULE_OWNERS = [
     [/^C(\d+)$/, id => `type=stamklasse&klasseid=${id}`],
     [/^RE(\d+)$/, id => `type=lokale&nosubnav=1&id=${id}`],
     [/^R(\d+)$/, id => `type=lokale&nosubnav=1&id=${id}`],
-    [/^(?:HE|G)(\d+)$/, id => `type=holdelement&holdelementid=${id}`]
+    [/^(?:HE|G)(\d+)$/, id => `type=holdelement&holdelementid=${id}`],
+    [/^H(\d+)$/, id => `type=hold&holdid=${id}`]
 ];
 
 // Skemaet for eleven selv, eller for en anden (who = fx "S12345", "T678", "HE9")
