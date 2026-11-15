@@ -1,0 +1,9 @@
+{
+  "columns": ["Fravær (moduler)", "Moduler i alt", "Fravær (%)"],
+  "rows": [
+    { "name": "Matematik", "cells": ["2", "28", "7,1 %"] },
+    { "name": "Informatik", "cells": ["0", "24", "0,0 %"] },
+    { "name": "Dansk", "cells": ["3", "26", "11,5 %"] },
+    { "name": "I alt", "cells": ["5", "78", "6,4 %"] }
+  ]
+}

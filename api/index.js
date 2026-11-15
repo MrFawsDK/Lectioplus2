@@ -6,6 +6,7 @@
 //   GET  /api/skema?week=40&year=2026  skemaet for en uge
 //   GET  /api/opgaver                  opgaver
 //   GET  /api/karakterer               karakterblad
+//   GET  /api/fravaer                  fravær pr. hold
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
 // Lectio-cookien gemmes på serveren i databasen (sessions), så man er logget ind efter en genstart.
@@ -89,6 +90,13 @@ function requireLogin(req, res, next) {
 // Lectio-fejl -> svar
 function lectioError(res, error) {
     if (error instanceof lectio.NotLoggedInError) {
+        // Sessionen er ubrugelig - slet den, så login-siden ikke tror, man stadig er logget ind
+        const id = sessionId(res.req);
+        if (id) {
+            sessions.delete(hashId(id));
+            sessionSql.delete.run(hashId(id));
+        }
+        res.clearCookie("flexio_session");
         return res.status(401).json({ error: "Din Lectio-session er udløbet. Log ind igen.", code: "not_authenticated" });
     }
     console.error(error);
@@ -179,6 +187,17 @@ router.get("/karakterer", requireLogin, async (req, res) => {
 
     try {
         res.json(await lectio.getGrades(req.user));
+    } catch (error) {
+        lectioError(res, error);
+    }
+});
+
+router.get("/fravaer", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("fravaer/fravaer.json"));
+    if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
+
+    try {
+        res.json(await lectio.getAbsence(req.user));
     } catch (error) {
         lectioError(res, error);
     }

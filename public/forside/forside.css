@@ -1,0 +1,93 @@
+.forside-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.hello h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 28px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 28px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.list {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 10px 0;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.list li:last-child {
+    border-bottom: 0;
+}
+
+.list .meta {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.list .cancelled {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.empty-line {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.big {
+    flex: 1;
+    margin: 0;
+    font-size: 40px;
+}
+
+.more {
+    color: var(--md-sys-color-primary);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.more:hover {
+    text-decoration: underline;
+}

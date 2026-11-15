@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forside - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/forside/forside.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="forside-page">
+    <section class="hello">
+        <h1 id="hello">Forside</h1>
+        <p class="lead" id="subtitle"></p>
+    </section>
+
+    <md-divider></md-divider>
+
+    <div class="cards">
+        <section class="card">
+            <h2 id="lessonsTitle">Skema</h2>
+            <ul class="list" id="lessons"></ul>
+            <a class="more" href="/skema/">Se hele skemaet</a>
+        </section>
+
+        <section class="card">
+            <h2>Opgaver der mangler</h2>
+            <ul class="list" id="assignments"></ul>
+            <a class="more" href="/opgaver/">Se alle opgaver</a>
+        </section>
+
+        <section class="card">
+            <h2>Fravær</h2>
+            <p class="big" id="absence">-</p>
+            <a class="more" href="/fravaer/">Se fravær pr. hold</a>
+        </section>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/forside/forside.js"></script>
+</body>
+</html>

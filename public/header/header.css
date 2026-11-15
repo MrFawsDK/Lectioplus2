@@ -1,6 +1,7 @@
 .header {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px;
     align-items: center;
 
     min-height: 72px;
@@ -11,8 +12,18 @@
 
 .nav {
     grid-column: 2;
+    justify-self: center;
     display: flex;
-    gap: 8px;
+    gap: 4px;
+
+    /* Mange punkter: rul sidelæns frem for at bryde layoutet */
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.nav > * {
+    flex: none;
 }
 
 .nav > * {
@@ -34,7 +45,6 @@
 
     .nav {
         grid-column: 1;
-        flex-wrap: wrap;
         gap: 2px;
     }
 

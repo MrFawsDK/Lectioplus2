@@ -29,7 +29,7 @@ function escapeHtml(text) {
 // Kun adresser på vores egen side (ikke "//andet-site.dk")
 function nextUrl() {
     const next = new URLSearchParams(location.search).get("next") ?? "";
-    return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/skema/";
+    return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/forside/";
 }
 
 function showMessage(text, type = "error") {
@@ -187,8 +187,8 @@ async function start() {
         showMessage("Din Lectio-session er udløbet. Hent en ny cookie fra Lectio og log ind igen.", "info");
     }
 
-    // Allerede logget ind? Så videre.
-    const response = await fetch("/api/me", { credentials: "same-origin" });
+    // Allerede logget ind? Så videre - men ikke hvis vi lige er sendt hertil, fordi sessionen er udløbet (ellers kører vi i ring)
+    const response = reason ? { ok: false } : await fetch("/api/me", { credentials: "same-origin" });
     if (response.ok) {
         location.href = nextUrl();
         return;

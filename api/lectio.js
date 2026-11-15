@@ -332,4 +332,57 @@ async function getGrades(user) {
     return { types, subjects };
 }
 
-module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades };
+/* ---------- Fravær ---------- */
+
+// Fraværssiden har en tabel med én række pr. hold og kolonner som "Fravær (moduler)" og "Fravær (%)".
+// Vi kender ikke kolonnerne på forhånd, så vi sender overskrifter og celler videre som tekst.
+function readAbsence(html) {
+    const $ = cheerio.load(html);
+
+    const tables = $("table").toArray().filter(element => $(element).text().includes("%"));
+    const table = $(tables.find(element => /hold/i.test($(element).text())) ?? tables[0]);
+
+    const rows = table.find("tr").toArray().map(row =>
+        $(row).children("th, td").toArray().map(cell => clean($(cell).text()))
+    ).filter(cells => cells.some(Boolean));
+
+    const header = rows.find(cells => cells.some(cell => /^(hold|fag)$/i.test(cell))) ?? rows[0] ?? [];
+    const body = rows.slice(rows.indexOf(header) + 1).filter(cells => cells.length > 1);
+
+    return {
+        columns: header.slice(1),
+        rows: body.map(cells => ({ name: cells[0], cells: cells.slice(1, header.length) }))
+    };
+}
+
+async function getAbsence(user) {
+    const forside = await getPage(user, "forside.aspx");
+    const id = user.student.studentId;
+
+    // Lectios menu på forsiden kender adressen til fraværssiden - brug den først, ellers gæt på de kendte
+    const $ = cheerio.load(forside);
+    const fromMenu = $("a[href*='fravaer' i]").toArray()
+        .map(link => ($(link).attr("href") ?? "").replace(/^\/lectio\/\d+\//, "").replace(/^\.?\//, ""))
+        .filter(href => href && !href.startsWith("http") && !href.startsWith("#"));
+
+    const candidates = [...new Set([
+        ...fromMenu,
+        `subnav/fravaerelev_fravaerelev.aspx?elevid=${id}`,
+        `subnav/fravaerelev.aspx?elevid=${id}`,
+        `subnav/fravaer.aspx?elevid=${id}`,
+        `fravaerelev.aspx?elevid=${id}`
+    ])];
+
+    for (const page of candidates) {
+        try {
+            const absence = readAbsence(await getPage(user, page));
+            if (absence.rows.length) return absence;
+        } catch (error) {
+            if (!(error instanceof NotLoggedInError)) throw error;
+        }
+    }
+
+    throw new Error("Kunne ikke finde dit fravær i Lectio");
+}
+
+module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades, getAbsence };

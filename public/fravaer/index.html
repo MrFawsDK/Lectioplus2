@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fravær - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/fravaer/fravaer.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="fravaer-page">
+    <section class="page-head">
+        <h1>Fravær</h1>
+        <p class="lead">Dit fravær fra Lectio, fordelt på hold, med en vurdering af hvordan det ser ud.</p>
+    </section>
+
+    <div class="empty" id="emptyState">
+        <md-icon>event_busy</md-icon>
+        <span id="emptyText">Henter fravær …</span>
+    </div>
+
+    <div id="content" hidden>
+        <div class="grid">
+            <!-- Cirkeldiagram: fremmøde mod fravær -->
+            <section class="card donut-card">
+                <h2>Samlet fravær</h2>
+                <div class="donut-wrap">
+                    <svg viewBox="0 0 120 120" class="donut" role="img" id="donut" aria-label="Cirkeldiagram over fravær"></svg>
+                    <div class="donut-center"><strong id="totalPct">-</strong><span>fravær</span></div>
+                </div>
+                <ul class="legend">
+                    <li><i class="dot present"></i> Til stede <b id="presentPct">-</b></li>
+                    <li><i class="dot absent"></i> Fraværende <b id="absentPct">-</b></li>
+                </ul>
+            </section>
+
+            <!-- Diagnose -->
+            <section class="card diagnose" id="diagnose">
+                <h2>Diagnose</h2>
+                <div class="verdict" id="verdict"></div>
+                <ul class="insights" id="insights"></ul>
+                <p class="note">Vurderingen er vejledende og bygger på grænserne 5 %, 10 % og 20 %. Din skoles egne regler kan være anderledes.</p>
+            </section>
+        </div>
+
+        <!-- Søjlediagram pr. hold -->
+        <section class="card">
+            <h2>Fravær pr. hold</h2>
+            <div class="bars" id="bars"></div>
+            <p class="note">Den stiplede streg viser 10 %.</p>
+        </section>
+
+        <!-- Tabel med Lectios egne tal -->
+        <section class="card">
+            <h2>Tal fra Lectio</h2>
+            <div class="table-wrap">
+                <table class="absence-table">
+                    <thead><tr id="absenceHead"></tr></thead>
+                    <tbody id="absenceBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/fravaer/fravaer.js"></script>
+</body>
+</html>
