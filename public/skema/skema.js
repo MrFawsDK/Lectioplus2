@@ -20,7 +20,8 @@ let scheduleNotes = [];
 // Uger der allerede er hentet: "2026-40" -> true
 const loadedWeeks = new Set();
 
-let view = "week";
+// På en telefon starter skemaet i dagsvisning (en uge er for bred); ellers i ugevisning
+let view = matchMedia("(max-width: 700px)").matches ? "day" : "week";
 let selectedDate = startOfDay(new Date());
 
 
@@ -495,6 +496,14 @@ async function loadScheduleNotes() {
     } catch (error) {
         console.error(error);
     }
+}
+
+// Dagsvisning: vælg den rigtige knap og gå til nærmeste hverdag
+if (view === "day") {
+    selectedDate = nearestWeekday(selectedDate);
+    document.querySelectorAll("#viewSwitch md-outlined-segmented-button").forEach(button => {
+        button.selected = button.dataset.view === "day";
+    });
 }
 
 showWeek();

@@ -1,0 +1,8 @@
+{
+  "title": "Bøger", "url": "https://www.lectio.dk/",
+  "tables": [{ "headers": ["Titel", "Fag", "Status"], "rows": [
+    { "cells": ["Matematik A htx 1", "Matematik", "Udleveret"], "href": null },
+    { "cells": ["Dansk i tiden", "Dansk", "Udleveret"], "href": null }
+  ] }],
+  "text": ""
+}

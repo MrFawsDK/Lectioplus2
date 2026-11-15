@@ -1,14 +1,19 @@
 /* ---------- Boksen ---------- */
 
+/* Skemaet fylder hele skærmen: ingen ramme eller margin, kun lidt luft i siderne */
 .skema-main {
-    width: min(1300px, calc(100% - 32px));
-    margin: 24px auto;
+    width: 100%;
+    margin: 0;
     font-family: Roboto, sans-serif;
 }
 
 .skema-card {
     display: block;
-    padding: 20px;
+    min-height: calc(100dvh - 73px);
+    padding: clamp(8px, 1.5vw, 24px);
+
+    --md-outlined-card-container-shape: 0;
+    --md-outlined-card-outline-width: 0;
 }
 
 .toolbar {
@@ -59,10 +64,10 @@
 
 .schedule {
     display: grid;
-    grid-template-columns: 96px repeat(var(--days, 5), minmax(140px, 1fr));
+    grid-template-columns: 96px repeat(var(--days, 5), minmax(120px, 1fr));
     grid-template-rows: auto var(--body-height);
 
-    min-width: 600px;
+    min-width: 0;
 
     color: var(--md-sys-color-on-surface);
     font-size: 14px;
@@ -245,4 +250,48 @@
     margin: 0;
     color: var(--md-sys-color-on-surface-variant);
     font-size: 14px;
+}
+
+
+/* ---------- Telefon ---------- */
+
+@media (max-width: 700px) {
+    .toolbar {
+        align-items: stretch;
+        margin-bottom: 12px;
+    }
+
+    .toolbar-title h1 {
+        font-size: 22px;
+    }
+
+    .toolbar-controls {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    #viewSwitch {
+        width: 140px;
+    }
+
+    /* Én dag fylder hele bredden - tidskolonnen bliver smallere */
+    .schedule {
+        grid-template-columns: 64px repeat(var(--days, 5), minmax(0, 1fr));
+    }
+
+    .module-info {
+        padding: 4px;
+        font-size: 11px;
+    }
+
+    .day-date {
+        font-size: 18px;
+    }
+
+    /* Uge-visning på en telefon: kolonnerne må være smalle, og siden kan rulles sidelæns */
+    .schedule[style*="--days: 5"] {
+        grid-template-columns: 56px repeat(5, minmax(110px, 1fr));
+        min-width: 640px;
+    }
 }

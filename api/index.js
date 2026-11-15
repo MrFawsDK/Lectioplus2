@@ -24,6 +24,7 @@ const db = require("./db");
 const lectio = require("./lectio");
 const post = require("./beskeder");
 const plan = require("./lektier");
+const pages = require("./sider");
 
 const router = express.Router();
 router.use(express.json());
@@ -264,6 +265,25 @@ router.get("/studieplan", requireLogin, async (req, res) => {
         lectioError(res, error);
     }
 });
+
+// Bøger, spørgeskemaer og SPS læses generisk fra Lectio (sider.js)
+for (const [route, load, demo] of [
+    ["boger", user => pages.getBooks(user), "boger/boger.json"],
+    ["spoergeskema", user => pages.getSurveys(user), "spoergeskema/spoergeskema.json"],
+    ["sps", user => pages.getSps(user), "sps/sps.json"]
+]) {
+    router.get(`/${route}`, requireLogin, async (req, res) => {
+        if (req.user.demo) return res.json(demoData(demo));
+        if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
+
+        try {
+            res.json(await load(req.user));
+        } catch (error) {
+            if (error.expose) return res.status(502).json({ error: error.message });
+            lectioError(res, error);
+        }
+    });
+}
 
 /* ---------- Noter ---------- */
 

@@ -36,6 +36,14 @@ async function loadHeader() {
         }
     });
 
+    // Menu-knappen (telefon/tablet) åbner og lukker menuen
+    const toggle = header.querySelector("#menuToggle");
+    toggle?.addEventListener("click", () => {
+        const open = header.classList.toggle("menu-open");
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.querySelector("md-icon").textContent = open ? "close" : "menu";
+    });
+
     // Vis elevens navn på profil-knappen og "Demo" hvis der bruges demo-data (getMe() fra session.js)
     getMe().then(me => {
         const profileButton = header.querySelector(".profile [href='/profil/']");

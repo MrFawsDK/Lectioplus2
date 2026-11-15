@@ -1,0 +1,8 @@
+{
+  "title": "Spørgeskemaer", "url": "https://www.lectio.dk/",
+  "tables": [{ "headers": ["Titel", "Frist"], "rows": [
+    { "cells": ["Trivselsundersøgelse 2026", "30/11-2026"], "href": "https://www.lectio.dk/" },
+    { "cells": ["Evaluering af informatik", "15/12-2026"], "href": "https://www.lectio.dk/" }
+  ] }],
+  "text": ""
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPS - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/side/side.css">
+</head>
+<body data-api="sps">
+
+<header class="header" id="header"></header>
+
+<main class="side-page">
+    <section class="page-head">
+        <h1>SPS</h1>
+        <p class="lead">Din SPS-side fra Lectio.</p>
+    </section>
+
+    <md-divider></md-divider>
+
+    <div id="content"></div>
+
+    <div class="empty" id="emptyState">
+        <md-icon>support_agent</md-icon>
+        <span id="emptyText">Henter SPS …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/side/side.js"></script>
+</body>
+</html>

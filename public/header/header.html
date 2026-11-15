@@ -3,10 +3,15 @@
     Guide: https://m3.material.io/components/buttons/overview
     Element: <md-text-button> fra @material/web/button/text-button.js
 -->
+<!-- Menu-knap: vises kun på telefon og tablet (se header.css og header.js) -->
+<md-icon-button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false">
+    <md-icon>menu</md-icon>
+</md-icon-button>
+
 <a href="/forside/" class="brand">Flexio</a>
 
 <nav class="nav">
-    <!-- Samme rækkefølge som i Lectio (Profil er ikonet til højre), med Noter som vores egen side. Knapper uden href er sider vi ikke har lavet endnu. -->
+    <!-- Samme rækkefølge som i Lectio (Profil er ikonet til højre), med Noter som vores egen side. -->
     <md-text-button href="/forside/">Forside</md-text-button>
     <md-text-button href="/skema/">Skema</md-text-button>
     <md-text-button href="/studieplan/">Studieplan</md-text-button>
@@ -15,10 +20,10 @@
     <md-text-button href="/lektier/">Lektier</md-text-button>
     <md-text-button href="/karakter/">Karakterer</md-text-button>
     <md-text-button href="/noter/">Noter</md-text-button>
-    <md-text-button disabled>Bøger</md-text-button>
-    <md-text-button disabled>Spørgeskema</md-text-button>
+    <md-text-button href="/boger/">Bøger</md-text-button>
+    <md-text-button href="/spoergeskema/">Spørgeskema</md-text-button>
     <md-text-button href="/dokumenter/">Dokumenter</md-text-button>
-    <md-text-button disabled>SPS</md-text-button>
+    <md-text-button href="/sps/">SPS</md-text-button>
     <md-text-button href="/beskeder/">Beskeder</md-text-button>
 </nav>
 

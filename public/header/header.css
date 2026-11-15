@@ -1,6 +1,9 @@
+/* ---------- Header ---------- */
+
 .header {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "brand nav profile";
     gap: 16px;
     align-items: center;
 
@@ -10,9 +13,27 @@
     border-bottom: 1px solid var(--border);
 }
 
+.brand {
+    grid-area: brand;
+    justify-self: start;
+
+    color: var(--md-sys-color-primary);
+    font-family: Roboto, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+}
+
+.menu-toggle {
+    display: none;
+    grid-area: toggle;
+}
+
 .nav {
-    grid-column: 2;
+    grid-area: nav;
     justify-self: center;
+
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -26,32 +47,9 @@
 }
 
 .profile {
-    grid-column: 3;
+    grid-area: profile;
     justify-self: end;
-}
 
-@media (max-width: 600px) {
-    .header {
-        grid-template-columns: 1fr auto;
-        padding: 10px 12px;
-    }
-
-    .nav {
-        grid-column: 1;
-        gap: 2px;
-    }
-
-    .profile {
-        grid-column: 2;
-    }
-
-    .nav > * {
-        --md-text-button-label-text-size: 14px;
-        --md-filled-tonal-button-label-text-size: 14px;
-    }
-}
-
-.profile {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -72,20 +70,50 @@
     display: none;
 }
 
-.brand {
-    grid-column: 1;
-    justify-self: start;
 
-    color: var(--md-sys-color-primary);
-    font-family: Roboto, sans-serif;
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-}
+/* ---------- Telefon og tablet: menuen gemmes bag en knap ---------- */
 
-@media (max-width: 600px) {
+@media (max-width: 1100px) {
+    .header {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas:
+            "toggle brand profile"
+            "nav nav nav";
+        gap: 4px 8px;
+        min-height: 60px;
+        padding: 6px 8px;
+    }
+
+    .menu-toggle {
+        display: inline-flex;
+    }
+
     .brand {
+        font-size: 22px;
+    }
+
+    .nav {
         display: none;
+        justify-self: stretch;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 0;
+
+        padding: 4px 0 8px;
+        border-top: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .header.menu-open .nav {
+        display: flex;
+    }
+
+    /* Store knapper med tekst til venstre, nemme at ramme med en tommel */
+    .nav > * {
+        --md-text-button-label-text-size: 17px;
+        --md-filled-tonal-button-label-text-size: 17px;
+        --md-text-button-container-height: 48px;
+        --md-filled-tonal-button-container-height: 48px;
+        justify-content: flex-start;
     }
 }
