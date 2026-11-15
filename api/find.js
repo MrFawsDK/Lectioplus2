@@ -63,29 +63,47 @@ async function inBatches(tasks, size = 6) {
     return results;
 }
 
-// En side der ikke kan hentes (fx en type skolen ikke bruger) giver en tom liste - kun manglende login stopper alt
-const safe = async load => {
+// Henter og læser én side. En side der ikke kan hentes (fx en type skolen ikke bruger) giver en tom liste og en note til fejlfinding.
+// Kun den første side (lærerne) må stoppe alt, hvis eleven ikke er logget ind - ellers tæller en enkelt afvist side ikke.
+async function readPage(user, page, label, notes, { required = false } = {}) {
     try {
-        return await load();
+        const html = await getPage(user, page);
+        const items = readList(html);
+
+        if (items.length) {
+            notes.push(`${label}: ${items.length}`);
+        } else {
+            const $ = cheerio.load(html);
+            notes.push(`${label}: 0 (${clean($("title").text()).slice(0, 40) || "ingen titel"}; ${$("ul.ls-columnlist").length} lister, ${$("a").length} links)`);
+        }
+
+        return items;
     } catch (error) {
-        if (error instanceof NotLoggedInError) throw error;
-        console.error(error.message);
+        if (required && error instanceof NotLoggedInError) throw error;
+        notes.push(`${label}: ${error instanceof NotLoggedInError ? "afvist af Lectio" : error.message}`);
         return [];
     }
-};
+}
 
 // Skolens lister er de samme for alle på skolen, så de hentes højst hvert 30. minut
-async function getPeople(user) {
+async function getPeople(user, { fresh = false } = {}) {
     const cached = cache.get(user.schoolCode);
-    if (cached && Date.now() - cached.time < CACHE_MS) return { groups: cached.groups };
+    if (!fresh && cached && Date.now() - cached.time < CACHE_MS) return { groups: cached.groups };
 
-    const list = type => safe(async () => readList(await getPage(user, `FindSkema.aspx?type=${type}`)));
+    const notes = [];
 
-    const [teachers, classes, teams, rooms] = await Promise.all([list("laerer"), list("stamklasse"), list("hold"), list("lokale")]);
+    // Lærerne først: afvises den, er eleven ikke logget ind
+    const teachers = await readPage(user, "FindSkema.aspx?type=laerer", "lærere", notes, { required: true });
+
+    const [classes, teams, rooms] = await Promise.all([
+        readPage(user, "FindSkema.aspx?type=stamklasse", "klasser", notes),
+        readPage(user, "FindSkema.aspx?type=hold", "hold", notes),
+        readPage(user, "FindSkema.aspx?type=lokale", "lokaler", notes)
+    ]);
 
     const students = (await inBatches(LETTERS.map(letter => () =>
-        safe(async () => readList(await getPage(user, `FindSkema.aspx?type=elev&forbogstav=${encodeURIComponent(letter)}`)))
-    ))).flat();
+        readPage(user, `FindSkema.aspx?type=elev&forbogstav=${encodeURIComponent(letter)}`, `elever ${letter}`, notes)
+    ), 4)).flat();
 
     // Samme person kan stå under flere bogstaver (fx Aa/Å) - hver kun én gang
     const unique = items => [...new Map(items.map(item => [item.id, item])).values()];
@@ -99,13 +117,17 @@ async function getPeople(user) {
     ].filter(group => group.items.length);
 
     if (!groups.some(group => group.title === "Elever" || group.title === "Lærere")) {
-        const error = new Error("Kunne ikke læse listen over elever og lærere fra Lectio (Find skema gav ingen personer)");
+        console.error("Find skema gav ingen personer:", notes);
+        const error = new Error(`Kunne ikke læse listen over elever og lærere fra Lectio. ${notes.slice(0, 5).join(" | ")}`);
         error.expose = true;
         throw error;
     }
 
-    cache.set(user.schoolCode, { time: Date.now(), groups });
-    return { groups };
+    // Ingen elever, men lærere: send alligevel det vi har, og skriv hvad der skete i serverens log
+    if (!groups.some(group => group.title === "Elever")) console.error("Ingen elever fundet:", notes);
+
+    cache.set(user.schoolCode, { time: Date.now(), groups, notes });
+    return { groups, notes };
 }
 
 module.exports = { getPeople, ID };

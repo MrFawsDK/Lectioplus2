@@ -239,7 +239,9 @@ router.get("/find", requireLogin, async (req, res) => {
     if (req.user.demo) return res.json(demoData("find/find.json"));
 
     try {
-        res.json(await finder.getPeople(req.user));
+        // ?debug=1 henter listen på ny og viser, hvad hver side gav (til fejlfinding)
+        const people = await finder.getPeople(req.user, { fresh: Boolean(req.query.debug) });
+        res.json(req.query.debug ? people : { groups: people.groups });
     } catch (error) {
         if (error.expose) return res.status(502).json({ error: error.message });
         lectioError(res, error);
