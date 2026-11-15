@@ -38,9 +38,66 @@ md-divider {
     font-size: 14px;
 }
 
+.letter-group {
+    margin-bottom: 16px;
+    scroll-margin-top: 76px; /* plads til alfabet-linjen, når der hoppes */
+}
+
+.letter {
+    margin: 0 0 6px 4px;
+    color: var(--md-sys-color-primary);
+    font-size: 20px;
+    font-weight: 500;
+}
+
 .results {
     border-radius: 16px;
     background: var(--md-sys-color-surface-container-low);
+}
+
+/* Alfabetet: en linje der bliver siddende øverst, så man altid kan hoppe */
+.alphabet {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    margin: 0 -4px 12px;
+    padding: 6px 4px;
+    background: var(--md-sys-color-surface, var(--bg));
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.alphabet::-webkit-scrollbar {
+    display: none;
+}
+
+.alphabet button {
+    flex: none;
+    min-width: 34px;
+    height: 36px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 18px;
+
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    font: 500 15px Roboto, sans-serif;
+    cursor: pointer;
+}
+
+.alphabet button:hover,
+.alphabet button:focus-visible {
+    background: var(--md-sys-color-surface-container-high);
+    outline: none;
+}
+
+.alphabet[hidden] {
+    display: none;
 }
 
 .empty {
@@ -72,4 +129,8 @@ md-divider {
     .page-head h1 {
         font-size: 32px;
     }
+}
+
+#sentinel {
+    height: 1px;
 }

@@ -17,7 +17,7 @@
 <main class="find-page">
     <section class="page-head">
         <h1>Find skema</h1>
-        <p class="lead">Søg efter en elev, lærer, klasse, et hold eller et lokale og se deres skema.</p>
+        <p class="lead">Hele listen over elever, lærere, klasser, hold og lokaler. Tryk på en for at se profil og skema.</p>
     </section>
 
     <!--
@@ -40,12 +40,16 @@
 
     <p class="count" id="count" role="status"></p>
 
+    <!-- Bogstaver: et tryk hopper til dem, der begynder med bogstavet -->
+    <nav class="alphabet" id="alphabet" aria-label="Spring til bogstav" hidden></nav>
+
     <!--
-        M3: Lists - List item (type="link")
+        M3: Lists - List item (type="link"). Listen tegnes i bogstav-grupper i find.js
         Guide: https://m3.material.io/components/lists/overview
         Element: <md-list> og <md-list-item> fra @material/web/list
     -->
-    <md-list class="results" id="results"></md-list>
+    <div class="groups" id="results"></div>
+    <div id="sentinel" hidden></div>
 
     <div class="empty" id="emptyState">
         <md-icon>groups</md-icon>
