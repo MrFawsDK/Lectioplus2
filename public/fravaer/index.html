@@ -17,7 +17,7 @@
 <main class="fravaer-page">
     <section class="page-head">
         <h1>Fravær</h1>
-        <p class="lead">Dit fravær fra Lectio: opgjort, for hele året og pr. hold.</p>
+        <p class="lead">Dit fravær fra Lectio: opgjort, for hele året og pr. hold, med mulighed for at angive årsager.</p>
     </section>
 
     <div class="empty" id="emptyState">
@@ -37,11 +37,6 @@
                 <h2>For året</h2>
                 <p class="big" id="yearPct">-</p>
                 <p class="sub" id="yearModules"></p>
-            </section>
-            <section class="card diagnose">
-                <h2>Diagnose</h2>
-                <div class="verdict" id="verdict"></div>
-                <ul class="insights" id="insights"></ul>
             </section>
         </div>
 
@@ -66,12 +61,23 @@
 
         <md-divider></md-divider>
 
+        <!-- Meddelelser og bemærkninger fra Lectio -->
+        <details class="module-group" id="warningGroup" open>
+            <summary id="warningTitle"></summary>
+            <div class="table-wrap">
+                <table class="absence-table modules">
+                    <thead><tr><th>Dato</th><th>Fra</th><th>Type</th><th>Note</th></tr></thead>
+                    <tbody id="warningBody"></tbody>
+                </table>
+            </div>
+        </details>
+
         <!-- Moduler med fravær -->
         <details class="module-group" id="missingGroup" open>
             <summary id="missingTitle"></summary>
             <div class="table-wrap">
                 <table class="absence-table modules">
-                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Type</th></tr></thead>
+                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Type</th><th>Bemærkning</th><th></th></tr></thead>
                     <tbody id="missingBody"></tbody>
                 </table>
             </div>
@@ -81,7 +87,7 @@
             <summary id="registeredTitle"></summary>
             <div class="table-wrap">
                 <table class="absence-table modules">
-                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Årsag</th><th>Note</th></tr></thead>
+                    <thead><tr><th>Modul</th><th>Tidspunkt</th><th>Fravær</th><th>Årsag</th><th>Note</th><th>Bemærkning</th><th></th></tr></thead>
                     <tbody id="registeredBody"></tbody>
                 </table>
             </div>

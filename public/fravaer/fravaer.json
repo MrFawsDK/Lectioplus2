@@ -5,6 +5,9 @@
     { "name": "Informatik", "period": { "pct": "0,0%", "modules": "0" }, "year": { "pct": "1,5%", "modules": "1" } },
     { "name": "Dansk", "period": { "pct": "11,5%", "modules": "3" }, "year": { "pct": "9,0%", "modules": "5" } }
   ],
+  "warnings": [
+    { "date": "12/10-2026", "initials": "LS", "type": "Advarsel", "note": "Husk at angive årsag til fravær i dansk." }
+  ],
   "missing": [
     { "week": "39/2026", "date": "2026-09-22", "start": "08:00", "end": "09:30", "subject": "Dansk", "title": "", "absence": "100%", "type": "Ikke tilstede", "registered": "22/9-2026", "comment": "", "reason": "", "reasonNote": "", "missingReason": true }
   ],

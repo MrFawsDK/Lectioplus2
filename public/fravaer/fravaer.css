@@ -312,7 +312,7 @@
 
 .totals {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 24px;
 }
@@ -428,4 +428,10 @@ md-divider {
     .split .donut-wrap {
         align-self: center;
     }
+}
+
+
+.modules td.wrap {
+    max-width: 320px;
+    white-space: normal;
 }

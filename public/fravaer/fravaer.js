@@ -1,9 +1,6 @@
 // Fraværssiden bygger på Lectios fraværsside: opgjort fravær, hele året, fravær pr. hold
 // og de moduler hvor man har haft fravær (med eller uden årsag).
 
-const WARN = 5;      // % - fra her bør man holde øje med det
-const HIGH = 10;     // % - fra her er det højt
-const CRITICAL = 20; // % - fra her er det kritisk
 
 // Farver til cirkeldiagrammet (et hold pr. farve)
 const COLORS = ["#4285f4", "#34a853", "#fbbc04", "#ea4335", "#9c27b0", "#00acc1", "#ff7043", "#8d6e63", "#5c6bc0", "#7cb342"];
@@ -23,13 +20,6 @@ const number = text => {
 
 const format = value => `${value.toFixed(1).replace(".", ",")} %`;
 const isTotal = team => /^(samlet|i alt)/i.test(team.name);
-
-function level(pct) {
-    if (pct >= CRITICAL) return { name: "Kritisk", color: "var(--bad)" };
-    if (pct >= HIGH) return { name: "Højt", color: "var(--bad)" };
-    if (pct >= WARN) return { name: "Moderat", color: "var(--warn)" };
-    return { name: "Lavt", color: "var(--ok)" };
-}
 
 function modulesText(count) {
     return `${count} modul${count === 1 ? "" : "er"}`;
@@ -52,28 +42,6 @@ function renderTotals(total) {
     document.querySelector("#yearPct").textContent = format(year);
     document.querySelector("#yearModules").textContent = modulesText(number(total.year.modules));
 }
-
-function renderDiagnosis(total, teams) {
-    const pct = number(total.period.pct);
-    const { name, color } = level(pct);
-    const worst = [...teams].sort((a, b) => number(b.period.pct) - number(a.period.pct))[0];
-    const high = teams.filter(team => number(team.period.pct) >= HIGH);
-    const clean = teams.filter(team => number(team.year.modules) === 0);
-    const insights = [];
-
-    if (pct < WARN) insights.push("Dit opgjorte fravær er lavt. Fortsæt som du gør.");
-    else if (pct < HIGH) insights.push(`Du er under ${HIGH} %, men tæt nok på til, at du bør holde øje med det.`);
-    else insights.push(`Du er over ${HIGH} %. Tal med dine lærere eller din studievejleder, hvis fraværet skyldes noget bestemt.`);
-
-    if (worst && number(worst.period.pct) >= WARN) insights.push(`Mest fravær har du i ${worst.name} (${format(number(worst.period.pct))}).`);
-    if (high.length > 1) insights.push(`${high.length} hold ligger over ${HIGH} %: ${high.map(team => team.name).join(", ")}.`);
-    if (clean.length) insights.push(`Intet fravær i hele året: ${clean.map(team => team.name).join(", ")}.`);
-
-    document.querySelector("#verdict").innerHTML =
-        `<span class="badge" style="background:${color}">${name}</span>`;
-    document.querySelector("#insights").innerHTML = insights.map(text => `<li>${escapeHtml(text)}</li>`).join("");
-}
-
 
 /* ---------- Cirkeldiagram og tabel pr. hold ---------- */
 
@@ -110,7 +78,27 @@ function renderTeams(teams) {
 }
 
 
-/* ---------- Moduler med fravær ---------- */
+/* ---------- Meddelelser og moduler med fravær ---------- */
+
+// Knap til Lectios egen side, hvor man angiver eller retter årsagen (åbner i en ny fane)
+// M3: Buttons - Text button: https://m3.material.io/components/buttons/overview
+function reasonButton(module, label) {
+    return module.reasonUrl
+        ? `<md-text-button href="${escapeHtml(module.reasonUrl)}" target="_blank" rel="noopener">${label}</md-text-button>`
+        : "";
+}
+
+function renderWarnings(warnings) {
+    document.querySelector("#warningTitle").textContent = `Meddelelser og bemærkninger: ${warnings.length}`;
+    document.querySelector("#warningGroup").hidden = warnings.length === 0;
+    document.querySelector("#warningBody").innerHTML = warnings.map(item => `
+        <tr>
+            <th scope="row">${escapeHtml(item.date)}</th>
+            <td>${escapeHtml(item.initials)}</td>
+            <td>${escapeHtml(item.type)}</td>
+            <td class="wrap">${escapeHtml(item.note)}</td>
+        </tr>`).join("");
+}
 
 function renderModules(missing, registered) {
     const row = (module, cells) =>
@@ -119,24 +107,26 @@ function renderModules(missing, registered) {
     document.querySelector("#missingTitle").textContent = `Manglende fraværsårsager: ${missing.length}`;
     document.querySelector("#missingGroup").hidden = missing.length === 0;
     document.querySelector("#missingBody").innerHTML = missing.map(module =>
-        row(module, `<td>${escapeHtml(module.absence)}</td><td>${escapeHtml(module.type)}</td>`)).join("");
+        row(module, `<td>${escapeHtml(module.absence)}</td><td>${escapeHtml(module.type)}</td>
+            <td class="wrap">${escapeHtml(module.comment)}</td><td>${reasonButton(module, "Angiv årsag")}</td>`)).join("");
 
     document.querySelector("#registeredTitle").textContent = `Fraværsårsager angivet: ${registered.length}`;
     document.querySelector("#registeredGroup").hidden = registered.length === 0;
     document.querySelector("#registeredBody").innerHTML = registered.map(module =>
-        row(module, `<td>${escapeHtml(module.absence)}</td><td>${escapeHtml(module.reason)}</td><td>${escapeHtml(module.reasonNote)}</td>`)).join("");
+        row(module, `<td>${escapeHtml(module.absence)}</td><td>${escapeHtml(module.reason)}</td><td class="wrap">${escapeHtml(module.reasonNote)}</td>
+            <td class="wrap">${escapeHtml(module.comment)}</td><td>${reasonButton(module, "Ret")}</td>`)).join("");
 }
 
 
 /* ---------- Start ---------- */
 
-function render({ teams, missing = [], registered = [] }) {
+function render({ teams, warnings = [], missing = [], registered = [] }) {
     const total = teams.find(isTotal) ?? teams[0];
     const subjects = teams.filter(team => !isTotal(team));
 
     renderTotals(total);
-    renderDiagnosis(total, subjects);
     renderTeams(subjects);
+    renderWarnings(warnings);
     renderModules(missing, registered);
 
     document.querySelector("#emptyState").hidden = true;

@@ -345,7 +345,7 @@ async function getGrades(user) {
 //   #s_m_Content_Content_FatabMissingAarsagerGV   fravær hvor årsag mangler
 //   #s_m_Content_Content_FatabAbsenceFravaerGV    fravær med årsag
 //   Uge | Aktivitet (skemabrik) | Fravær | Type | Registreret + lærer | Bemærkning | Årsag + note
-function readAbsenceModules($, selector, missing) {
+function readAbsenceModules($, selector, missing, user) {
     const modules = [];
 
     $(`${selector} tr`).slice(1).each((_, row) => {
@@ -354,6 +354,12 @@ function readAbsenceModules($, selector, missing) {
 
         const lesson = readTooltip($(row).find("a.s2skemabrik").attr("data-tooltip")) ?? {};
         const text = index => clean($(cells[index]).text());
+
+        // Lectios eget skema til at angive/rette årsag: fravaer_aarsag.aspx?elevid=..&id=<absid>&atype=aa (som i BetterLectio)
+        const absId = ($(row).find("a.s2skemabrik").attr("href") ?? "").match(/absid=(\d+)/i)?.[1];
+        const reasonUrl = absId && user?.studentId
+            ? `${LECTIO}/${user.schoolCode}/fravaer_aarsag.aspx?elevid=${user.studentId}&id=${absId}&atype=aa`
+            : null;
         const [reason = "", reasonNote = ""] = (cells[6] ? $(cells[6]).text() : "").split(/\n+|\s{3,}/).map(clean).filter(Boolean);
 
         modules.push({
@@ -369,7 +375,8 @@ function readAbsenceModules($, selector, missing) {
             comment: text(5),
             reason: missing ? "" : reason ?? "",
             reasonNote: missing ? "" : reasonNote ?? "",
-            missingReason: missing
+            missingReason: missing,
+            reasonUrl
         });
     });
 
@@ -425,19 +432,26 @@ async function getAbsence(user) {
         throw error;
     }
 
+    // Meddelelser/advarsler om fravær (Dato | Initialer | Type | Note)
+    const warnings = [];
+    $("table[id$='SFTabWarningGV'] tr").each((_, row) => {
+        const cells = $(row).children("td").toArray().map(cell => clean($(cell).text()));
+        if (cells.length >= 4 && cells[0]) warnings.push({ date: cells[0], initials: cells[1], type: cells[2], note: cells[3] });
+    });
+
     // Moduler med fravær. Mislykkes denne side, vises resten alligevel
     let missing = [];
     let registered = [];
 
     try {
         const reasons = cheerio.load(await getPage(user, `subnav/fravaerelev_fravaersaarsager.aspx?elevid=${id}`));
-        missing = readAbsenceModules(reasons, "table[id$=FatabMissingAarsagerGV]", true);
-        registered = readAbsenceModules(reasons, "table[id$=FatabAbsenceFravaerGV]", false);
+        missing = readAbsenceModules(reasons, "table[id$=FatabMissingAarsagerGV]", true, { ...user, studentId: id });
+        registered = readAbsenceModules(reasons, "table[id$=FatabAbsenceFravaerGV]", false, { ...user, studentId: id });
     } catch (error) {
         console.error(error);
     }
 
-    return { teams, missing, registered };
+    return { teams, warnings, missing, registered };
 }
 
 module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades, getAbsence };
