@@ -135,8 +135,22 @@ function readTooltip(tooltip) {
     return lesson.start ? lesson : null;
 }
 
-async function getSchedule(user, week, year) {
-    const html = await getPage(user, `SkemaNy.aspx?week=${String(week).padStart(2, "0")}${year}`);
+// Hvilken side hører til hvilket id (bogstavet foran id'et, som i Lectios "Find skema")
+const SCHEDULE_OWNERS = [
+    [/^S(\d+)$/, id => `type=elev&elevid=${id}`],
+    [/^T(\d+)$/, id => `type=laerer&laererid=${id}`],
+    [/^C(\d+)$/, id => `type=stamklasse&klasseid=${id}`],
+    [/^RE(\d+)$/, id => `type=lokale&nosubnav=1&id=${id}`],
+    [/^R(\d+)$/, id => `type=lokale&nosubnav=1&id=${id}`],
+    [/^(?:HE|G)(\d+)$/, id => `type=holdelement&holdelementid=${id}`]
+];
+
+// Skemaet for eleven selv, eller for en anden (who = fx "S12345", "T678", "HE9")
+async function getSchedule(user, week, year, who) {
+    const owner = who && SCHEDULE_OWNERS.map(([pattern, build]) => who.match(pattern) && build(who.match(pattern)[1])).find(Boolean);
+    if (who && !owner) throw new Error("Ugyldigt skema");
+
+    const html = await getPage(user, `SkemaNy.aspx?${owner ? `${owner}&` : ""}week=${String(week).padStart(2, "0")}${year}`);
     const $ = cheerio.load(html);
 
     // Moduler fra venstre kolonne: "1. modul<br>8:00 - 9:30"
@@ -180,7 +194,7 @@ async function getSchedule(user, week, year) {
         });
     });
 
-    return { modules, lessons };
+    return { title: clean($("#s_m_HeaderContent_MainTitle").text()), modules, lessons };
 }
 
 /* ---------- Elever på et hold ---------- */

@@ -1,4 +1,9 @@
 // Skemaet hentes én uge ad gangen fra vores server, som henter det fra Lectio
+// Skemaet for en anden (elev, lærer, klasse, hold eller lokale) åbnes fra "Find skema" som /skema/?id=S123
+const WHO = (() => {
+    const id = new URLSearchParams(location.search).get("id");
+    return id && /^[A-Z]+\d+$/.test(id) ? id : null;
+})();
 const API_URL = "/api/skema";
 
 const DAY_NAMES = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"];
@@ -434,7 +439,8 @@ async function showWeek() {
     try {
         const week = getWeekNumber(selectedDate);
         const year = getWeekYear(selectedDate);
-        const data = await apiGet(`${API_URL}?week=${week}&year=${year}`);
+        const data = await apiGet(`${API_URL}?week=${week}&year=${year}${WHO ? `&id=${WHO}` : ""}`);
+        if (WHO && data.title) showOwner(data.title);
 
         // Kun lektionerne i den hentede uge gemmes for ugen
         const monday = getMonday(selectedDate);
@@ -510,5 +516,19 @@ if (view === "day") {
     });
 }
 
+// Andres skema: navn og tilbage-knap øverst, og ingen af elevens egne noter
+function showOwner(title) {
+    // Lectios overskrift er fx "Eleven Anna Hansen, 2y 25htx - Skema" - kun navnet og klassen vises
+    document.querySelector("#ownerName").textContent = title.replace(/^(Eleven|Læreren|Klassen|Holdet|Lokalet)\s+/, "").replace(/\s+-\s+Skema.*$/, "");
+    document.title = `${document.querySelector("#ownerName").textContent} - Flexio`;
+}
+
+if (WHO) {
+    document.querySelector("#ownerBar").hidden = false;
+    document.querySelector(".lesson-notes").hidden = true;
+    document.querySelector("#newLessonNote").hidden = true;
+} else {
+    loadScheduleNotes();
+}
+
 showWeek();
-loadScheduleNotes();

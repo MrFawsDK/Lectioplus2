@@ -22,6 +22,14 @@
         Element: <md-outlined-card> fra @material/web/labs/card/outlined-card.js
     -->
     <md-outlined-card class="skema-card">
+        <!-- Vises kun, når man ser en andens skema (fra Find skema) -->
+        <div class="owner-bar" id="ownerBar" hidden>
+            <md-icon-button href="/find/" aria-label="Tilbage til Find skema">
+                <md-icon>arrow_back</md-icon>
+            </md-icon-button>
+            <strong id="ownerName"></strong>
+        </div>
+
         <div class="toolbar">
             <div class="toolbar-title">
                 <h1 id="weekTitle">Skema</h1>

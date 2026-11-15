@@ -308,3 +308,18 @@
     --md-filled-card-container-color: var(--fag-bg);
     color: var(--fag-fg);
 }
+
+
+/* ---------- Andres skema ---------- */
+
+.owner-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -8px 0 8px -8px;
+    font-size: 18px;
+}
+
+.owner-bar[hidden] {
+    display: none;
+}

@@ -10,6 +10,7 @@
 //   GET  /api/beskeder?mappe=          beskeder og mapper;  GET /api/beskeder/:id  en besked med svar (beskeder.js)
 //   GET  /api/dokumenter?mappe=        dokumenter og mapper (beskeder.js)
 //   GET/PUT/DELETE /api/indstillinger  Flexios egne indstillinger (indstillinger.js), POST /api/indstillinger/log-ud-overalt
+//   GET  /api/find                     alle elever, lærere, klasser, hold og lokaler;  /api/skema?id=S123  deres skema (find.js)
 //   GET  /api/lektier                  lektier;  GET /api/studieplan  forløb pr. fag (lektier.js)
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
@@ -27,6 +28,7 @@ const post = require("./beskeder");
 const plan = require("./lektier");
 const pages = require("./sider");
 const profile = require("./profil");
+const finder = require("./find");
 
 const router = express.Router();
 router.use(express.json());
@@ -171,11 +173,31 @@ router.get("/me", requireLogin, (req, res) => {
 /* ---------- Data ---------- */
 
 router.get("/skema", requireLogin, async (req, res) => {
-    if (req.user.demo) return res.json(demoData("skema/skema.json"));
+    // ?id=S123 giver en andens skema (elev, lærer, klasse, hold eller lokale) - ids kommer fra /api/find
+    const who = req.query.id ? String(req.query.id) : undefined;
+    if (who && !finder.ID.test(who)) return res.status(400).json({ error: "Ugyldigt skema" });
+
+    if (req.user.demo) {
+        // Demo: samme skema til alle, men med den valgtes navn som overskrift
+        const name = who && demoData("find/find.json").groups.flatMap(group => group.items).find(item => item.id === who)?.name;
+        return res.json({ ...demoData("skema/skema.json"), ...(name ? { title: name } : {}) });
+    }
 
     try {
-        res.json(await lectio.getSchedule(req.user, Number(req.query.week), Number(req.query.year)));
+        res.json(await lectio.getSchedule(req.user, Number(req.query.week), Number(req.query.year), who));
     } catch (error) {
+        lectioError(res, error);
+    }
+});
+
+// Alle elever, lærere, klasser, hold og lokaler (til "Find skema")
+router.get("/find", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("find/find.json"));
+
+    try {
+        res.json(await finder.getPeople(req.user));
+    } catch (error) {
+        if (error.expose) return res.status(502).json({ error: error.message });
         lectioError(res, error);
     }
 });

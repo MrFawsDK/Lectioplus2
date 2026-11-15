@@ -22,7 +22,7 @@ db.exec(`
 // Sider man kan vælge som startside eller skjule i menuen (samme som i header.html)
 const PAGES = [
     "/forside/", "/skema/", "/studieplan/", "/fravaer/", "/opgaver/", "/lektier/", "/karakter/",
-    "/noter/", "/boger/", "/spoergeskema/", "/dokumenter/", "/sps/", "/beskeder/"
+    "/noter/", "/find/", "/boger/", "/spoergeskema/", "/dokumenter/", "/sps/", "/beskeder/"
 ];
 
 const FONTS = [

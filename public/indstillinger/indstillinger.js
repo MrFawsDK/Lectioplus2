@@ -2,7 +2,7 @@
 
 const PAGE_LABELS = {
     "/forside/": "Forside", "/skema/": "Skema", "/studieplan/": "Studieplan", "/fravaer/": "Fravær",
-    "/opgaver/": "Opgaver", "/lektier/": "Lektier", "/karakter/": "Karakterer", "/noter/": "Noter",
+    "/opgaver/": "Opgaver", "/lektier/": "Lektier", "/karakter/": "Karakterer", "/noter/": "Noter", "/find/": "Find skema",
     "/boger/": "Bøger", "/spoergeskema/": "Spørgeskema", "/dokumenter/": "Dokumenter", "/sps/": "SPS",
     "/beskeder/": "Beskeder"
 };

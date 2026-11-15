@@ -1,0 +1,35 @@
+{
+  "groups": [
+    {
+      "title": "Elever",
+      "items": [
+        { "id": "S1001", "name": "Anna Hansen (2y 25htx)" },
+        { "id": "S1002", "name": "Mads Jensen (2y 25htx)" },
+        { "id": "S1003", "name": "Sofie Nielsen (2y 25htx)" },
+        { "id": "S1004", "name": "Oliver Pedersen (1a 26htx)" }
+      ]
+    },
+    {
+      "title": "Lærere",
+      "items": [
+        { "id": "T2001", "name": "ABD - Anders Bech Dahl" },
+        { "id": "T2002", "name": "LS - Lone Sørensen" },
+        { "id": "T2003", "name": "MK - Mette Kristensen" }
+      ]
+    },
+    {
+      "title": "Klasser",
+      "items": [
+        { "id": "C3001", "name": "2y 25htx" },
+        { "id": "C3002", "name": "1a 26htx" }
+      ]
+    },
+    {
+      "title": "Lokaler",
+      "items": [
+        { "id": "R4001", "name": "H202" },
+        { "id": "R4002", "name": "H203" }
+      ]
+    }
+  ]
+}

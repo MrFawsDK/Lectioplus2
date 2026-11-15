@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find skema - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/find/find.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="find-page">
+    <section class="page-head">
+        <h1>Find skema</h1>
+        <p class="lead">Søg efter en elev, lærer, klasse, et hold eller et lokale og se deres skema.</p>
+    </section>
+
+    <!--
+        M3: Text fields - Outlined text field
+        Guide: https://m3.material.io/components/text-fields/overview
+        Element: <md-outlined-text-field> fra @material/web/textfield/outlined-text-field.js
+    -->
+    <md-outlined-text-field id="searchField" class="search" label="Søg på navn eller klasse" type="search" autocomplete="off">
+        <md-icon slot="leading-icon">search</md-icon>
+    </md-outlined-text-field>
+
+    <!--
+        M3: Chips - Filter chip (én kategori ad gangen)
+        Guide: https://m3.material.io/components/chips/overview
+        Element: <md-chip-set> og <md-filter-chip> fra @material/web/chips
+    -->
+    <md-chip-set class="kinds" id="kinds" aria-label="Type"></md-chip-set>
+
+    <md-divider></md-divider>
+
+    <p class="count" id="count" role="status"></p>
+
+    <!--
+        M3: Lists - List item (type="link")
+        Guide: https://m3.material.io/components/lists/overview
+        Element: <md-list> og <md-list-item> fra @material/web/list
+    -->
+    <md-list class="results" id="results"></md-list>
+
+    <div class="empty" id="emptyState">
+        <md-icon>groups</md-icon>
+        <span id="emptyText">Henter elever og lærere …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/find/find.js"></script>
+</body>
+</html>
