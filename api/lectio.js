@@ -454,4 +454,4 @@ async function getAbsence(user) {
     return { teams, warnings, missing, registered };
 }
 
-module.exports = { NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades, getAbsence };
+module.exports = { LECTIO, getPage, clean, NotLoggedInError, getSchools, getStudent, getSchedule, getTeamMembers, getAssignments, getGrades, getAbsence };

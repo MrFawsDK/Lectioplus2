@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumenter - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/dokumenter/dokumenter.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="dokumenter-page">
+    <section class="page-head">
+        <h1>Dokumenter</h1>
+        <p class="lead" id="lead">Dine dokumenter og mapper fra Lectio.</p>
+    </section>
+
+    <md-divider></md-divider>
+
+    <!--
+        M3: Lists - List item (type="button" for mapper, type="link" for filer)
+        Guide: https://m3.material.io/components/lists/overview
+        Element: <md-list-item> fra @material/web/list/list-item.js
+    -->
+    <md-list class="doc-list" id="docList"></md-list>
+
+    <div class="empty" id="emptyState">
+        <md-icon>folder_open</md-icon>
+        <span id="emptyText">Henter dokumenter …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/dokumenter/dokumenter.js"></script>
+</body>
+</html>

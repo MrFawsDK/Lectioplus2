@@ -1,0 +1,22 @@
+{
+  "subject": "Husk aflevering i matematik",
+  "url": "https://www.lectio.dk/",
+  "messages": [
+    {
+      "sender": "MK",
+      "title": "Husk aflevering i matematik",
+      "date": "14/11-2026 09:12",
+      "text": "Hej alle\n\nHusk at aflevere vektoropgaven senest fredag kl. 23:30.\n\nMvh MK",
+      "attachments": [{ "name": "Vektoropgave.pdf", "href": "https://www.lectio.dk/" }],
+      "replyTo": null
+    },
+    {
+      "sender": "Demo-elev",
+      "title": "Husk aflevering i matematik",
+      "date": "14/11-2026 10:40",
+      "text": "Tak, jeg afleverer i dag.",
+      "attachments": [],
+      "replyTo": "MK"
+    }
+  ]
+}

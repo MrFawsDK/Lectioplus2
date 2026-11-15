@@ -1,0 +1,51 @@
+.dokumenter-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.page-head h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 20px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+md-divider {
+    margin-bottom: 16px;
+}
+
+.doc-list {
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+    .page-head h1 {
+        font-size: 32px;
+    }
+}

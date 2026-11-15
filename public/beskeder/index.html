@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beskeder - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/beskeder/beskeder.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="beskeder-page">
+    <section class="page-head">
+        <h1>Beskeder</h1>
+        <p class="lead">Dine beskeder fra Lectio. Svar skrives i Lectio.</p>
+    </section>
+
+    <!-- M3: Chips (mapper) kunne bruges her - vi bruger tekstknapper, da de allerede findes i M3-biblioteket -->
+    <nav class="folders" id="folders" aria-label="Mapper"></nav>
+
+    <md-divider></md-divider>
+
+    <div class="mail">
+        <!--
+            M3: Lists - List item (type="button")
+            Guide: https://m3.material.io/components/lists/overview
+            Element: <md-list-item> fra @material/web/list/list-item.js
+        -->
+        <md-list class="message-list" id="messageList"></md-list>
+
+        <article class="reader" id="reader">
+            <p class="placeholder" id="placeholder">Vælg en besked for at læse den.</p>
+        </article>
+    </div>
+
+    <div class="empty" id="emptyState">
+        <md-icon>mail</md-icon>
+        <span id="emptyText">Henter beskeder …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/beskeder/beskeder.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "folders": [
+    { "id": "-70", "name": "Indbakke", "selected": true },
+    { "id": "-60", "name": "Sendt", "selected": false },
+    { "id": "-50", "name": "Slettet", "selected": false }
+  ],
+  "messages": [
+    { "id": "1001", "emne": "Husk aflevering i matematik", "afsender": "MK", "modtagere": ["2y Ma"], "sidstÆndret": "14/11-2026 09:12" },
+    { "id": "1002", "emne": "Ændret lokale i informatik", "afsender": "ABD", "modtagere": ["2y 25htx InfB"], "sidstÆndret": "12/11-2026 14:30" },
+    { "id": "1003", "emne": "Studietur til København", "afsender": "LS", "modtagere": ["2y 25htx"], "sidstÆndret": "05/11-2026 11:02" }
+  ]
+}

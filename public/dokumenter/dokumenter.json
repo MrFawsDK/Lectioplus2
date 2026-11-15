@@ -1,0 +1,13 @@
+{
+  "title": "Mine dokumenter",
+  "parent": null,
+  "folders": [
+    { "id": "F1", "name": "Matematik" },
+    { "id": "F2", "name": "Informatik" },
+    { "id": "F3", "name": "Dansk" }
+  ],
+  "files": [
+    { "name": "Studieplan.pdf", "comment": "", "changedBy": "Demo-elev", "date": "02/11-2026", "url": "https://www.lectio.dk/" },
+    { "name": "Projektbeskrivelse.docx", "comment": "Første udkast", "changedBy": "Demo-elev", "date": "31/08-2026", "url": "https://www.lectio.dk/" }
+  ]
+}

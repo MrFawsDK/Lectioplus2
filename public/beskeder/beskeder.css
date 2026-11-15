@@ -1,0 +1,130 @@
+.beskeder-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.page-head h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 20px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.folders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+md-divider {
+    margin-bottom: 16px;
+}
+
+.mail {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.message-list {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.reader {
+    min-height: 240px;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.reader h2 {
+    margin: 0 0 16px;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.post {
+    padding: 14px 0;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.post:first-of-type {
+    border-top: 0;
+}
+
+.post-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.post-head span {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.post-text {
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.reader-actions {
+    margin-top: 12px;
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+@media (max-width: 800px) {
+    .mail {
+        grid-template-columns: 1fr;
+    }
+
+    .message-list {
+        max-height: 40vh;
+    }
+
+    .page-head h1 {
+        font-size: 32px;
+    }
+}

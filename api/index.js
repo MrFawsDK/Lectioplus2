@@ -7,6 +7,8 @@
 //   GET  /api/opgaver                  opgaver
 //   GET  /api/karakterer               karakterblad
 //   GET  /api/fravaer                  fravær pr. hold
+//   GET  /api/beskeder?mappe=          beskeder og mapper;  GET /api/beskeder/:id  en besked med svar (beskeder.js)
+//   GET  /api/dokumenter?mappe=        dokumenter og mapper (beskeder.js)
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
 // Lectio-cookien gemmes på serveren i databasen (sessions), så man er logget ind efter en genstart.
@@ -19,6 +21,7 @@ const express = require("express");
 
 const db = require("./db");
 const lectio = require("./lectio");
+const post = require("./beskeder");
 
 const router = express.Router();
 router.use(express.json());
@@ -200,6 +203,39 @@ router.get("/fravaer", requireLogin, async (req, res) => {
         res.json(await lectio.getAbsence(req.user));
     } catch (error) {
         if (error.expose) return res.status(502).json({ error: error.message });
+        lectioError(res, error);
+    }
+});
+
+router.get("/beskeder", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("beskeder/beskeder.json"));
+
+    try {
+        res.json(await post.getMessages(req.user, req.query.mappe));
+    } catch (error) {
+        lectioError(res, error);
+    }
+});
+
+router.get("/beskeder/:id", requireLogin, async (req, res) => {
+    if (!/^\d+$/.test(req.params.id)) return res.status(400).json({ error: "Ugyldig besked" });
+    if (req.user.demo) return res.json(demoData("beskeder/besked.json"));
+
+    try {
+        res.json(await post.getMessage(req.user, req.params.id));
+    } catch (error) {
+        if (error.expose) return res.status(502).json({ error: error.message });
+        lectioError(res, error);
+    }
+});
+
+router.get("/dokumenter", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("dokumenter/dokumenter.json"));
+    if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
+
+    try {
+        res.json(await post.getDocuments(req.user, req.query.mappe));
+    } catch (error) {
         lectioError(res, error);
     }
 });

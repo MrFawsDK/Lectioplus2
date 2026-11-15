@@ -14,21 +14,14 @@
     grid-column: 2;
     justify-self: center;
     display: flex;
-    gap: 4px;
-
-    /* Mange punkter: rul sidelæns frem for at bryde layoutet */
-    max-width: 100%;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px 4px;
 }
 
 .nav > * {
-    flex: none;
-}
-
-.nav > * {
-    --md-text-button-label-text-size: 17px;
-    --md-filled-tonal-button-label-text-size: 17px;
+    --md-text-button-label-text-size: 15px;
+    --md-filled-tonal-button-label-text-size: 15px;
     --md-text-button-label-text-color: var(--muted);
 }
 
