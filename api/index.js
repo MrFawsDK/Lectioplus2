@@ -9,6 +9,7 @@
 //   GET  /api/fravaer                  fravær pr. hold
 //   GET  /api/beskeder?mappe=          beskeder og mapper;  GET /api/beskeder/:id  en besked med svar (beskeder.js)
 //   GET  /api/dokumenter?mappe=        dokumenter og mapper (beskeder.js)
+//   GET  /api/lektier                  lektier;  GET /api/studieplan  forløb pr. fag (lektier.js)
 //   Noter, tags, fag og deling af noter: se noter.js (gemmes i en database)
 //
 // Lectio-cookien gemmes på serveren i databasen (sessions), så man er logget ind efter en genstart.
@@ -22,6 +23,7 @@ const express = require("express");
 const db = require("./db");
 const lectio = require("./lectio");
 const post = require("./beskeder");
+const plan = require("./lektier");
 
 const router = express.Router();
 router.use(express.json());
@@ -235,6 +237,28 @@ router.get("/dokumenter", requireLogin, async (req, res) => {
 
     try {
         res.json(await post.getDocuments(req.user, req.query.mappe));
+    } catch (error) {
+        lectioError(res, error);
+    }
+});
+
+router.get("/lektier", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("lektier/lektier.json"));
+    if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
+
+    try {
+        res.json(await plan.getHomework(req.user));
+    } catch (error) {
+        lectioError(res, error);
+    }
+});
+
+router.get("/studieplan", requireLogin, async (req, res) => {
+    if (req.user.demo) return res.json(demoData("studieplan/studieplan.json"));
+    if (!req.user.student?.studentId) return res.status(502).json({ error: "Kunne ikke finde dit elev-id i Lectio. Log ud og ind igen." });
+
+    try {
+        res.json(await plan.getStudyPlan(req.user));
     } catch (error) {
         lectioError(res, error);
     }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studieplan - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/studieplan/studieplan.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="studieplan-page">
+    <section class="page-head">
+        <h1>Studieplan</h1>
+        <p class="lead">Forløbene i dine fag fra Lectio.</p>
+    </section>
+
+    <!-- Fag vælges med knapper (M3: Text button / Filled tonal button) -->
+    <nav class="subjects" id="subjects" aria-label="Fag"></nav>
+
+    <md-divider></md-divider>
+
+    <div id="phases"></div>
+
+    <div class="empty" id="emptyState">
+        <md-icon>event_note</md-icon>
+        <span id="emptyText">Henter studieplan …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/studieplan/studieplan.js"></script>
+</body>
+</html>

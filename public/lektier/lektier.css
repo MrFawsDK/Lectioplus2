@@ -1,0 +1,93 @@
+.lektier-page {
+    padding: 32px clamp(16px, 4vw, 56px) 48px;
+
+    color: var(--md-sys-color-on-surface);
+    font-family: Roboto, sans-serif;
+}
+
+.page-head h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.lead {
+    margin: 6px 0 20px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+md-divider {
+    margin-bottom: 20px;
+}
+
+.day h2 {
+    margin: 24px 0 8px;
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.lesson {
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.lesson-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lesson-head strong {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.lesson-head span {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.topic {
+    margin: 2px 0 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+}
+
+.items {
+    margin: 10px 0 0;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.items a {
+    color: var(--md-sys-color-primary);
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.empty[hidden] {
+    display: none;
+}
+
+.empty md-icon {
+    --md-icon-size: 40px;
+    opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+    .page-head h1 {
+        font-size: 32px;
+    }
+}

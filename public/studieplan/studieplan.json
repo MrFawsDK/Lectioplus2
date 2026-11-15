@@ -1,0 +1,23 @@
+{
+  "subjects": [
+    {
+      "subject": "Matematik", "id": "HE1",
+      "phases": [
+        { "id": "FL1", "title": "Vektorer", "estimate": "20 lektioner", "period": "Uge 33 - Uge 40", "description": "Regning med vektorer i planen og rummet.", "url": null },
+        { "id": "FL2", "title": "Differentialregning", "estimate": "24 lektioner", "period": "Uge 41 - Uge 49", "description": "Grænseværdi, tangent og monotoniforhold.", "url": null }
+      ]
+    },
+    {
+      "subject": "Informatik", "id": "HE2",
+      "phases": [
+        { "id": "FL3", "title": "Læringsplatform", "estimate": "30 lektioner", "period": "Uge 35 - Uge 50", "description": "Projektforløb: vi udvikler en læringsplatform.", "url": null }
+      ]
+    },
+    {
+      "subject": "Dansk", "id": "HE3",
+      "phases": [
+        { "id": "FL4", "title": "Novelleanalyse", "estimate": "12 lektioner", "period": "Uge 44 - Uge 48", "description": "", "url": null }
+      ]
+    }
+  ]
+}

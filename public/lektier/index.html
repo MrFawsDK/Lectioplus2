@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lektier - Flexio</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/m3/m3.css">
+    <link rel="stylesheet" href="/header/header.css">
+    <link rel="stylesheet" href="/lektier/lektier.css">
+</head>
+<body>
+
+<header class="header" id="header"></header>
+
+<main class="lektier-page">
+    <section class="page-head">
+        <h1>Lektier</h1>
+        <p class="lead">Dine lektier fra Lectio, samlet pr. dag.</p>
+    </section>
+
+    <md-divider></md-divider>
+
+    <div id="days"></div>
+
+    <div class="empty" id="emptyState">
+        <md-icon>menu_book</md-icon>
+        <span id="emptyText">Henter lektier …</span>
+    </div>
+</main>
+
+<script type="module" src="/m3/material.js"></script>
+<script src="/session/session.js"></script>
+<script src="/header/header.js"></script>
+<script src="/lektier/lektier.js"></script>
+</body>
+</html>
