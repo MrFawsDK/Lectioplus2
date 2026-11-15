@@ -37,7 +37,8 @@ const DEFAULTS = {
     startPage: "/forside/",
     hiddenMenu: [],        // sider der er skjult i menuen
     noteFont: "Roboto",
-    noteSubject: ""        // fag der er valgt som standard til nye noter ("" = intet)
+    noteSubject: "",       // fag der er valgt som standard til nye noter ("" = intet)
+    subjectColors: true    // hvert fag har sin egen farve
 };
 
 // Hver indstilling har en funktion der returnerer den rensede værdi, eller undefined hvis værdien ikke dur
@@ -48,7 +49,8 @@ const CHECKS = {
     startPage: value => PAGES.includes(value) ? value : undefined,
     hiddenMenu: value => Array.isArray(value) ? [...new Set(value.filter(page => PAGES.includes(page)))] : undefined,
     noteFont: value => FONTS.includes(value) ? value : undefined,
-    noteSubject: value => typeof value === "string" && value.length <= 80 ? value.trim() : undefined
+    noteSubject: value => typeof value === "string" && value.length <= 80 ? value.trim() : undefined,
+    subjectColors: value => typeof value === "boolean" ? value : undefined
 };
 
 /* ---------- Database ---------- */

@@ -85,3 +85,20 @@ md-divider {
         font-size: 32px;
     }
 }
+
+
+/* ---------- Fagfarver ---------- */
+
+.phase[style*="--fag-h"] {
+    border-left: 5px solid var(--fag-accent);
+}
+
+md-filled-tonal-button[style*="--fag-h"] {
+    --md-filled-tonal-button-container-color: var(--fag-bg);
+    --md-filled-tonal-button-label-text-color: var(--fag-fg);
+    --md-filled-tonal-button-hover-label-text-color: var(--fag-fg);
+}
+
+md-text-button[style*="--fag-h"] {
+    --md-text-button-label-text-color: var(--fag-accent);
+}

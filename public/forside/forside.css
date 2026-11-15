@@ -91,3 +91,10 @@
 .more:hover {
     text-decoration: underline;
 }
+
+
+/* Fagfarver */
+.list li[style*="--fag-h"] {
+    padding-left: 12px;
+    border-left: 4px solid var(--fag-accent);
+}

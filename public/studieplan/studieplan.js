@@ -19,7 +19,7 @@ function renderSubjects() {
     // Det valgte fag er en tonal knap, de andre er tekstknapper (M3: Buttons)
     subjectBar.innerHTML = subjects.map((item, index) => {
         const tag = index === selected ? "md-filled-tonal-button" : "md-text-button";
-        return `<${tag} data-index="${index}">${escapeHtml(item.subject)}</${tag}>`;
+        return `<${tag} data-index="${index}" style="${subjectStyle(item.subject)}">${escapeHtml(item.subject)}</${tag}>`;
     }).join("");
 }
 
@@ -27,7 +27,7 @@ function renderPhases() {
     const { phases = [] } = subjects[selected] ?? {};
 
     phasesBox.innerHTML = phases.map(phase => `
-        <article class="phase">
+        <article class="phase" style="${subjectStyle(subjects[selected]?.subject)}">
             <div class="phase-head">
                 <strong>${escapeHtml(phase.title)}</strong>
                 <span>${escapeHtml([phase.period, phase.estimate].filter(Boolean).join(" · "))}</span>

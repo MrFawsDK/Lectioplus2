@@ -43,3 +43,16 @@ body {
     --accent: #a9c7ff;
     --hover: #1e1f23;
 }
+
+/* Fagfarver: et element med style="--fag-h:<tone>" får disse farver (se subjectStyle() i session/session.js) */
+[style*="--fag-h"] {
+    --fag-bg: hsl(var(--fag-h) 80% 91%);
+    --fag-fg: hsl(var(--fag-h) 70% 14%);
+    --fag-accent: hsl(var(--fag-h) 65% 42%);
+}
+
+:root[data-theme="dark"] [style*="--fag-h"] {
+    --fag-bg: hsl(var(--fag-h) 38% 22%);
+    --fag-fg: hsl(var(--fag-h) 80% 92%);
+    --fag-accent: hsl(var(--fag-h) 70% 64%);
+}

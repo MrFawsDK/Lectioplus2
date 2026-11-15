@@ -99,7 +99,7 @@ if (!location.pathname.startsWith(LOGIN_PAGE)) {
 
 const SETTINGS_KEY = "flexio.indstillinger";
 const TEXT_ZOOM = { small: 0.9, normal: 1, large: 1.15 };
-const DEFAULT_SETTINGS = { theme: "system", accent: "blue", textSize: "normal", startPage: "/forside/", hiddenMenu: [], noteFont: "Roboto", noteSubject: "" };
+const DEFAULT_SETTINGS = { theme: "system", accent: "blue", textSize: "normal", startPage: "/forside/", hiddenMenu: [], noteFont: "Roboto", noteSubject: "", subjectColors: true };
 
 function cachedSettings() {
     try {
@@ -174,4 +174,52 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => appl
 
 if (!location.pathname.startsWith(LOGIN_PAGE)) {
     getSettings().catch(() => {});
+}
+
+
+/* ---------- Fagfarver ----------
+   Hvert fag får sin egen farvetone, så fagene er nemme at kende fra hinanden på tværs af siderne.
+   subjectStyle("2y Ma") giver fx "--fag-h:215", som CSS'en i style.css laver om til baggrund, tekst og kantfarve.
+   Kan slås fra i Indstillinger (subjectColors). */
+
+// Kendte fag får en fast tone (stems = begyndelsen af ordet, codes = Lectios forkortelser). Andre fag får en tone ud fra navnet.
+const SUBJECT_HUES = [
+    { hue: 215, stems: ["matem"], codes: ["ma", "mat"] },
+    { hue: 0, stems: ["dansk"], codes: ["da", "dan"] },
+    { hue: 280, stems: ["engel"], codes: ["en", "eng"] },
+    { hue: 175, stems: ["fysik"], codes: ["fy", "fys"] },
+    { hue: 150, stems: ["inform"], codes: ["inf", "infb", "infa", "infc"] },
+    { hue: 35, stems: ["histor"], codes: ["hi", "his"] },
+    { hue: 95, stems: ["idræt", "idraet"], codes: ["id", "idr"] },
+    { hue: 195, stems: ["teknol"], codes: ["tek", "tec"] },
+    { hue: 320, stems: ["kemi"], codes: ["ke", "kem"] },
+    { hue: 120, stems: ["biolog"], codes: ["bi", "bio"] },
+    { hue: 50, stems: ["samfund"], codes: ["sa", "sam"] },
+    { hue: 245, stems: ["studietid", "studie"], codes: ["st"] },
+    { hue: 265, stems: ["klassetime", "klasse"], codes: ["kl"] },
+    { hue: 15, stems: ["tysk"], codes: ["ty"] },
+    { hue: 335, stems: ["fransk"], codes: ["fr"] },
+    { hue: 70, stems: ["religion"], codes: ["re"] },
+    { hue: 20, stems: ["design"], codes: ["de"] }
+];
+
+function subjectHue(name) {
+    // "2y 25htx InfB" -> ["infb"]: klasse-koderne (2y, 25htx ...) er ikke en del af faget
+    const words = String(name ?? "").toLowerCase().split(/[\s,/]+/).filter(word => word && !/^\d+[a-zæøå]*$/.test(word));
+
+    for (const word of words) {
+        const known = SUBJECT_HUES.find(item => item.codes.includes(word) || item.stems.some(stem => word.startsWith(stem)));
+        if (known) return known.hue;
+    }
+
+    // Ukendt fag: samme navn giver altid samme tone
+    let hash = 0;
+    for (const char of words.join(" ") || String(name)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    return hash % 360;
+}
+
+// Til style-attributten på et element. Tom, hvis fagfarver er slået fra (eller faget mangler).
+function subjectStyle(name) {
+    if (!name || cachedSettings().subjectColors === false) return "";
+    return `--fag-h:${subjectHue(name)}`;
 }

@@ -199,6 +199,10 @@ function renderLesson(item, range) {
     card.style.left = `calc(${(column / columns) * 100}% + 4px)`;
     card.style.width = `calc(${100 / columns}% - 8px)`;
 
+    // Fagets farve (se subjectStyle() i session.js og .lesson i skema.css)
+    const fagStyle = subjectStyle(lesson.subject || lesson.team);
+    if (fagStyle) card.style.cssText += `;${fagStyle}`;
+
     card.tabIndex = 0;
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", `${lesson.subject}, ${lesson.start} til ${lesson.end}`);

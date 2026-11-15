@@ -3,7 +3,7 @@
 
 
 // Farver til cirkeldiagrammet (et hold pr. farve)
-const COLORS = ["#4285f4", "#34a853", "#fbbc04", "#ea4335", "#9c27b0", "#00acc1", "#ff7043", "#8d6e63", "#5c6bc0", "#7cb342"];
+const teamColor = name => `hsl(${subjectHue(name)} 65% 50%)`;
 
 function escapeHtml(text) {
     return String(text ?? "")
@@ -59,7 +59,7 @@ function renderTeams(teams) {
         ? `<circle cx="60" cy="60" r="${radius}" fill="none" stroke="var(--md-sys-color-surface-container-high)" stroke-width="14"></circle>`
         : sorted.filter(team => team.count > 0).map((team, index) => {
             const length = circumference * team.count / sum;
-            const slice = `<circle cx="60" cy="60" r="${radius}" fill="none" stroke="${COLORS[sorted.indexOf(team) % COLORS.length]}" stroke-width="14"
+            const slice = `<circle cx="60" cy="60" r="${radius}" fill="none" stroke="${teamColor(team.name)}" stroke-width="14"
                 stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}"><title>${escapeHtml(team.name)}: ${team.count}</title></circle>`;
             offset += length;
             return slice;
@@ -70,7 +70,7 @@ function renderTeams(teams) {
     const max = sorted[0]?.count || 1;
     document.querySelector("#teamBody").innerHTML = sorted.map((team, index) => `
         <tr>
-            <th scope="row"><i class="dot" style="background:${COLORS[index % COLORS.length]}"></i>${escapeHtml(team.name)}</th>
+            <th scope="row"><i class="dot" style="background:${teamColor(team.name)}"></i>${escapeHtml(team.name)}</th>
             <td>${escapeHtml(team.year.pct)}</td>
             <td><div class="mini-bar"><div style="width:${team.count / max * 100}%"></div></div></td>
             <td class="right">${modulesText(team.count)}</td>

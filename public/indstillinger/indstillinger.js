@@ -72,6 +72,8 @@ function render() {
     selectSegment(document.querySelector("#themeSet"), settings.theme);
     selectSegment(document.querySelector("#sizeSet"), settings.textSize);
 
+    document.querySelector("#subjectColorsSwitch").selected = settings.subjectColors !== false;
+
     document.querySelectorAll("#accentSwatches .swatch").forEach(swatch => {
         swatch.setAttribute("aria-checked", String(swatch.dataset.value === settings.accent));
     });
@@ -128,6 +130,10 @@ fontSelect.addEventListener("change", () => {
 
 subjectSelect.addEventListener("change", () => {
     if (!rendering && subjectSelect.value !== settings.noteSubject) save({ noteSubject: subjectSelect.value === "__none" ? "" : subjectSelect.value });
+});
+
+document.querySelector("#subjectColorsSwitch").addEventListener("change", event => {
+    if (!rendering) save({ subjectColors: event.target.selected });
 });
 
 menuList.addEventListener("change", event => {

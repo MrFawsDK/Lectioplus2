@@ -321,3 +321,19 @@
         height: 44px;
     }
 }
+
+
+/* ---------- Fagfarver ---------- */
+
+.assignment[style*="--fag-h"] {
+    border-left: 5px solid var(--fag-accent);
+}
+
+md-filter-chip[style*="--fag-h"] {
+    --md-filter-chip-outline-color: var(--fag-accent);
+    --md-filter-chip-selected-container-color: var(--fag-bg);
+    --md-filter-chip-selected-label-text-color: var(--fag-fg);
+    --md-filter-chip-selected-hover-label-text-color: var(--fag-fg);
+    --md-filter-chip-selected-focus-label-text-color: var(--fag-fg);
+    --md-filter-chip-selected-pressed-label-text-color: var(--fag-fg);
+}

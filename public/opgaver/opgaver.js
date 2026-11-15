@@ -115,7 +115,7 @@ function renderTeamChips() {
         .map(team => {
             const selected = team === selectedTeam ? " selected" : "";
             const label = team === "Alle" ? "Alle hold" : team;
-            return `<md-filter-chip label="${escapeHtml(label)}" data-team="${escapeHtml(team)}"${selected}></md-filter-chip>`;
+            return `<md-filter-chip label="${escapeHtml(label)}" data-team="${escapeHtml(team)}" style="${team === "Alle" ? "" : subjectStyle(team)}"${selected}></md-filter-chip>`;
         })
         .join("");
 
@@ -218,7 +218,7 @@ function assignmentItem(assignment) {
     }
 
     return `
-        <md-list-item type="button" data-index="${index}" class="assignment ${status}">
+        <md-list-item type="button" data-index="${index}" class="assignment ${status}" style="${subjectStyle(assignment.subject)}">
             <div slot="start" class="date-badge ${status}">
                 <span class="date-day">${deadline.getDate()}</span>
                 <span class="date-month">${MONTHS[deadline.getMonth()]}</span>

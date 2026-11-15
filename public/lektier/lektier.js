@@ -26,7 +26,7 @@ function render({ homework }) {
         <section class="day">
             <h2>${escapeHtml(dayTitle(date))}</h2>
             ${lessons.map(lesson => `
-                <article class="lesson">
+                <article class="lesson" style="${subjectStyle(lesson.subject)}">
                     <div class="lesson-head">
                         <strong>${escapeHtml(lesson.subject)}</strong>
                         <span>${escapeHtml([lesson.start && `${lesson.start}–${lesson.end}`, lesson.teacher].filter(Boolean).join(" · "))}</span>

@@ -49,7 +49,7 @@ async function loadLessons() {
         .filter(lesson => lesson.date === day)
         .sort((a, b) => a.start.localeCompare(b.start))
         .map(lesson => `
-            <li>
+            <li style="${subjectStyle(lesson.subject)}">
                 <span class="${lesson.status === "cancelled" ? "cancelled" : ""}">${escapeHtml(lesson.subject)}</span>
                 <span class="meta">${escapeHtml(lesson.start)}–${escapeHtml(lesson.end)}${lesson.room ? ` · ${escapeHtml(lesson.room)}` : ""}</span>
             </li>`), "");
@@ -64,7 +64,7 @@ async function loadAssignments() {
         .slice(0, 5);
 
     list(document.querySelector("#assignments"), missing.map(item => `
-        <li>
+        <li style="${subjectStyle(item.subject)}">
             <span>${escapeHtml(item.title)}<br><small class="meta">${escapeHtml(item.subject)}</small></span>
             <span class="meta">${escapeHtml(item.deadline.slice(0, 10).split("-").reverse().join("/"))}</span>
         </li>`), "Ingen opgaver mangler.");

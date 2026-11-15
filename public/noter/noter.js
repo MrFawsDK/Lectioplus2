@@ -354,7 +354,7 @@ function renderSubjectChips() {
             const count = subject === "Alle" ? notes.length : notes.filter(note => note.subject === subject).length;
             const selected = subject === view.subject ? " selected" : "";
             const label = subject === "Alle" ? `Alle fag (${count})` : `${subject} (${count})`;
-            return `<md-filter-chip label="${escapeHtml(label)}" data-subject="${escapeHtml(subject)}"${selected}></md-filter-chip>`;
+            return `<md-filter-chip label="${escapeHtml(label)}" data-subject="${escapeHtml(subject)}" style="${subject === "Alle" ? "" : subjectStyle(subject)}"${selected}></md-filter-chip>`;
         })
         .join("");
 
@@ -409,7 +409,7 @@ function noteCard(note) {
     const noteTags = tagsOf(note).sort((a, b) => a.name.localeCompare(b.name, "da"));
 
     return `
-        <md-outlined-card class="note-card" data-id="${escapeHtml(note.id)}" tabindex="0" role="button" aria-label="${escapeHtml(noteTitle(note))}">
+        <md-outlined-card class="note-card" data-id="${escapeHtml(note.id)}" style="${subjectStyle(note.subject)}" tabindex="0" role="button" aria-label="${escapeHtml(noteTitle(note))}">
             <md-ripple></md-ripple>
             <md-focus-ring></md-focus-ring>
             <div class="note-inner">
@@ -442,7 +442,7 @@ function receivedCard(note) {
     const from = `${note.sharedBy || "En elev"} · ${note.via === "dig" ? "delt med dig" : `delt med ${note.via}`}`;
 
     return `
-        <md-outlined-card class="note-card" data-received-id="${escapeHtml(note.id)}" tabindex="0" role="link" aria-label="${escapeHtml(noteTitle(note))}">
+        <md-outlined-card class="note-card" data-received-id="${escapeHtml(note.id)}" style="${subjectStyle(note.subject)}" tabindex="0" role="link" aria-label="${escapeHtml(noteTitle(note))}">
             <md-ripple></md-ripple>
             <md-focus-ring></md-focus-ring>
             <div class="note-inner">
@@ -463,7 +463,7 @@ function groupHead(group) {
         : "";
 
     return `
-        <div class="group-head">
+        <div class="group-head" style="${view.groupBy === "subject" ? subjectStyle(group.title) : ""}">
             ${icon}
             <h2>${escapeHtml(group.title)}</h2>
             ${group.meta ? `<span class="group-meta">${escapeHtml(group.meta)}</span>` : ""}

@@ -295,3 +295,16 @@
         min-width: 640px;
     }
 }
+
+
+/* ---------- Fagfarver ---------- */
+
+.lesson[style*="--fag-h"] {
+    border-left: 5px solid var(--fag-accent);
+}
+
+/* Ændrede og aflyste moduler beholder deres egen farve, så de stadig er nemme at få øje på */
+.lesson.normal[style*="--fag-h"] {
+    --md-filled-card-container-color: var(--fag-bg);
+    color: var(--fag-fg);
+}
